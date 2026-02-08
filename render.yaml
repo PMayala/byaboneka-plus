@@ -15,7 +15,7 @@ services:
     env: node
     plan: starter
     rootDir: backend
-    buildCommand: npm ci
+    buildCommand: npm ci && npm run build
     startCommand: npm start
     healthCheckPath: /api/v1/health
     envVars:
