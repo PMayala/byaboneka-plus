@@ -1,0 +1,783 @@
+{
+  "info": {
+    "_postman_id": "byaboneka-plus-api",
+    "name": "Byaboneka+ API",
+    "description": "Trust-Aware Lost & Found Infrastructure for Rwanda's Transport Ecosystem",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:4000/api/v1"
+    },
+    {
+      "key": "accessToken",
+      "value": ""
+    },
+    {
+      "key": "refreshToken",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('accessToken', response.data.tokens.accessToken);",
+                  "    pm.collectionVariables.set('refreshToken', response.data.tokens.refreshToken);",
+                  "    pm.test('Registration successful', () => pm.expect(response.success).to.be.true);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"Test@123\",\n  \"name\": \"Test User\",\n  \"phone\": \"+250788123456\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('accessToken', response.data.tokens.accessToken);",
+                  "    pm.collectionVariables.set('refreshToken', response.data.tokens.refreshToken);",
+                  "    pm.test('Login successful', () => pm.expect(response.success).to.be.true);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"emmanuel.k@gmail.com\",\n  \"password\": \"User@123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Login as Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('accessToken', response.data.tokens.accessToken);",
+                  "    pm.collectionVariables.set('refreshToken', response.data.tokens.refreshToken);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@byaboneka.rw\",\n  \"password\": \"Admin@123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
+            }
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Name\",\n  \"phone\": \"+250788999999\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
+            }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('accessToken', response.data.tokens.accessToken);",
+                  "    pm.collectionVariables.set('refreshToken', response.data.tokens.refreshToken);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "refresh"]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Lost Items",
+      "item": [
+        {
+          "name": "List Lost Items",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/lost-items?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["lost-items"],
+              "query": [
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "10"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get My Lost Items",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/lost-items/mine",
+              "host": ["{{baseUrl}}"],
+              "path": ["lost-items", "mine"]
+            }
+          }
+        },
+        {
+          "name": "Create Lost Item",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category\": \"PHONE\",\n  \"title\": \"Black Samsung Galaxy S23\",\n  \"description\": \"Lost my black Samsung Galaxy S23 with a clear case. Has a small scratch on the back.\",\n  \"location_area\": \"Kimironko\",\n  \"location_hint\": \"Near the main market entrance\",\n  \"lost_date\": \"2024-01-15\",\n  \"verification_questions\": [\n    {\"question\": \"What is your lockscreen wallpaper?\", \"answer\": \"mountains\"},\n    {\"question\": \"How many apps are in your dock?\", \"answer\": \"4\"},\n    {\"question\": \"What music app is installed?\", \"answer\": \"spotify\"}\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/lost-items",
+              "host": ["{{baseUrl}}"],
+              "path": ["lost-items"]
+            }
+          }
+        },
+        {
+          "name": "Get Lost Item by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/lost-items/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["lost-items", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Lost Item",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Title\",\n  \"description\": \"Updated description with more details\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/lost-items/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["lost-items", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Lost Item",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/lost-items/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["lost-items", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Matches for Lost Item",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/lost-items/1/matches",
+              "host": ["{{baseUrl}}"],
+              "path": ["lost-items", "1", "matches"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Found Items",
+      "item": [
+        {
+          "name": "List Found Items",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/found-items?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["found-items"],
+              "query": [
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "10"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get My Found Items",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/found-items/mine",
+              "host": ["{{baseUrl}}"],
+              "path": ["found-items", "mine"]
+            }
+          }
+        },
+        {
+          "name": "Create Found Item",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category\": \"PHONE\",\n  \"title\": \"Black smartphone found\",\n  \"description\": \"Found a black smartphone near the bus station. Has a cracked screen.\",\n  \"location_area\": \"Nyabugogo\",\n  \"location_hint\": \"Near the main bus terminal\",\n  \"found_date\": \"2024-01-16\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/found-items",
+              "host": ["{{baseUrl}}"],
+              "path": ["found-items"]
+            }
+          }
+        },
+        {
+          "name": "Get Found Item by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/found-items/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["found-items", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Found Item",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Found Item Title\",\n  \"description\": \"More details about the found item\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/found-items/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["found-items", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Found Item",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/found-items/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["found-items", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Claims",
+      "item": [
+        {
+          "name": "Create Claim",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lost_item_id\": 1,\n  \"found_item_id\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/claims",
+              "host": ["{{baseUrl}}"],
+              "path": ["claims"]
+            }
+          }
+        },
+        {
+          "name": "Get My Claims",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/claims/mine",
+              "host": ["{{baseUrl}}"],
+              "path": ["claims", "mine"]
+            }
+          }
+        },
+        {
+          "name": "Get Claim by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/claims/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["claims", "1"]
+            }
+          }
+        },
+        {
+          "name": "Submit Verification Answers",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"answers\": [\"mountains\", \"4\", \"spotify\"]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/claims/1/verify",
+              "host": ["{{baseUrl}}"],
+              "path": ["claims", "1", "verify"]
+            }
+          }
+        },
+        {
+          "name": "Generate OTP",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/claims/1/otp/generate",
+              "host": ["{{baseUrl}}"],
+              "path": ["claims", "1", "otp", "generate"]
+            }
+          }
+        },
+        {
+          "name": "Verify OTP (Complete Handover)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"otp\": \"123456\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/claims/1/otp/verify",
+              "host": ["{{baseUrl}}"],
+              "path": ["claims", "1", "otp", "verify"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Messages",
+      "item": [
+        {
+          "name": "Get Message Threads",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/messages/threads",
+              "host": ["{{baseUrl}}"],
+              "path": ["messages", "threads"]
+            }
+          }
+        },
+        {
+          "name": "Get Messages for Claim",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/messages/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["messages", "1"]
+            }
+          }
+        },
+        {
+          "name": "Send Message",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Hello, I believe this is my phone. Can we arrange a meeting?\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/messages/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["messages", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Unread Count",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/messages/unread-count",
+              "host": ["{{baseUrl}}"],
+              "path": ["messages", "unread-count"]
+            }
+          }
+        },
+        {
+          "name": "Report Message as Scam",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"User asked for money before returning the item\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/messages/1/report",
+              "host": ["{{baseUrl}}"],
+              "path": ["messages", "1", "report"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cooperatives",
+      "item": [
+        {
+          "name": "List Cooperatives",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/cooperatives",
+              "host": ["{{baseUrl}}"],
+              "path": ["cooperatives"]
+            }
+          }
+        },
+        {
+          "name": "Get Cooperative by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/cooperatives/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["cooperatives", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Get Platform Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "stats"]
+            }
+          }
+        },
+        {
+          "name": "List All Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users"],
+              "query": [
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "20"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Ban User",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Violation of terms of service\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/5/ban",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users", "5", "ban"]
+            }
+          }
+        },
+        {
+          "name": "Unban User",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/5/unban",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users", "5", "unban"]
+            }
+          }
+        },
+        {
+          "name": "Recalculate User Trust",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/4/recalculate-trust",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users", "4", "recalculate-trust"]
+            }
+          }
+        },
+        {
+          "name": "List Scam Reports",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/scam-reports",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "scam-reports"]
+            }
+          }
+        },
+        {
+          "name": "Resolve Scam Report",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resolution_notes\": \"Report verified. User has been warned.\",\n  \"action\": \"warn\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/scam-reports/1/resolve",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "scam-reports", "1", "resolve"]
+            }
+          }
+        },
+        {
+          "name": "Get Audit Logs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/audit-logs?page=1&limit=50",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "audit-logs"],
+              "query": [
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "50"}
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

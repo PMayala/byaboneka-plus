@@ -1,0 +1,1006 @@
+openapi: 3.0.3
+info:
+  title: Byaboneka+ API
+  description: |
+    Trust-Aware Lost & Found Infrastructure for Rwanda's Transport Ecosystem.
+    
+    ## Features
+    - User authentication with JWT tokens
+    - Lost item reporting with verification questions
+    - Found item reporting with image uploads
+    - Intelligent matching algorithm
+    - Claim verification system
+    - OTP-based handover protocol
+    - In-app messaging with scam detection
+    - Trust scoring system
+    
+    ## Authentication
+    Most endpoints require JWT authentication. Include the token in the Authorization header:
+    ```
+    Authorization: Bearer <your_token>
+    ```
+  version: 1.0.0
+  contact:
+    name: Byaboneka+ Support
+    email: support@byaboneka.rw
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:4000/api/v1
+    description: Development server
+  - url: https://api.byaboneka.rw/api/v1
+    description: Production server
+
+tags:
+  - name: Authentication
+    description: User registration and login
+  - name: Lost Items
+    description: Report and manage lost items
+  - name: Found Items
+    description: Report and manage found items
+  - name: Claims
+    description: Claim verification and handover
+  - name: Messages
+    description: In-app messaging
+  - name: Cooperatives
+    description: Transport cooperative management
+  - name: Admin
+    description: Administrative functions
+
+paths:
+  /health:
+    get:
+      summary: Health check
+      tags: [Authentication]
+      responses:
+        '200':
+          description: Server is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  timestamp:
+                    type: string
+
+  /auth/register:
+    post:
+      summary: Register a new user
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password, name]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 8
+                name:
+                  type: string
+                phone:
+                  type: string
+            example:
+              email: "user@example.com"
+              password: "SecurePass123"
+              name: "John Doe"
+              phone: "+250788123456"
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '409':
+          description: Email already exists
+
+  /auth/login:
+    post:
+      summary: Login user
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+            example:
+              email: "user@example.com"
+              password: "SecurePass123"
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid credentials
+
+  /auth/refresh:
+    post:
+      summary: Refresh access token
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refreshToken]
+              properties:
+                refreshToken:
+                  type: string
+      responses:
+        '200':
+          description: Token refreshed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid refresh token
+
+  /auth/me:
+    get:
+      summary: Get current user profile
+      tags: [Authentication]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    put:
+      summary: Update user profile
+      tags: [Authentication]
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                phone:
+                  type: string
+      responses:
+        '200':
+          description: Profile updated
+
+  /lost-items:
+    get:
+      summary: List lost items
+      tags: [Lost Items]
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - $ref: '#/components/parameters/CategoryParam'
+        - $ref: '#/components/parameters/LocationParam'
+        - $ref: '#/components/parameters/KeywordParam'
+      responses:
+        '200':
+          description: List of lost items
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLostItems'
+    post:
+      summary: Report a lost item
+      tags: [Lost Items]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateLostItem'
+      responses:
+        '201':
+          description: Lost item created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LostItem'
+
+  /lost-items/{id}:
+    get:
+      summary: Get lost item details
+      tags: [Lost Items]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Lost item details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LostItem'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      summary: Update lost item
+      tags: [Lost Items]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateLostItem'
+      responses:
+        '200':
+          description: Item updated
+    delete:
+      summary: Delete lost item
+      tags: [Lost Items]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Item deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /lost-items/{id}/matches:
+    get:
+      summary: Get matching found items
+      tags: [Lost Items]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: List of matching found items with scores
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Match'
+
+  /found-items:
+    get:
+      summary: List found items
+      tags: [Found Items]
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - $ref: '#/components/parameters/CategoryParam'
+        - $ref: '#/components/parameters/LocationParam'
+      responses:
+        '200':
+          description: List of found items
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedFoundItems'
+    post:
+      summary: Report a found item
+      tags: [Found Items]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFoundItem'
+      responses:
+        '201':
+          description: Found item created
+
+  /found-items/{id}:
+    get:
+      summary: Get found item details
+      tags: [Found Items]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Found item details
+    put:
+      summary: Update found item
+      tags: [Found Items]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Item updated
+    delete:
+      summary: Delete found item
+      tags: [Found Items]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Item deleted
+
+  /found-items/{id}/images:
+    post:
+      summary: Upload images for found item
+      tags: [Found Items]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                images:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        '200':
+          description: Images uploaded
+
+  /claims:
+    get:
+      summary: List user's claims
+      tags: [Claims]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of claims
+    post:
+      summary: Create a new claim
+      tags: [Claims]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [lost_item_id, found_item_id]
+              properties:
+                lost_item_id:
+                  type: integer
+                found_item_id:
+                  type: integer
+      responses:
+        '201':
+          description: Claim created
+
+  /claims/{id}:
+    get:
+      summary: Get claim details
+      tags: [Claims]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Claim details
+
+  /claims/{id}/verify:
+    post:
+      summary: Submit verification answers
+      tags: [Claims]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [answers]
+              properties:
+                answers:
+                  type: array
+                  items:
+                    type: string
+                  minItems: 3
+                  maxItems: 3
+            example:
+              answers: ["mountains", "3", "spotify"]
+      responses:
+        '200':
+          description: Verification result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      verified:
+                        type: boolean
+                      correct_count:
+                        type: integer
+                      attempts_remaining:
+                        type: integer
+
+  /claims/{id}/otp/generate:
+    post:
+      summary: Generate OTP for handover
+      tags: [Claims]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: OTP generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      otp:
+                        type: string
+                        description: 6-digit OTP code
+                      expires_at:
+                        type: string
+                        format: date-time
+
+  /claims/{id}/otp/verify:
+    post:
+      summary: Verify OTP and complete handover
+      tags: [Claims]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [otp]
+              properties:
+                otp:
+                  type: string
+                  pattern: '^[0-9]{6}$'
+      responses:
+        '200':
+          description: Handover completed
+
+  /messages/threads:
+    get:
+      summary: List message threads
+      tags: [Messages]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of message threads
+
+  /messages/{claimId}:
+    get:
+      summary: Get messages for a claim
+      tags: [Messages]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: claimId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of messages
+    post:
+      summary: Send a message
+      tags: [Messages]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: claimId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [content]
+              properties:
+                content:
+                  type: string
+                  maxLength: 1000
+      responses:
+        '201':
+          description: Message sent
+
+  /messages/{messageId}/report:
+    post:
+      summary: Report a message as scam
+      tags: [Messages]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: messageId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason:
+                  type: string
+      responses:
+        '200':
+          description: Report submitted
+
+  /cooperatives:
+    get:
+      summary: List cooperatives
+      tags: [Cooperatives]
+      responses:
+        '200':
+          description: List of verified cooperatives
+
+  /admin/stats:
+    get:
+      summary: Get platform statistics
+      tags: [Admin]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Platform statistics
+
+  /admin/users:
+    get:
+      summary: List all users
+      tags: [Admin]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: role
+          in: query
+          schema:
+            type: string
+            enum: [citizen, coop_staff, admin]
+      responses:
+        '200':
+          description: List of users
+
+  /admin/users/{id}/ban:
+    post:
+      summary: Ban a user
+      tags: [Admin]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason:
+                  type: string
+      responses:
+        '200':
+          description: User banned
+
+  /admin/users/{id}/unban:
+    post:
+      summary: Unban a user
+      tags: [Admin]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: User unbanned
+
+  /admin/scam-reports:
+    get:
+      summary: List scam reports
+      tags: [Admin]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of scam reports
+
+  /admin/scam-reports/{id}/resolve:
+    post:
+      summary: Resolve a scam report
+      tags: [Admin]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [resolution_notes, action]
+              properties:
+                resolution_notes:
+                  type: string
+                action:
+                  type: string
+                  enum: [dismiss, warn, ban]
+      responses:
+        '200':
+          description: Report resolved
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    IdParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    PageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        default: 1
+    LimitParam:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        default: 10
+        maximum: 100
+    CategoryParam:
+      name: category
+      in: query
+      schema:
+        type: string
+        enum: [PHONE, ID, WALLET, BAG, KEYS, OTHER]
+    LocationParam:
+      name: location_area
+      in: query
+      schema:
+        type: string
+    KeywordParam:
+      name: keyword
+      in: query
+      schema:
+        type: string
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        name:
+          type: string
+        phone:
+          type: string
+        role:
+          type: string
+          enum: [citizen, coop_staff, admin]
+        trust_score:
+          type: integer
+        email_verified:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+
+    AuthResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            user:
+              $ref: '#/components/schemas/User'
+            tokens:
+              type: object
+              properties:
+                accessToken:
+                  type: string
+                refreshToken:
+                  type: string
+
+    LostItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        category:
+          type: string
+          enum: [PHONE, ID, WALLET, BAG, KEYS, OTHER]
+        title:
+          type: string
+        description:
+          type: string
+        location_area:
+          type: string
+        location_hint:
+          type: string
+        lost_date:
+          type: string
+          format: date
+        status:
+          type: string
+          enum: [ACTIVE, CLAIMED, RETURNED, EXPIRED]
+        created_at:
+          type: string
+          format: date-time
+
+    CreateLostItem:
+      type: object
+      required: [category, title, description, location_area, lost_date, verification_questions]
+      properties:
+        category:
+          type: string
+          enum: [PHONE, ID, WALLET, BAG, KEYS, OTHER]
+        title:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 1000
+        location_area:
+          type: string
+        location_hint:
+          type: string
+        lost_date:
+          type: string
+          format: date
+        verification_questions:
+          type: array
+          items:
+            type: object
+            properties:
+              question:
+                type: string
+              answer:
+                type: string
+          minItems: 3
+          maxItems: 3
+
+    UpdateLostItem:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        location_area:
+          type: string
+        location_hint:
+          type: string
+        status:
+          type: string
+
+    FoundItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        finder_id:
+          type: integer
+        category:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        location_area:
+          type: string
+        found_date:
+          type: string
+          format: date
+        status:
+          type: string
+        image_urls:
+          type: array
+          items:
+            type: string
+        source:
+          type: string
+          enum: [CITIZEN, COOPERATIVE]
+
+    CreateFoundItem:
+      type: object
+      required: [category, title, description, location_area, found_date]
+      properties:
+        category:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        location_area:
+          type: string
+        location_hint:
+          type: string
+        found_date:
+          type: string
+          format: date
+        cooperative_id:
+          type: integer
+
+    Match:
+      type: object
+      properties:
+        found_item:
+          $ref: '#/components/schemas/FoundItem'
+        score:
+          type: integer
+          description: Match score (higher is better)
+        explanation:
+          type: array
+          items:
+            type: string
+          description: Reasons for the match score
+
+    PaginatedLostItems:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/LostItem'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+
+    PaginatedFoundItems:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/FoundItem'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+        totalPages:
+          type: integer
+
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              message:
+                type: string
+                example: Resource not found
+
+    ValidationError:
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              errors:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    field:
+                      type: string
+                    message:
+                      type: string
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              message:
+                type: string
+                example: Unauthorized

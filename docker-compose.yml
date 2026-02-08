@@ -1,0 +1,64 @@
+# Byaboneka+ Docker Compose Configuration
+# Run: docker compose up -d
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: byaboneka-db
+    environment:
+      POSTGRES_USER: byaboneka
+      POSTGRES_PASSWORD: byaboneka_dev_pass
+      POSTGRES_DB: byaboneka_plus
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U byaboneka -d byaboneka_plus"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: byaboneka-backend
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://byaboneka:byaboneka_dev_pass@postgres:5432/byaboneka_plus
+      JWT_SECRET: dev_jwt_secret_change_in_production_min_32_chars
+      JWT_REFRESH_SECRET: dev_refresh_secret_change_in_production_min_32
+      CORS_ORIGIN: http://localhost:3000
+      PORT: 4000
+      UPLOAD_PATH: /app/uploads
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+      - uploads_data:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: npm run dev
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: byaboneka-frontend
+    environment:
+      VITE_API_URL: http://localhost:4000/api/v1
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    command: npm run dev -- --host
+
+volumes:
+  postgres_data:
+  uploads_data:
