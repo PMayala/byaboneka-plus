@@ -12,7 +12,7 @@ services:
   # Backend API
   - type: web
     name: byaboneka-api
-    env: node
+    runtime: node
     plan: starter
     rootDir: backend
     buildCommand: npm ci && npm run build
