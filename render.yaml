@@ -1,42 +1,35 @@
 # Render Blueprint for Byaboneka+ Backend
 # https://render.com/docs/blueprint-spec
 
-services:
+databases:
   # PostgreSQL Database
-  - type: pserv
-    name: byaboneka-db
-    env: docker
+  - name: byaboneka-db
+    databaseName: byaboneka_plus
+    user: byaboneka
     plan: starter
-    dockerfilePath: ./Dockerfile.postgres
-    envVars:
-      - key: POSTGRES_USER
-        value: byaboneka
-      - key: POSTGRES_PASSWORD
-        generateValue: true
-      - key: POSTGRES_DB
-        value: byaboneka_plus
 
+services:
   # Backend API
   - type: web
     name: byaboneka-api
     env: node
     plan: starter
-    buildCommand: npm ci && npm run build
+    rootDir: backend
+    buildCommand: npm ci
     startCommand: npm start
     healthCheckPath: /api/v1/health
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
-        value: 4000
+        value: 10000
       - key: DATABASE_URL
-        fromService:
+        fromDatabase:
           name: byaboneka-db
-          type: pserv
           property: connectionString
       - key: JWT_SECRET
         generateValue: true
       - key: JWT_REFRESH_SECRET
         generateValue: true
       - key: CORS_ORIGIN
-        value: https://byaboneka.vercel.app
+        value: https://byaboneka-plus.vercel.app
