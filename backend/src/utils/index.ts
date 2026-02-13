@@ -46,25 +46,39 @@ function normalizeAnswer(answer: string): string {
 // JWT UTILITIES
 // ============================================
 
-const JWT_SECRET = process.env.JWT_SECRET || 'dev_jwt_secret_change_in_production_min_32_chars';
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'dev_refresh_secret_change_in_production_min_32';
+function getJwtSecret(): string {
+  const secret = process.env.JWT_SECRET;
+  if (!secret && process.env.NODE_ENV === 'production') {
+    throw new Error('FATAL: JWT_SECRET environment variable must be set in production');
+  }
+  return secret || 'dev_jwt_secret_change_in_production_min_32_chars';
+}
+
+function getJwtRefreshSecret(): string {
+  const secret = process.env.JWT_REFRESH_SECRET;
+  if (!secret && process.env.NODE_ENV === 'production') {
+    throw new Error('FATAL: JWT_REFRESH_SECRET environment variable must be set in production');
+  }
+  return secret || 'dev_refresh_secret_change_in_production_min_32';
+}
+
 const ACCESS_TOKEN_EXPIRY = '15m';
 const REFRESH_TOKEN_EXPIRY = '7d';
 
 export function generateAccessToken(payload: TokenPayload): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRY } as jwt.SignOptions);
+  return jwt.sign(payload, getJwtSecret(), { expiresIn: ACCESS_TOKEN_EXPIRY } as jwt.SignOptions);
 }
 
 export function generateRefreshToken(payload: TokenPayload): string {
-  return jwt.sign(payload, JWT_REFRESH_SECRET, { expiresIn: REFRESH_TOKEN_EXPIRY } as jwt.SignOptions);
+  return jwt.sign(payload, getJwtRefreshSecret(), { expiresIn: REFRESH_TOKEN_EXPIRY } as jwt.SignOptions);
 }
 
 export function verifyAccessToken(token: string): TokenPayload {
-  return jwt.verify(token, JWT_SECRET) as TokenPayload;
+  return jwt.verify(token, getJwtSecret()) as TokenPayload;
 }
 
 export function verifyRefreshToken(token: string): TokenPayload {
-  return jwt.verify(token, JWT_REFRESH_SECRET) as TokenPayload;
+  return jwt.verify(token, getJwtRefreshSecret()) as TokenPayload;
 }
 
 export function hashToken(token: string): string {
@@ -72,12 +86,14 @@ export function hashToken(token: string): string {
 }
 
 // ============================================
-// OTP UTILITIES
+// OTP UTILITIES (unified — uses bcryptjs)
 // ============================================
 
 export function generateOTP(): string {
-  // Generate 6-digit OTP
-  return crypto.randomInt(100000, 999999).toString();
+  // Generate 6-digit OTP using crypto for security
+  const bytes = crypto.randomBytes(4);
+  const num = bytes.readUInt32BE(0) % 1000000;
+  return num.toString().padStart(6, '0');
 }
 
 export async function hashOTP(otp: string): Promise<string> {
@@ -104,7 +120,7 @@ const STOPWORDS = new Set([
   'few', 'more', 'most', 'other', 'some', 'such', 'no', 'not', 'only', 'same', 'so',
   'than', 'too', 'very', 'just', 'also', 'now', 'here', 'there', 'then', 'once',
   'with', 'about', 'after', 'before', 'above', 'below', 'between', 'into', 'through',
-  'during', 'under', 'again', 'further', 'while', 'lost', 'found', 'item', 'phone',
+  'during', 'under', 'again', 'further', 'while', 'lost', 'found', 'item',
   // Kinyarwanda common
   'mu', 'ku', 'ni', 'na', 'ndi', 'uri', 'ari', 'dufite', 'nta', 'hari', 'ya', 'yo',
   'by', 'bya', 'cy', 'cya', 'ry', 'rya', 'wa', 'wo', 'ba', 'bo', 'ka', 'ko', 'ha',
@@ -114,49 +130,40 @@ const STOPWORDS = new Set([
 const COLOR_PATTERNS = [
   'black', 'white', 'red', 'blue', 'green', 'yellow', 'orange', 'pink', 'purple',
   'brown', 'grey', 'gray', 'silver', 'gold', 'dark', 'light',
-  // Kinyarwanda colors
   'umukara', 'umweru', 'umutuku', 'ubururu'
 ];
 
 const BRAND_PATTERNS = [
-  // Phones
   'iphone', 'samsung', 'galaxy', 'tecno', 'infinix', 'itel', 'huawei', 'xiaomi',
   'redmi', 'oppo', 'vivo', 'nokia', 'motorola', 'pixel', 'oneplus', 'realme',
-  // Bags & accessories
   'nike', 'adidas', 'samsonite', 'puma', 'gucci', 'louis', 'vuitton', 'zara',
-  // Banks
   'bk', 'equity', 'kcb', 'cogebanque', 'bpr', 'i&m', 'access',
-  // Other
   'toyota', 'honda', 'hp', 'dell', 'lenovo', 'asus', 'acer', 'macbook'
 ];
 
 export function extractKeywords(text: string): string[] {
   if (!text) return [];
 
-  // Normalize text
   const normalized = text
     .toLowerCase()
-    .replace(/[^\w\s]/g, ' ')  // Replace punctuation with spaces
-    .replace(/\s+/g, ' ')      // Collapse whitespace
+    .replace(/[^\w\s]/g, ' ')
+    .replace(/\s+/g, ' ')
     .trim();
 
   const words = normalized.split(' ');
   const keywords: Set<string> = new Set();
 
   for (const word of words) {
-    // Skip short words and stopwords
     if (word.length < 3 || STOPWORDS.has(word)) {
       continue;
     }
 
-    // Always include colors and brands
     if (COLOR_PATTERNS.includes(word) || BRAND_PATTERNS.includes(word)) {
       keywords.add(word);
       continue;
     }
 
-    // Include meaningful words (4+ chars)
-    if (word.length >= 4) {
+    if (word.length >= 3) {
       keywords.add(word);
     }
   }
@@ -216,14 +223,12 @@ export const TRUST_CHANGES = {
 // LOCATION UTILITIES
 // ============================================
 
-// Kigali sectors/areas for proximity calculation
 const KIGALI_AREAS: { [key: string]: string[] } = {
   'Nyarugenge': ['Gitega', 'Nyarugenge', 'Nyamirambo', 'Muhima', 'Rwezamenyo', 'Kimisagara'],
   'Gasabo': ['Kimironko', 'Remera', 'Kacyiru', 'Gisozi', 'Kimihurura', 'Nyarutarama', 'Kibagabaga', 'Kinyinya'],
   'Kicukiro': ['Gikondo', 'Kagarama', 'Kicukiro', 'Kanombe', 'Niboye', 'Masaka', 'Nyarugunga'],
 };
 
-// Adjacent areas mapping (lowercase for consistent lookups)
 const ADJACENT_AREAS: { [key: string]: string[] } = {
   'kimironko': ['remera', 'kibagabaga', 'kinyinya'],
   'remera': ['kimironko', 'kicukiro', 'kibagabaga', 'nyarugunga'],
@@ -245,17 +250,14 @@ export function computeLocationDistance(area1: string, area2: string): number {
   const a1 = area1.toLowerCase().trim();
   const a2 = area2.toLowerCase().trim();
 
-  // Same area
   if (a1 === a2) return 0;
 
-  // Check if adjacent (bidirectional check)
   const adjacentToA1 = ADJACENT_AREAS[a1] || [];
   if (adjacentToA1.includes(a2)) return 1;
 
   const adjacentToA2 = ADJACENT_AREAS[a2] || [];
   if (adjacentToA2.includes(a1)) return 1;
 
-  // Check if in same district
   for (const district of Object.values(KIGALI_AREAS)) {
     const lowerDistrict = district.map(a => a.toLowerCase());
     if (lowerDistrict.includes(a1) && lowerDistrict.includes(a2)) {
@@ -263,7 +265,6 @@ export function computeLocationDistance(area1: string, area2: string): number {
     }
   }
 
-  // Different districts
   return 3;
 }
 
@@ -271,31 +272,39 @@ export function computeLocationDistance(area1: string, area2: string): number {
 // FRAUD DETECTION UTILITIES
 // ============================================
 
-// Keywords that might indicate extortion attempts
-const EXTORTION_KEYWORDS = [
+const PAYMENT_KEYWORDS = [
   'pay', 'money', 'cash', 'mtn', 'momo', 'airtel', 'transfer', 'send',
-  'price', 'reward', 'fee', 'cost', 'charge', 'first', 'before',
-  // Kinyarwanda
+  'price', 'reward', 'fee', 'cost', 'charge',
   'amafaranga', 'hishyura', 'ohereze'
 ];
 
+const CONDITIONAL_KEYWORDS = ['first', 'before'];
+
 export function detectExtortionKeywords(message: string): string[] {
   const lower = message.toLowerCase();
-  return EXTORTION_KEYWORDS.filter(keyword => lower.includes(keyword));
+
+  const hasPayment = PAYMENT_KEYWORDS.some(k => lower.includes(k));
+  const hasCondition = CONDITIONAL_KEYWORDS.some(k => lower.includes(k));
+
+  // Only flag when it sounds like “pay first / pay before…”
+  if (hasPayment && hasCondition) return ['payment_before_return'];
+
+  return [];
 }
 
 export function isMessageFlaggable(message: string): { flagged: boolean; reason?: string } {
-  const suspiciousKeywords = detectExtortionKeywords(message);
-  
-  if (suspiciousKeywords.length >= 2) {
+  const suspicious = detectExtortionKeywords(message);
+
+  if (suspicious.length >= 1) {
     return {
       flagged: true,
-      reason: `Message contains suspicious keywords: ${suspiciousKeywords.join(', ')}`
+      reason: `Message suggests payment before return (${suspicious.join(', ')})`
     };
   }
 
   return { flagged: false };
 }
+
 
 // ============================================
 // DATE UTILITIES
@@ -324,7 +333,6 @@ export function isValidEmail(email: string): boolean {
 }
 
 export function isValidPhone(phone: string): boolean {
-  // Rwanda phone format: +250 7XX XXX XXX
   const phoneRegex = /^\+?250\d{9}$/;
   return phoneRegex.test(phone.replace(/\s/g, ''));
 }
@@ -333,6 +341,17 @@ export function sanitizeInput(input: string): string {
   return input
     .replace(/<[^>]*>/g, '') // Remove HTML tags
     .trim();
+}
+
+/**
+ * Escape special LIKE pattern characters to prevent pattern injection.
+ * Use with parameterized queries: WHERE col LIKE $1
+ */
+export function escapeLikePattern(input: string): string {
+  return input
+    .replace(/\\/g, '\\\\')
+    .replace(/%/g, '\\%')
+    .replace(/_/g, '\\_');
 }
 
 // ============================================
@@ -348,7 +367,7 @@ export function parsePaginationParams(
   limit?: string | number
 ): { page: number; limit: number; offset: number } {
   const parsedPage = Math.max(1, parseInt(String(page)) || 1);
-  const parsedLimit = Math.min(100, Math.max(1, parseInt(String(limit)) || 10));
+  const parsedLimit = Math.min(100, Math.max(1, parseInt(String(limit)) || 20));
   const offset = (parsedPage - 1) * parsedLimit;
 
   return { page: parsedPage, limit: parsedLimit, offset };

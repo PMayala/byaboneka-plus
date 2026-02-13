@@ -1,0 +1,711 @@
+{
+  "info": {
+    "name": "Byaboneka+ API",
+    "description": "Trust-Aware Lost & Found Infrastructure for Rwanda\n\n## Quick Start\n1. Run the **Register** then **Login** request\n2. The access token is auto-saved to the collection variable `accessToken`\n3. All authenticated requests use this token automatically\n\n## Environments\n- **Local**: `http://localhost:4000/api/v1`\n- **Production**: `https://your-app.onrender.com/api/v1`",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "byaboneka-plus"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:4000/api/v1" },
+    { "key": "accessToken", "value": "" },
+    { "key": "refreshToken", "value": "" },
+    { "key": "userId", "value": "" },
+    { "key": "lostItemId", "value": "" },
+    { "key": "foundItemId", "value": "" },
+    { "key": "claimId", "value": "" },
+    { "key": "cooperativeId", "value": "" },
+    { "key": "adminToken", "value": "" }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{accessToken}}" }]
+  },
+  "item": [
+    {
+      "name": "🔐 Authentication",
+      "item": [
+        {
+          "name": "Register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success) {",
+                  "  pm.collectionVariables.set('accessToken', res.data.tokens.accessToken);",
+                  "  pm.collectionVariables.set('refreshToken', res.data.tokens.refreshToken);",
+                  "  pm.collectionVariables.set('userId', res.data.user.id);",
+                  "  pm.test('Registration successful', () => pm.expect(res.data.user.email).to.exist);",
+                  "}",
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"jean@example.com\",\n  \"password\": \"MySecure1Pass\",\n  \"name\": \"Jean Habimana\",\n  \"phone\": \"+250788123456\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"] }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success) {",
+                  "  pm.collectionVariables.set('accessToken', res.data.tokens.accessToken);",
+                  "  pm.collectionVariables.set('refreshToken', res.data.tokens.refreshToken);",
+                  "  pm.collectionVariables.set('userId', res.data.user.id);",
+                  "}",
+                  "pm.test('Login successful', () => pm.expect(res.success).to.be.true);",
+                  "pm.test('Has tokens', () => pm.expect(res.data.tokens.accessToken).to.exist);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"jean@example.com\",\n  \"password\": \"MySecure1Pass\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "Login (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success) {",
+                  "  pm.collectionVariables.set('adminToken', res.data.tokens.accessToken);",
+                  "}",
+                  "pm.test('Admin login', () => pm.expect(res.data.user.role).to.eql('admin'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@byaboneka.rw\",\n  \"password\": \"Admin1234!\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/auth/refresh", "host": ["{{baseUrl}}"], "path": ["auth", "refresh"] }
+          }
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/auth/profile", "host": ["{{baseUrl}}"], "path": ["auth", "profile"] }
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jean-Claude Habimana\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/auth/profile", "host": ["{{baseUrl}}"], "path": ["auth", "profile"] }
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"MySecure1Pass\",\n  \"newPassword\": \"NewSecure2Pass\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/auth/change-password", "host": ["{{baseUrl}}"], "path": ["auth", "change-password"] }
+          }
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"jean@example.com\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/auth/forgot-password", "host": ["{{baseUrl}}"], "path": ["auth", "forgot-password"] }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/auth/logout", "host": ["{{baseUrl}}"], "path": ["auth", "logout"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📦 Lost Items",
+      "item": [
+        {
+          "name": "Create Lost Item",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success) { pm.collectionVariables.set('lostItemId', res.data.id); }",
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Has keywords', () => pm.expect(res.data.keywords).to.be.an('array'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category\": \"PHONE\",\n  \"title\": \"Samsung Galaxy S23 Ultra\",\n  \"description\": \"Black Samsung phone with cracked screen protector and blue case. Has a small scratch on the back.\",\n  \"location_area\": \"Nyabugogo\",\n  \"location_hint\": \"Near the main bus station\",\n  \"lost_date\": \"2026-02-10T14:00:00Z\",\n  \"verification_questions\": [\n    { \"question\": \"What is your phone wallpaper?\", \"answer\": \"my dog\" },\n    { \"question\": \"What color is the phone case?\", \"answer\": \"blue\" },\n    { \"question\": \"What is the lock screen PIN length?\", \"answer\": \"six digits\" }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/lost-items", "host": ["{{baseUrl}}"], "path": ["lost-items"] }
+          }
+        },
+        {
+          "name": "List Lost Items",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/lost-items?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["lost-items"],
+              "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "10" }]
+            }
+          }
+        },
+        {
+          "name": "Get Lost Item",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/lost-items/{{lostItemId}}", "host": ["{{baseUrl}}"], "path": ["lost-items", "{{lostItemId}}"] }
+          }
+        },
+        {
+          "name": "Get Matches for Lost Item",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/lost-items/{{lostItemId}}/matches", "host": ["{{baseUrl}}"], "path": ["lost-items", "{{lostItemId}}", "matches"] }
+          }
+        },
+        {
+          "name": "My Lost Items",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/users/me/lost-items", "host": ["{{baseUrl}}"], "path": ["users", "me", "lost-items"] }
+          }
+        },
+        {
+          "name": "Update Lost Item",
+          "request": {
+            "method": "PUT",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Updated description with more details about the Samsung phone\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/lost-items/{{lostItemId}}", "host": ["{{baseUrl}}"], "path": ["lost-items", "{{lostItemId}}"] }
+          }
+        },
+        {
+          "name": "Delete Lost Item",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/lost-items/{{lostItemId}}", "host": ["{{baseUrl}}"], "path": ["lost-items", "{{lostItemId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔍 Found Items",
+      "item": [
+        {
+          "name": "Create Found Item",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success) { pm.collectionVariables.set('foundItemId', res.data.id); }",
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category\": \"PHONE\",\n  \"title\": \"Black Samsung phone found on bus\",\n  \"description\": \"Found a black Samsung phone on the seat of KBS bus #205. Has a blue case and cracked screen protector.\",\n  \"location_area\": \"Nyabugogo\",\n  \"location_hint\": \"KBS Bus #205, route Nyabugogo-Kimironko\",\n  \"found_date\": \"2026-02-10T16:30:00Z\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/found-items", "host": ["{{baseUrl}}"], "path": ["found-items"] }
+          }
+        },
+        {
+          "name": "List Found Items",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/found-items?page=1&limit=10&category=PHONE",
+              "host": ["{{baseUrl}}"],
+              "path": ["found-items"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "category", "value": "PHONE" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Found Item",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/found-items/{{foundItemId}}", "host": ["{{baseUrl}}"], "path": ["found-items", "{{foundItemId}}"] }
+          }
+        },
+        {
+          "name": "Upload Images",
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "formdata",
+              "formdata": [{ "key": "images", "type": "file", "src": "" }]
+            },
+            "url": { "raw": "{{baseUrl}}/found-items/{{foundItemId}}/images", "host": ["{{baseUrl}}"], "path": ["found-items", "{{foundItemId}}", "images"] }
+          }
+        },
+        {
+          "name": "My Found Items",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/users/me/found-items", "host": ["{{baseUrl}}"], "path": ["users", "me", "found-items"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "✅ Claims & Verification",
+      "item": [
+        {
+          "name": "Create Claim",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success) { pm.collectionVariables.set('claimId', res.data.id); }",
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lost_item_id\": {{lostItemId}},\n  \"found_item_id\": {{foundItemId}}\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/claims", "host": ["{{baseUrl}}"], "path": ["claims"] }
+          }
+        },
+        {
+          "name": "Get Verification Questions",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/claims/{{claimId}}/questions", "host": ["{{baseUrl}}"], "path": ["claims", "{{claimId}}", "questions"] }
+          }
+        },
+        {
+          "name": "Submit Verification Answers",
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"answers\": [\"my dog\", \"blue\", \"six digits\"]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/claims/{{claimId}}/verify", "host": ["{{baseUrl}}"], "path": ["claims", "{{claimId}}", "verify"] }
+          }
+        },
+        {
+          "name": "Get Claim Details",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/claims/{{claimId}}", "host": ["{{baseUrl}}"], "path": ["claims", "{{claimId}}"] }
+          }
+        },
+        {
+          "name": "My Claims",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/users/me/claims", "host": ["{{baseUrl}}"], "path": ["users", "me", "claims"] }
+          }
+        },
+        {
+          "name": "Cancel Claim",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{baseUrl}}/claims/{{claimId}}/cancel", "host": ["{{baseUrl}}"], "path": ["claims", "{{claimId}}", "cancel"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔑 Handover (OTP)",
+      "item": [
+        {
+          "name": "Generate OTP",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{baseUrl}}/claims/{{claimId}}/handover/otp", "host": ["{{baseUrl}}"], "path": ["claims", "{{claimId}}", "handover", "otp"] }
+          }
+        },
+        {
+          "name": "Verify OTP (Confirm Handover)",
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"otp\": \"123456\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/claims/{{claimId}}/handover/verify", "host": ["{{baseUrl}}"], "path": ["claims", "{{claimId}}", "handover", "verify"] }
+          }
+        },
+        {
+          "name": "Get Handover Status",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/claims/{{claimId}}/handover", "host": ["{{baseUrl}}"], "path": ["claims", "{{claimId}}", "handover"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "⚖️ Disputes",
+      "item": [
+        {
+          "name": "File Dispute",
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"I forgot the answer to question 2 but this is definitely my phone. I can provide the purchase receipt from MTN store Kigali.\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/claims/{{claimId}}/dispute", "host": ["{{baseUrl}}"], "path": ["claims", "{{claimId}}", "dispute"] }
+          }
+        },
+        {
+          "name": "List Disputes (Admin)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{adminToken}}" }] },
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/admin/disputes?status=OPEN", "host": ["{{baseUrl}}"], "path": ["admin", "disputes"], "query": [{ "key": "status", "value": "OPEN" }] }
+          }
+        },
+        {
+          "name": "Resolve Dispute (Admin)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{adminToken}}" }] },
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resolution\": \"RESOLVED_OWNER\",\n  \"resolution_notes\": \"Owner provided valid purchase receipt as proof of ownership.\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/admin/disputes/1/resolve", "host": ["{{baseUrl}}"], "path": ["admin", "disputes", "1", "resolve"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "💬 Messages",
+      "item": [
+        {
+          "name": "Send Message",
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Hi, I found what might be your phone. When can we meet at the cooperative office?\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/messages/threads/{{claimId}}", "host": ["{{baseUrl}}"], "path": ["messages", "threads", "{{claimId}}"] }
+          }
+        },
+        {
+          "name": "Get Thread Messages",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/messages/threads/{{claimId}}", "host": ["{{baseUrl}}"], "path": ["messages", "threads", "{{claimId}}"] }
+          }
+        },
+        {
+          "name": "List My Threads",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/messages/threads", "host": ["{{baseUrl}}"], "path": ["messages", "threads"] }
+          }
+        },
+        {
+          "name": "Unread Count",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/messages/unread-count", "host": ["{{baseUrl}}"], "path": ["messages", "unread-count"] }
+          }
+        },
+        {
+          "name": "Report Scam Message",
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"User is demanding payment before returning the item.\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/messages/1/report", "host": ["{{baseUrl}}"], "path": ["messages", "1", "report"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🏢 Cooperatives",
+      "item": [
+        {
+          "name": "List Cooperatives",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/cooperatives", "host": ["{{baseUrl}}"], "path": ["cooperatives"] }
+          }
+        },
+        {
+          "name": "Get Cooperative",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/cooperatives/{{cooperativeId}}", "host": ["{{baseUrl}}"], "path": ["cooperatives", "{{cooperativeId}}"] }
+          }
+        },
+        {
+          "name": "Create Cooperative (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success) { pm.collectionVariables.set('cooperativeId', res.data.id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{adminToken}}" }] },
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Kigali Bus Services (KBS)\",\n  \"registration_number\": \"RW-COOP-2024-001\",\n  \"contact_info\": \"+250788000111\",\n  \"address\": \"Nyabugogo Terminal, Kigali\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/cooperatives", "host": ["{{baseUrl}}"], "path": ["cooperatives"] }
+          }
+        },
+        {
+          "name": "Verify Cooperative (Admin)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{adminToken}}" }] },
+            "method": "PATCH",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"VERIFIED\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/cooperatives/{{cooperativeId}}/status", "host": ["{{baseUrl}}"], "path": ["cooperatives", "{{cooperativeId}}", "status"] }
+          }
+        },
+        {
+          "name": "Add Coop Staff (Admin)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{adminToken}}" }] },
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"staff@kbs.rw\",\n  \"password\": \"StaffPass1!\",\n  \"name\": \"Emmanuel Ndayisaba\",\n  \"phone\": \"+250788000222\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/cooperatives/{{cooperativeId}}/staff", "host": ["{{baseUrl}}"], "path": ["cooperatives", "{{cooperativeId}}", "staff"] }
+          }
+        },
+        {
+          "name": "Get Coop Staff",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/cooperatives/{{cooperativeId}}/staff", "host": ["{{baseUrl}}"], "path": ["cooperatives", "{{cooperativeId}}", "staff"] }
+          }
+        },
+        {
+          "name": "Cooperative Dashboard",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/cooperative/dashboard", "host": ["{{baseUrl}}"], "path": ["cooperative", "dashboard"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🛡️ Admin",
+      "item": [
+        {
+          "name": "Dashboard Stats",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{adminToken}}" }] },
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/admin/stats", "host": ["{{baseUrl}}"], "path": ["admin", "stats"] }
+          }
+        },
+        {
+          "name": "List Users",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{adminToken}}" }] },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/admin/users?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users"],
+              "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "20" }]
+            }
+          }
+        },
+        {
+          "name": "Ban User",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{adminToken}}" }] },
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Repeated fraudulent claim attempts\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/admin/users/2/ban", "host": ["{{baseUrl}}"], "path": ["admin", "users", "2", "ban"] }
+          }
+        },
+        {
+          "name": "Unban User",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{adminToken}}" }] },
+            "method": "POST",
+            "url": { "raw": "{{baseUrl}}/admin/users/2/unban", "host": ["{{baseUrl}}"], "path": ["admin", "users", "2", "unban"] }
+          }
+        },
+        {
+          "name": "Scam Reports",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{adminToken}}" }] },
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/admin/scam-reports?status=OPEN", "host": ["{{baseUrl}}"], "path": ["admin", "scam-reports"], "query": [{ "key": "status", "value": "OPEN" }] }
+          }
+        },
+        {
+          "name": "Audit Logs",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{adminToken}}" }] },
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/admin/audit-logs?page=1&limit=50", "host": ["{{baseUrl}}"], "path": ["admin", "audit-logs"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "50" }] }
+          }
+        },
+        {
+          "name": "Recalculate Trust",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{adminToken}}" }] },
+            "method": "POST",
+            "url": { "raw": "{{baseUrl}}/admin/users/2/recalculate-trust", "host": ["{{baseUrl}}"], "path": ["admin", "users", "2", "recalculate-trust"] }
+          }
+        },
+        {
+          "name": "Trigger Cleanup",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{adminToken}}" }] },
+            "method": "POST",
+            "url": { "raw": "{{baseUrl}}/admin/cleanup", "host": ["{{baseUrl}}"], "path": ["admin", "cleanup"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "💚 System",
+      "item": [
+        {
+          "name": "Health Check",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('API is healthy', () => {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.status).to.eql('ok');",
+                  "  pm.expect(res.database).to.eql('connected');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/health", "host": ["{{baseUrl}}"], "path": ["health"] }
+          }
+        }
+      ]
+    }
+  ]
+}

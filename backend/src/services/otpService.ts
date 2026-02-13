@@ -11,10 +11,11 @@
  * - HAND-07: Comprehensive audit logging
  */
 
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import { query, transaction } from '../config/database';
 import { logAudit, extractRequestMeta } from './auditService';
+import { onSuccessfulReturn } from './trustService';
 import { Request } from 'express';
 
 const OTP_LENGTH = 6;
@@ -24,7 +25,7 @@ const SALT_ROUNDS = 10;
 
 export interface OTPGenerationResult {
   success: boolean;
-  otp?: string; // Only returned on generation (for display to owner)
+  otp?: string;
   expiresAt?: Date;
   message: string;
 }
@@ -52,7 +53,6 @@ export interface HandoverDetails {
  * Generate a secure 6-digit OTP
  */
 function generateSecureOTP(): string {
-  // Generate cryptographically secure random bytes
   const bytes = crypto.randomBytes(4);
   const num = bytes.readUInt32BE(0) % 1000000;
   return num.toString().padStart(OTP_LENGTH, '0');
@@ -106,12 +106,10 @@ export async function generateHandoverOTP(
   if (existingOTP.rows.length > 0) {
     const existing = existingOTP.rows[0];
     
-    // If already verified, handover is complete
     if (existing.otp_verified) {
       return { success: false, message: 'Handover has already been completed for this claim' };
     }
     
-    // If still valid, don't regenerate
     if (new Date(existing.otp_expires_at) > new Date()) {
       const remainingMs = new Date(existing.otp_expires_at).getTime() - Date.now();
       const remainingHours = Math.ceil(remainingMs / (60 * 60 * 1000));
@@ -138,7 +136,7 @@ export async function generateHandoverOTP(
   );
   
   // Log OTP generation
-  const { ipAddress, userAgent } = req ? extractRequestMeta(req) : {};
+  const { ipAddress, userAgent } = req ? extractRequestMeta(req) : { ipAddress: undefined, userAgent: undefined };
   await logAudit({
     actorId: userId,
     action: 'OTP_GENERATED',
@@ -154,9 +152,9 @@ export async function generateHandoverOTP(
   
   return {
     success: true,
-    otp, // Return plaintext OTP to owner for sharing
+    otp,
     expiresAt,
-    message: `Handover code generated successfully. Share this code ONLY when physically meeting the finder: ${otp}. Valid for 24 hours.`
+    message: `Handover code generated successfully. Share this code ONLY when physically meeting the finder. Valid for 24 hours.`
   };
 }
 
@@ -189,7 +187,6 @@ export async function verifyHandoverOTP(
   
   const handover = handoverResult.rows[0];
   
-  // Check if already verified
   if (handover.otp_verified) {
     return { success: false, message: 'This handover has already been completed.' };
   }
@@ -200,13 +197,11 @@ export async function verifyHandoverOTP(
     return { success: false, message: isAuthorizedVerifier.reason };
   }
   
-  // Check expiry
   if (new Date(handover.otp_expires_at) < new Date()) {
     return { success: false, message: 'Handover code has expired. Please ask the owner to generate a new one.' };
   }
   
-  // Check max attempts
-  if (handover.verification_attempts >= handover.max_attempts) {
+  if (handover.verification_attempts >= (handover.max_attempts || MAX_OTP_ATTEMPTS)) {
     return { 
       success: false, 
       message: 'Maximum verification attempts exceeded. Please ask the owner to generate a new code.',
@@ -217,16 +212,14 @@ export async function verifyHandoverOTP(
   // Verify OTP
   const isValid = await bcrypt.compare(otp, handover.otp_code_hash);
   
-  const { ipAddress, userAgent } = req ? extractRequestMeta(req) : {};
+  const { ipAddress, userAgent } = req ? extractRequestMeta(req) : { ipAddress: undefined, userAgent: undefined };
   
   if (!isValid) {
-    // Increment attempts
     await query(
       `UPDATE handover_confirmations SET verification_attempts = verification_attempts + 1 WHERE id = $1`,
       [handover.id]
     );
     
-    // Log failed attempt
     await logAudit({
       actorId: verifierId,
       action: 'OTP_FAILED',
@@ -237,7 +230,8 @@ export async function verifyHandoverOTP(
       userAgent
     });
     
-    const attemptsRemaining = handover.max_attempts - handover.verification_attempts - 1;
+    const maxAttempts = handover.max_attempts || MAX_OTP_ATTEMPTS;
+    const attemptsRemaining = maxAttempts - handover.verification_attempts - 1;
     return {
       success: false,
       message: `Invalid handover code. ${attemptsRemaining} attempt${attemptsRemaining !== 1 ? 's' : ''} remaining.`,
@@ -247,7 +241,6 @@ export async function verifyHandoverOTP(
   
   // OTP is valid - complete handover in a transaction
   await transaction(async (client) => {
-    // Mark OTP as verified
     await client.query(
       `UPDATE handover_confirmations 
        SET otp_verified = TRUE, returned_at = NOW(), return_confirmed_by = $1
@@ -255,19 +248,16 @@ export async function verifyHandoverOTP(
       [verifierId, handover.id]
     );
     
-    // Update claim status to RETURNED
     await client.query(
       `UPDATE claims SET status = 'RETURNED' WHERE id = $1`,
       [claimId]
     );
     
-    // Update lost item status to RETURNED
     await client.query(
       `UPDATE lost_items SET status = 'RETURNED' WHERE id = $1`,
       [handover.lost_item_id]
     );
     
-    // Update found item status to RETURNED
     await client.query(
       `UPDATE found_items SET status = 'RETURNED' WHERE id = $1`,
       [handover.found_item_id]
@@ -289,6 +279,11 @@ export async function verifyHandoverOTP(
     ipAddress,
     userAgent
   });
+
+  // Update trust scores for successful return
+  if (req) {
+    await onSuccessfulReturn(req, handover.finder_id, handover.owner_id);
+  }
   
   return {
     success: true,
@@ -299,18 +294,15 @@ export async function verifyHandoverOTP(
 
 /**
  * Check if a user is authorized to verify the OTP
- * Must be the finder or a staff member of the associated cooperative
  */
 async function checkVerifierAuthorization(
   verifierId: number,
   handover: any
 ): Promise<{ authorized: boolean; reason: string }> {
-  // Finder can verify
   if (verifierId === handover.finder_id) {
     return { authorized: true, reason: 'Verifier is the finder' };
   }
   
-  // Owner cannot verify their own OTP
   if (verifierId === handover.owner_id || verifierId === handover.lost_item_owner) {
     return { 
       authorized: false, 
@@ -318,7 +310,6 @@ async function checkVerifierAuthorization(
     };
   }
   
-  // Check if verifier is coop staff for this item's cooperative
   if (handover.cooperative_id) {
     const staffCheck = await query(
       `SELECT id FROM users WHERE id = $1 AND cooperative_id = $2 AND role = 'coop_staff'`,
@@ -369,16 +360,12 @@ export async function getHandoverStatus(claimId: number): Promise<HandoverDetail
 
 /**
  * Regenerate OTP (invalidates old one)
- * Only owner can request regeneration
  */
 export async function regenerateOTP(
   claimId: number,
   userId: number,
   req?: Request
 ): Promise<OTPGenerationResult> {
-  // Delete existing OTP
   await query('DELETE FROM handover_confirmations WHERE claim_id = $1', [claimId]);
-  
-  // Generate new one
   return generateHandoverOTP(claimId, userId, req);
 }

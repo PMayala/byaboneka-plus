@@ -1,4 +1,4 @@
-import { Pool, PoolConfig, QueryResult, QueryResultRow } from 'pg';
+import { Pool, PoolClient, PoolConfig, QueryResult, QueryResultRow } from 'pg';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -13,7 +13,7 @@ const poolConfig: PoolConfig = {
 // Add SSL for production
 if (process.env.NODE_ENV === 'production') {
   poolConfig.ssl = {
-    rejectUnauthorized: false
+    rejectUnauthorized: false // Render managed DB uses self-signed certs
   };
 }
 
@@ -25,8 +25,8 @@ pool.on('connect', () => {
 });
 
 pool.on('error', (err) => {
-  console.error('❌ Unexpected database error:', err);
-  process.exit(-1);
+  // Log but do NOT crash — transient errors should not kill the server
+  console.error('❌ Unexpected database pool error:', err.message);
 });
 
 // Query helper with type safety
@@ -50,7 +50,7 @@ export async function query<T extends QueryResultRow = any>(
 
 // Transaction helper
 export async function transaction<T>(
-  callback: (client: any) => Promise<T>
+  callback: (client: PoolClient) => Promise<T>
 ): Promise<T> {
   const client = await pool.connect();
   try {
@@ -66,10 +66,10 @@ export async function transaction<T>(
   }
 }
 
-// Check database connection
+// Connection check
 export async function checkConnection(): Promise<boolean> {
   try {
-    await pool.query('SELECT NOW()');
+    await pool.query('SELECT 1');
     return true;
   } catch (error) {
     console.error('❌ Database connection check failed:', error);

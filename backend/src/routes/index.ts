@@ -20,6 +20,7 @@ import { validate, registerSchema, loginSchema, refreshTokenSchema, forgotPasswo
 import { authLimiter, reportLimiter, claimLimiter, verificationLimiter, otpLimiter, messageLimiter, 
          passwordResetLimiter, searchLimiter } from '../middleware/rateLimiter';
 import { UserRole } from '../types';
+import { checkConnection } from '../config/database';
 
 const router = Router();
 
@@ -235,23 +236,10 @@ router.get('/users/me/claims',
   claimsController.getMyClaims
 );
 
-
-// ============================================
-// HANDOVER ROUTES
-// ============================================
-
-router.post('/handovers/:claimId/generate-otp',
-  authenticate,
-  otpLimiter,
-  claimsController.generateHandoverOTP
-);
-
-router.post('/handovers/:claimId/confirm',
-  authenticate,
-  otpLimiter,
-  validate(verifyOtpSchema),
-  claimsController.confirmHandover
-);
+// NOTE: Handover OTP routes are in enhancedRoutes.ts (single implementation)
+// POST /claims/:claimId/handover/otp     - Generate OTP
+// POST /claims/:claimId/handover/verify  - Verify OTP
+// GET  /claims/:claimId/handover         - Get status
 
 // ============================================
 // MESSAGES ROUTES
@@ -393,11 +381,19 @@ router.post('/admin/cleanup',
 );
 
 // ============================================
-// HEALTH CHECK
+// HEALTH CHECK (with DB connectivity)
 // ============================================
 
-router.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+router.get('/health', async (req, res) => {
+  const dbOk = await checkConnection();
+  const status = dbOk ? 'ok' : 'degraded';
+  const httpCode = dbOk ? 200 : 503;
+
+  res.status(httpCode).json({
+    status,
+    timestamp: new Date().toISOString(),
+    database: dbOk ? 'connected' : 'unreachable'
+  });
 });
 
 export default router;

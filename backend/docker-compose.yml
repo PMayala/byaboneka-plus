@@ -1,0 +1,44 @@
+# docker-compose.yml - Local development
+version: '3.9'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+      - DATABASE_URL=postgresql://byaboneka:byaboneka_dev@db:5432/byaboneka_plus
+      - JWT_SECRET=dev_jwt_secret_change_in_production_min_32_chars!!
+      - JWT_REFRESH_SECRET=dev_refresh_secret_change_in_production_min_32!!
+      - CORS_ORIGIN=http://localhost:3000
+      - UPLOAD_PATH=./uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+      - uploads:/app/uploads
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=byaboneka
+      - POSTGRES_PASSWORD=byaboneka_dev
+      - POSTGRES_DB=byaboneka_plus
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U byaboneka -d byaboneka_plus"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
+  uploads:

@@ -7,10 +7,11 @@ import path from 'path';
 import cron from 'node-cron';
 
 import routes from './routes';
-import { checkConnection, closePool } from './config/database';
+import enhancedRoutes from './routes/enhancedRoutes';
+import { checkConnection, closePool, query } from './config/database';
 import { apiLimiter } from './middleware/rateLimiter';
+import { notFoundHandler, errorHandler } from './middleware/errorHandler';
 import { runMigrations } from './migrations/001_initial';
-import { query } from './config/database';
 
 // Load environment variables
 dotenv.config();
@@ -27,9 +28,20 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: 'cross-origin' }
 }));
 
-// CORS
+// CORS — support multiple origins for Vercel + localhost
+const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:3000')
+  .split(',')
+  .map(o => o.trim());
+
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    callback(new Error(`Origin ${origin} not allowed by CORS`));
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -40,9 +52,9 @@ if (process.env.NODE_ENV !== 'test') {
   app.use(morgan('dev'));
 }
 
-// Body parsing
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+// Body parsing — 1MB default, upload routes handle larger payloads
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
 // Rate limiting
 app.use('/api', apiLimiter);
@@ -55,8 +67,9 @@ app.use('/uploads', express.static(path.resolve(uploadPath)));
 // ROUTES
 // ============================================
 
-// API routes
+// API routes (core + enhanced)
 app.use('/api/v1', routes);
+app.use('/api/v1', enhancedRoutes);
 
 // Root endpoint
 app.get('/', (req: Request, res: Response) => {
@@ -64,51 +77,16 @@ app.get('/', (req: Request, res: Response) => {
     name: 'Byaboneka+ API',
     version: '1.0.0',
     description: 'Trust-Aware Lost & Found Infrastructure for Rwanda',
-    documentation: '/api/v1/docs',
     health: '/api/v1/health'
   });
 });
 
 // ============================================
-// ERROR HANDLING
+// ERROR HANDLING (using middleware from errorHandler.ts)
 // ============================================
 
-// 404 handler
-app.use((req: Request, res: Response) => {
-  res.status(404).json({
-    success: false,
-    message: 'Endpoint not found',
-    path: req.path
-  });
-});
-
-// Global error handler
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-  console.error('Error:', err);
-
-  // Multer errors
-  if (err.code === 'LIMIT_FILE_SIZE') {
-    return res.status(400).json({
-      success: false,
-      message: 'File too large. Maximum size is 5MB.'
-    });
-  }
-
-  if (err.message === 'Invalid file type. Only JPEG, PNG, and WebP are allowed.') {
-    return res.status(400).json({
-      success: false,
-      message: err.message
-    });
-  }
-
-  // Default error
-  res.status(err.status || 500).json({
-    success: false,
-    message: process.env.NODE_ENV === 'production' 
-      ? 'An unexpected error occurred' 
-      : err.message
-  });
-});
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 // ============================================
 // SCHEDULED JOBS
@@ -118,7 +96,6 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 cron.schedule('0 2 * * *', async () => {
   console.log('🕐 Running auto-expiry job...');
   try {
-    // Expire lost items
     const expiredLost = await query(`
       UPDATE lost_items 
       SET status = 'EXPIRED', expired_at = NOW()
@@ -127,7 +104,6 @@ cron.schedule('0 2 * * *', async () => {
       RETURNING id
     `);
 
-    // Expire found items
     const expiredFound = await query(`
       UPDATE found_items 
       SET status = 'EXPIRED', expired_at = NOW()
@@ -136,7 +112,6 @@ cron.schedule('0 2 * * *', async () => {
       RETURNING id
     `);
 
-    // Expire pending claims
     const expiredClaims = await query(`
       UPDATE claims 
       SET status = 'EXPIRED'
@@ -155,7 +130,6 @@ cron.schedule('0 2 * * *', async () => {
 cron.schedule('0 1 * * *', async () => {
   console.log('🕐 Sending expiry warnings...');
   try {
-    // Mark items for expiry warning
     await query(`
       UPDATE lost_items 
       SET expiry_warning_sent = true
