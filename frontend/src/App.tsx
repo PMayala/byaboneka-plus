@@ -26,9 +26,11 @@ import SettingsPage from './pages/SettingsPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import AdminUsersPage from './pages/AdminUsersPage';
 import AdminScamReportsPage from './pages/AdminScamReportsPage';
+import AdminFraudDashboard from './pages/AdminFraudDashboard';
 
 // Cooperative Pages
 import CoopDashboardPage from './pages/CoopDashboardPage';
+import CooperativeLeaderboard from './components/CooperativeLeaderboard';
 
 // Protected Route Component
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -112,6 +114,7 @@ function App() {
           {/* Public Routes */}
           <Route path="/" element={<HomePage />} />
           <Route path="/search" element={<SearchPage />} />
+          <Route path="/leaderboard" element={<CooperativeLeaderboard />} />
           <Route path="/lost-items/:id" element={<LostItemDetailPage />} />
           <Route path="/found-items/:id" element={<FoundItemDetailPage />} />
 
@@ -229,6 +232,14 @@ function App() {
             element={
               <AdminRoute>
                 <AdminScamReportsPage />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/fraud"
+            element={
+              <AdminRoute>
+                <AdminFraudDashboard />
               </AdminRoute>
             }
           />

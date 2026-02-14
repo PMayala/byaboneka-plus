@@ -21,6 +21,7 @@ import { authLimiter, reportLimiter, claimLimiter, verificationLimiter, otpLimit
          passwordResetLimiter, searchLimiter } from '../middleware/rateLimiter';
 import { UserRole } from '../types';
 import { checkConnection } from '../config/database';
+import { fraudCheck } from '../services/fraudDetectionService';
 
 const router = Router();
 
@@ -112,6 +113,7 @@ router.post('/auth/change-password',
 router.post('/lost-items',
   authenticate,
   reportLimiter,
+  fraudCheck('REPORT_CREATE'),
   validate(createLostItemSchema),
   lostItemsController.createLostItem
 );
@@ -155,6 +157,7 @@ router.get('/users/me/lost-items',
 router.post('/found-items',
   authenticate,
   reportLimiter,
+  fraudCheck('REPORT_CREATE'),
   validate(createFoundItemSchema),
   foundItemsController.createFoundItem
 );
@@ -204,6 +207,7 @@ router.get('/users/me/found-items',
 router.post('/claims',
   authenticate,
   claimLimiter,
+  fraudCheck('CLAIM_CREATE'),
   validate(createClaimSchema),
   claimsController.createClaim
 );
@@ -222,6 +226,7 @@ router.get('/claims/:claimId/questions',
 router.post('/claims/:claimId/verify',
   authenticate,
   verificationLimiter,
+  fraudCheck('CLAIM_VERIFY'),
   validate(verifyClaimSchema),
   claimsController.verifyClaim
 );
@@ -258,6 +263,7 @@ router.get('/messages/threads/:claimId',
 router.post('/messages/threads/:claimId',
   authenticate,
   messageLimiter,
+  fraudCheck('MESSAGE_SEND'),
   validate(sendMessageSchema),
   messagesController.sendMessage
 );

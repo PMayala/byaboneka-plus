@@ -58,7 +58,7 @@ export async function register(req: Request, res: Response): Promise<void> {
     const result = await query(
       `INSERT INTO users (email, password_hash, name, phone, role, trust_score)
        VALUES ($1, $2, $3, $4, $5, $6)
-       RETURNING id, email, name, phone, role, trust_score, created_at`,
+       RETURNING id, email, name, phone, role, trust_score, email_verified, phone_verified, created_at`,
       [email.toLowerCase(), passwordHash, name, phone || null, UserRole.CITIZEN, 0]
     );
 
@@ -93,6 +93,7 @@ export async function register(req: Request, res: Response): Promise<void> {
       userAgent
     });
 
+    // FIX #5: Include email_verified and phone_verified in response
     res.status(201).json({
       success: true,
       data: {
@@ -102,7 +103,10 @@ export async function register(req: Request, res: Response): Promise<void> {
           name: user.name,
           phone: user.phone,
           role: user.role,
-          trust_score: user.trust_score
+          trust_score: user.trust_score,
+          email_verified: user.email_verified || false,
+          phone_verified: user.phone_verified || false,
+          created_at: user.created_at
         },
         tokens: {
           accessToken,
@@ -125,10 +129,14 @@ export async function login(req: Request, res: Response): Promise<void> {
   try {
     const { email, password } = req.body;
 
-    // Find user
+    // FIX #5 & #17: Include email_verified, phone_verified, cooperative fields in login query
     const result = await query(
-      `SELECT id, email, password_hash, name, phone, role, trust_score, is_banned, ban_reason
-       FROM users WHERE email = $1`,
+      `SELECT u.id, u.email, u.password_hash, u.name, u.phone, u.role, u.trust_score,
+              u.is_banned, u.ban_reason, u.email_verified, u.phone_verified,
+              u.cooperative_id, c.name as cooperative_name, u.created_at
+       FROM users u
+       LEFT JOIN cooperatives c ON u.cooperative_id = c.id
+       WHERE u.email = $1`,
       [email.toLowerCase()]
     );
 
@@ -183,6 +191,7 @@ export async function login(req: Request, res: Response): Promise<void> {
     // Log login
     await logLogin(req, user.id);
 
+    // FIX #5 & #17: Include all fields frontend expects
     res.json({
       success: true,
       data: {
@@ -192,7 +201,12 @@ export async function login(req: Request, res: Response): Promise<void> {
           name: user.name,
           phone: user.phone,
           role: user.role,
-          trust_score: user.trust_score
+          trust_score: user.trust_score,
+          email_verified: user.email_verified || false,
+          phone_verified: user.phone_verified || false,
+          cooperative_id: user.cooperative_id || undefined,
+          cooperative_name: user.cooperative_name || undefined,
+          created_at: user.created_at
         },
         tokens: {
           accessToken,
@@ -514,10 +528,11 @@ export async function updateProfile(req: Request, res: Response): Promise<void> 
       }
     }
 
+    // FIX: Return all fields the frontend needs
     const result = await query(
       `UPDATE users SET name = COALESCE($1, name), phone = COALESCE($2, phone)
        WHERE id = $3
-       RETURNING id, email, name, phone, role, trust_score`,
+       RETURNING id, email, name, phone, role, trust_score, email_verified, phone_verified, created_at`,
       [name, phone, userId]
     );
 

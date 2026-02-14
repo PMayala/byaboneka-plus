@@ -6,7 +6,8 @@ import {
   Building, AlertCircle
 } from 'lucide-react';
 import { Button, Card, Input, Textarea, Alert } from '../components/ui';
-import { foundItemsApi } from '../services/api';
+import { foundItemsApi, duplicateApi } from '../services/api';
+import { DuplicateWarning } from '../components/DuplicateWarning';
 import { ItemCategory, CATEGORY_INFO, RWANDA_LOCATIONS } from '../types';
 import { useAuthStore } from '../store/authStore';
 import toast from 'react-hot-toast';
@@ -39,6 +40,8 @@ const ReportFoundPage: React.FC = () => {
   const [images, setImages] = useState<File[]>([]);
   const [imagesPreviews, setImagesPreviews] = useState<string[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [duplicateCandidates, setDuplicateCandidates] = useState<any[]>([]);
+  const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
 
   const [formData, setFormData] = useState<FormData>({
     category: '',
@@ -102,6 +105,32 @@ const ReportFoundPage: React.FC = () => {
     e.preventDefault();
     if (!validate()) return;
 
+    // Check for duplicates first (if not already confirmed)
+    if (!showDuplicateWarning && duplicateCandidates.length === 0) {
+      try {
+        const dupRes = await duplicateApi.checkFound({
+          category: formData.category,
+          title: formData.title,
+          description: formData.description,
+          location_area: formData.location_area,
+          found_date: formData.found_date,
+        });
+        if (dupRes.data.data?.has_potential_duplicates && dupRes.data.data.candidates.length > 0) {
+          setDuplicateCandidates(dupRes.data.data.candidates);
+          setShowDuplicateWarning(true);
+          return;
+        }
+      } catch (error) {
+        // If duplicate check fails, proceed anyway
+        console.warn('Duplicate check failed:', error);
+      }
+    }
+
+    await submitFoundItem();
+  };
+
+  const submitFoundItem = async () => {
+    setShowDuplicateWarning(false);
     setLoading(true);
     try {
       // Create the found item first
@@ -138,6 +167,16 @@ const ReportFoundPage: React.FC = () => {
   };
 
   return (
+    <>
+      {showDuplicateWarning && (
+        <DuplicateWarning
+          candidates={duplicateCandidates}
+          itemType="found"
+          onContinue={() => submitFoundItem()}
+          onViewDuplicate={(id, type) => navigate(`/${type === 'lost' ? 'lost-items' : 'found-items'}/${id}`)}
+          onCancel={() => { setShowDuplicateWarning(false); setDuplicateCandidates([]); }}
+        />
+      )}
     <div className="max-w-2xl mx-auto px-4 py-8">
       {/* Header */}
       <div className="mb-8">
@@ -336,6 +375,7 @@ const ReportFoundPage: React.FC = () => {
         </div>
       </form>
     </div>
+    </>
   );
 };
 

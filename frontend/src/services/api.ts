@@ -196,6 +196,21 @@ export const authApi = {
 };
 
 // ============================================
+// EMAIL VERIFICATION API (FIX #10 - was missing)
+// ============================================
+
+export const emailVerificationApi = {
+  requestVerification: () =>
+    api.post<ApiResponse<{ message: string }>>('/auth/email/verify/request'),
+
+  verify: (token: string) =>
+    api.post<ApiResponse<{ verified: boolean }>>('/auth/email/verify', { token }),
+
+  getStatus: () =>
+    api.get<ApiResponse<{ email_verified: boolean }>>('/auth/email/status'),
+};
+
+// ============================================
 // LOST ITEMS API
 // ============================================
 
@@ -297,6 +312,44 @@ export const foundItemsApi = {
 };
 
 // ============================================
+// DUPLICATE DETECTION API (FIX #9 - was missing)
+// ============================================
+
+export const duplicateApi = {
+  checkLost: (data: { category: string; title: string; description: string; location_area: string; lost_date: string }) =>
+    api.post<ApiResponse<{
+      has_potential_duplicates: boolean;
+      candidates: Array<{
+        id: number;
+        title: string;
+        description: string;
+        category: string;
+        location_area: string;
+        date: string;
+        similarity_score: number;
+        similarity_reasons: string[];
+      }>;
+      highest_score: number;
+    }>>('/lost-items/check-duplicate', data),
+
+  checkFound: (data: { category: string; title: string; description: string; location_area: string; found_date: string }) =>
+    api.post<ApiResponse<{
+      has_potential_duplicates: boolean;
+      candidates: Array<{
+        id: number;
+        title: string;
+        description: string;
+        category: string;
+        location_area: string;
+        date: string;
+        similarity_score: number;
+        similarity_reasons: string[];
+      }>;
+      highest_score: number;
+    }>>('/found-items/check-duplicate', data),
+};
+
+// ============================================
 // CLAIMS API
 // ============================================
 
@@ -308,7 +361,7 @@ export const claimsApi = {
     api.get<ApiResponse<Claim>>(`/claims/${id}`),
 
   getQuestions: (claimId: number) =>
-    api.get<ApiResponse<{ questions: string[] }>>(`/claims/${claimId}/questions`),
+    api.get<ApiResponse<{ claim_id: number; questions: string[]; attempts_remaining: number }>>(`/claims/${claimId}/questions`),
 
   verify: (claimId: number, answers: string[]) =>
     api.post<ApiResponse<{ verified: boolean; correct_count: number; attempts_remaining: number }>>(`/claims/${claimId}/verify`, { answers }),
@@ -318,22 +371,64 @@ export const claimsApi = {
 
   getMine: (params?: { page?: number; limit?: number; status?: string }) =>
     api.get<PaginatedResponse<Claim>>('/users/me/claims', { params }),
+
+  // FIX #11 - Verification cooldown status
+  getVerificationStatus: (claimId: number) =>
+    api.get<ApiResponse>(`/claims/${claimId}/verification/status`),
 };
 
 // ============================================
-// HANDOVER API
+// HANDOVER API (FIX #1 - URLs were completely wrong)
+// Old: /handovers/:id/generate-otp  →  Fixed: /claims/:id/handover/otp
+// Old: /handovers/:id/confirm       →  Fixed: /claims/:id/handover/verify
 // ============================================
 
 export const handoverApi = {
   generateOtp: (claimId: number) =>
-    api.post<ApiResponse<{ otp: string; expires_at: string }>>(`/handovers/${claimId}/generate-otp`),
+    api.post<ApiResponse<{ otp: string; expires_at: string; validity_hours: number }>>(`/claims/${claimId}/handover/otp`),
 
   confirmHandover: (claimId: number, otp: string) =>
-    api.post<ApiResponse>(`/handovers/${claimId}/confirm`, { otp }),
+    api.post<ApiResponse<{ message: string; handover_completed: boolean }>>(`/claims/${claimId}/handover/verify`, { otp }),
+
+  getStatus: (claimId: number) =>
+    api.get<ApiResponse<{
+      has_otp: boolean;
+      otp_verified?: boolean;
+      expires_at?: string;
+      attempts_used?: number;
+      is_expired?: boolean;
+      message?: string;
+    }>>(`/claims/${claimId}/handover`),
 };
 
 // ============================================
-// MESSAGES API
+// DISPUTE API (FIX #8 - was completely missing)
+// ============================================
+
+export const disputeApi = {
+  open: (claimId: number, data: { reason: string; evidence_urls?: string[] }) =>
+    api.post<ApiResponse>(`/claims/${claimId}/dispute`, data),
+
+  get: (claimId: number) =>
+    api.get<ApiResponse<{
+      id: number;
+      claim_id: number;
+      opened_by: number;
+      reason: string;
+      status: 'OPEN' | 'UNDER_REVIEW' | 'RESOLVED_OWNER' | 'RESOLVED_FINDER' | 'DISMISSED';
+      evidence_urls: string[];
+      resolution_notes?: string;
+      resolved_by?: number;
+      created_at: string;
+      resolved_at?: string;
+    }>>(`/claims/${claimId}/dispute`),
+
+  addEvidence: (disputeId: number, evidence_urls: string[]) =>
+    api.post<ApiResponse>(`/disputes/${disputeId}/evidence`, { evidence_urls }),
+};
+
+// ============================================
+// MESSAGES API (FIX #3 - unread count key, FIX #6 - removed markAsRead)
 // ============================================
 
 export const messagesApi = {
@@ -341,7 +436,8 @@ export const messagesApi = {
     api.get<PaginatedResponse<MessageThread>>('/messages/threads', { params }),
 
   getMessages: (claimId: number, params?: { page?: number; limit?: number }) =>
-    api.get<PaginatedResponse<Message>>(`/messages/threads/${claimId}`, { params }),
+    api.get<ApiResponse<Message[]>>(`/messages/threads/${claimId}`, { params }),
+    // NOTE: Backend auto-marks messages as read when fetched, no separate markAsRead needed
 
   sendMessage: (claimId: number, content: string) =>
     api.post<ApiResponse<Message>>(`/messages/threads/${claimId}`, { content }),
@@ -349,11 +445,9 @@ export const messagesApi = {
   reportScam: (messageId: number, reason: string) =>
     api.post<ApiResponse>(`/messages/${messageId}/report`, { reason }),
 
+  // FIX #3: Backend returns { unread_count: number }, NOT { count: number }
   getUnreadCount: () =>
-    api.get<ApiResponse<{ count: number }>>('/messages/unread-count'),
-
-  markAsRead: (claimId: number) =>
-    api.post<ApiResponse>(`/messages/threads/${claimId}/read`),
+    api.get<ApiResponse<{ unread_count: number }>>('/messages/unread-count'),
 };
 
 // ============================================
@@ -376,30 +470,37 @@ export const cooperativesApi = {
 };
 
 // ============================================
-// ADMIN API
+// ADMIN API (FIX #2 - AdminStats type matched to real backend response)
 // ============================================
 
+// FIX #2: This now matches what the backend ACTUALLY returns
 export interface AdminStats {
-  users: { total: number; new_today: number; new_week: number };
-  items: { lost: number; found: number; returned: number };
-  claims: { total: number; pending: number; verified: number };
-  trust: { average_score: number; banned_users: number };
+  total_users: number;
+  total_lost_items: number;
+  total_found_items: number;
+  total_claims: number;
+  successful_returns: number;
+  pending_scam_reports: number;
 }
 
+// FIX #7: Status uses 'OPEN' not 'PENDING' to match backend
 export interface ScamReport {
   id: number;
   reporter_id: number;
   reporter_name: string;
+  reporter_email: string;
   reported_user_id: number;
-  reported_user_name: string;
+  reported_name: string;
+  reported_email: string;
   message_id: number;
   message_content: string;
+  claim_id: number;
   reason: string;
-  status: 'PENDING' | 'RESOLVED' | 'DISMISSED';
+  status: 'OPEN' | 'RESOLVED' | 'DISMISSED';
   resolution_notes?: string;
   resolved_by?: number;
-  created_at: string;
   resolved_at?: string;
+  created_at: string;
 }
 
 export interface AuditLog {
@@ -418,7 +519,7 @@ export const adminApi = {
   getStats: () =>
     api.get<ApiResponse<AdminStats>>('/admin/stats'),
 
-  getUsers: (params?: { page?: number; limit?: number; search?: string; role?: string; is_banned?: boolean }) =>
+  getUsers: (params?: { page?: number; limit?: number; search?: string; role?: string; status?: string }) =>
     api.get<PaginatedResponse<User>>('/admin/users', { params }),
 
   banUser: (userId: number, reason: string) =>
@@ -428,7 +529,7 @@ export const adminApi = {
     api.post<ApiResponse>(`/admin/users/${userId}/unban`),
 
   recalculateTrust: (userId: number) =>
-    api.post<ApiResponse<{ new_score: number }>>(`/admin/users/${userId}/recalculate-trust`),
+    api.post<ApiResponse<{ user_id: number; new_trust_score: number }>>(`/admin/users/${userId}/recalculate-trust`),
 
   getScamReports: (params?: { page?: number; limit?: number; status?: string }) =>
     api.get<PaginatedResponse<ScamReport>>('/admin/scam-reports', { params }),
@@ -436,11 +537,18 @@ export const adminApi = {
   resolveScamReport: (reportId: number, data: { resolution_notes: string; action: 'dismiss' | 'warn' | 'ban' }) =>
     api.post<ApiResponse>(`/admin/scam-reports/${reportId}/resolve`, data),
 
-  getAuditLogs: (params?: { page?: number; limit?: number; action?: string; resource_type?: string; actor_id?: number }) =>
+  getAuditLogs: (params?: { page?: number; limit?: number; action?: string; resourceType?: string; actorId?: number }) =>
     api.get<PaginatedResponse<AuditLog>>('/admin/audit-logs', { params }),
 
   triggerCleanup: () =>
-    api.post<ApiResponse<{ expired_items: number; stale_matches: number }>>('/admin/cleanup'),
+    api.post<ApiResponse<{ message: string }>>('/admin/cleanup'),
+
+  // Admin dispute endpoints
+  getDisputes: (params?: { page?: number; limit?: number; status?: string }) =>
+    api.get<PaginatedResponse<any>>('/admin/disputes', { params }),
+
+  resolveDispute: (disputeId: number, data: { resolution: string; resolution_notes: string }) =>
+    api.post<ApiResponse>(`/admin/disputes/${disputeId}/resolve`, data),
 };
 
 // ============================================
@@ -448,7 +556,7 @@ export const adminApi = {
 // ============================================
 
 export const healthApi = {
-  check: () => api.get<{ status: string; timestamp: string }>('/health'),
+  check: () => api.get<{ status: string; timestamp: string; database: string }>('/health'),
 };
 
 export default api;

@@ -6,10 +6,23 @@ import {
 } from 'lucide-react';
 import { Button, Card, Badge, LoadingSpinner, Alert, Modal } from '../components/ui';
 import { foundItemsApi } from '../services/api';
-import { FoundItem, CATEGORY_INFO, STATUS_INFO } from '../types';
+import { FoundItem, LostItem, CATEGORY_INFO, STATUS_INFO } from '../types';
 import { useAuthStore } from '../store/authStore';
 import { formatDate, formatDateShort, formatDateLong, formatDateTime } from '../utils/dateUtils';
 import toast from 'react-hot-toast';
+
+interface MatchResult {
+  lost_item: LostItem;
+  score: number;
+  explanation: string[];
+}
+
+// Helper function to map match scores to valid badge variants
+const getMatchScoreBadgeVariant = (score: number): "verified" | "pending" | "default" => {
+  if (score >= 8) return "verified"; // High confidence
+  if (score >= 5) return "pending"; // Medium confidence
+  return "default"; // Low confidence
+};
 
 const FoundItemDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -21,6 +34,10 @@ const FoundItemDetailPage: React.FC = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
+
+  // Matches state
+  const [matches, setMatches] = useState<MatchResult[]>([]);
+  const [matchesLoading, setMatchesLoading] = useState(false);
 
   const isFinder = user?.id === item?.finder_id;
 
@@ -37,6 +54,19 @@ const FoundItemDetailPage: React.FC = () => {
       navigate('/search?type=found');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadMatches = async () => {
+    if (!id) return;
+    setMatchesLoading(true);
+    try {
+      const response = await foundItemsApi.getMatches(parseInt(id));
+      setMatches(response.data.data || []);
+    } catch (error) {
+      console.error('Failed to load matches:', error);
+    } finally {
+      setMatchesLoading(false);
     }
   };
 
@@ -238,6 +268,49 @@ const FoundItemDetailPage: React.FC = () => {
                 <strong>Privacy Protected:</strong> Full details and images are only shown to 
                 verified owners. Claim this item and complete verification to access all information.
               </Alert>
+            )}
+
+            {/* Potential Matching Lost Items - visible to the finder */}
+            {isFinder && (
+              <div className="mt-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-semibold text-gray-900">Potential Matching Lost Items</h3>
+                  <Button variant="ghost" size="sm" onClick={loadMatches} disabled={matchesLoading}>
+                    {matchesLoading ? 'Searching...' : matches.length > 0 ? 'Refresh' : 'Find Matches'}
+                  </Button>
+                </div>
+                {matchesLoading ? (
+                  <LoadingSpinner size="sm" />
+                ) : matches.length === 0 ? (
+                  <div className="text-center py-4">
+                    <p className="text-gray-500 mb-2">No matches found yet</p>
+                    <p className="text-sm text-gray-400">Click "Find Matches" to search for lost items that might belong to this finder.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {matches.map((match) => (
+                      <Card key={match.lost_item?.id || Math.random()} className="p-4 border border-gray-200 hover:border-primary-300 transition-colors">
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <Link to={`/lost-items/${match.lost_item?.id}`} className="font-medium text-gray-900 hover:text-primary-600">
+                              {match.lost_item?.title || 'Untitled'}
+                            </Link>
+                            <p className="text-sm text-gray-500 mt-1">{match.lost_item?.description?.slice(0, 100)}...</p>
+                            <div className="flex flex-wrap gap-1 mt-2">
+                              {match.explanation?.map((reason, i) => (
+                                <Badge key={i} variant="info" className="text-xs">{reason}</Badge>
+                              ))}
+                            </div>
+                          </div>
+                          <Badge variant={getMatchScoreBadgeVariant(match.score)}>
+                            {match.score}/13
+                          </Badge>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </div>
             )}
           </Card>
         </div>

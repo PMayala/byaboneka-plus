@@ -5,20 +5,18 @@ import {
   CheckCircle, TrendingUp, Activity, ChevronRight
 } from 'lucide-react';
 import { Card, LoadingSpinner, Badge } from '../components/ui';
-import api from '../services/api';
+import { adminApi, AdminStats } from '../services/api';
 import { formatDate, formatDateShort, formatDateTime } from '../utils/dateUtils';
 
-interface DashboardStats {
-  total_users: number;
-  total_lost_items: number;
-  total_found_items: number;
-  total_claims: number;
-  successful_returns: number;
-  pending_scam_reports: number;
-}
+/**
+ * AdminDashboardPage - FIXED VERSION
+ * 
+ * FIX #2: Uses proper AdminStats type that matches backend response
+ * FIX #12: Removed links to non-existent /admin/audit-logs and /admin/cooperatives pages
+ */
 
 const AdminDashboardPage: React.FC = () => {
-  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [stats, setStats] = useState<AdminStats | null>(null);
   const [recentUsers, setRecentUsers] = useState<any[]>([]);
   const [pendingReports, setPendingReports] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -29,10 +27,11 @@ const AdminDashboardPage: React.FC = () => {
 
   const loadDashboard = async () => {
     try {
+      // FIX: Use typed adminApi methods instead of raw api.get
       const [statsRes, usersRes, reportsRes] = await Promise.all([
-        api.get('/admin/stats'),
-        api.get('/admin/users', { params: { limit: 5 } }),
-        api.get('/admin/scam-reports', { params: { status: 'OPEN', limit: 5 } }),
+        adminApi.getStats(),
+        adminApi.getUsers({ limit: 5 }),
+        adminApi.getScamReports({ status: 'OPEN', limit: 5 }),
       ]);
       setStats(statsRes.data.data);
       setRecentUsers(usersRes.data.data || []);
@@ -148,10 +147,10 @@ const AdminDashboardPage: React.FC = () => {
         </Card>
       </div>
 
-      {/* Quick Actions */}
+      {/* Quick Actions - FIX #12: Only link to pages that actually exist */}
       <Card className="p-6 mt-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
           <Link to="/admin/users" className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors text-center">
             <Users className="w-6 h-6 text-gray-600 mx-auto mb-2" />
             <p className="text-sm font-medium">Manage Users</p>
@@ -159,14 +158,6 @@ const AdminDashboardPage: React.FC = () => {
           <Link to="/admin/scam-reports" className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors text-center">
             <AlertTriangle className="w-6 h-6 text-gray-600 mx-auto mb-2" />
             <p className="text-sm font-medium">Scam Reports</p>
-          </Link>
-          <Link to="/admin/audit-logs" className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors text-center">
-            <Activity className="w-6 h-6 text-gray-600 mx-auto mb-2" />
-            <p className="text-sm font-medium">Audit Logs</p>
-          </Link>
-          <Link to="/admin/cooperatives" className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors text-center">
-            <TrendingUp className="w-6 h-6 text-gray-600 mx-auto mb-2" />
-            <p className="text-sm font-medium">Cooperatives</p>
           </Link>
         </div>
       </Card>

@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { disputeApi, getErrorMessage } from '../services/api';
 
 /**
  * DisputeForm Component for Byaboneka+
  * 
  * Implements CLAIM-07: Dispute mechanism for edge cases
  * Allows users to open a dispute when verification fails despite ownership
+ * 
+ * FIX #4 & #8: Now uses centralized axios `disputeApi` instead of raw fetch().
  */
 
 interface DisputeFormProps {
@@ -47,27 +50,11 @@ export const DisputeForm: React.FC<DisputeFormProps> = ({
     setError('');
 
     try {
-      const token = localStorage.getItem('accessToken');
-      const response = await fetch(`/api/v1/claims/${claimId}/dispute`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ reason: reason.trim() })
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to open dispute');
-      }
-
+      await disputeApi.open(claimId, { reason: reason.trim() });
       setSuccess(true);
       onDisputeOpened?.();
-
     } catch (err: any) {
-      setError(err.message || 'Failed to open dispute. Please try again.');
+      setError(getErrorMessage(err));
     } finally {
       setIsSubmitting(false);
     }

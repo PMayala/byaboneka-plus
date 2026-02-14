@@ -6,9 +6,11 @@ import {
   HelpCircle, Shield, AlertCircle
 } from 'lucide-react';
 import { Button, Card, Input, Textarea, Select, Alert } from '../components/ui';
-import { lostItemsApi } from '../services/api';
+import { lostItemsApi, duplicateApi } from '../services/api';
+import { DuplicateWarning } from '../components/DuplicateWarning';
 import { ItemCategory, CATEGORY_INFO, RWANDA_LOCATIONS, QUESTION_TEMPLATES, VerificationQuestion } from '../types';
 import toast from 'react-hot-toast';
+import VerificationStrengthIndicator from '../components/VerificationStrengthIndicator';
 
 const CATEGORY_OPTIONS = Object.entries(CATEGORY_INFO).map(([value, info]) => ({
   value,
@@ -41,6 +43,8 @@ const ReportLostPage: React.FC = () => {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [duplicateCandidates, setDuplicateCandidates] = useState<any[]>([]);
+  const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
 
   const [formData, setFormData] = useState<FormData>({
     category: '',
@@ -102,6 +106,31 @@ const ReportLostPage: React.FC = () => {
   const handleSubmit = async () => {
     if (!validateStep(3)) return;
 
+    // Check for duplicates first
+    if (!showDuplicateWarning && duplicateCandidates.length === 0) {
+      try {
+        const dupRes = await duplicateApi.checkLost({
+          category: formData.category,
+          title: formData.title,
+          description: formData.description,
+          location_area: formData.location_area,
+          lost_date: formData.lost_date,
+        });
+        if (dupRes.data.data?.has_potential_duplicates && dupRes.data.data.candidates.length > 0) {
+          setDuplicateCandidates(dupRes.data.data.candidates);
+          setShowDuplicateWarning(true);
+          return;
+        }
+      } catch (error) {
+        console.warn('Duplicate check failed:', error);
+      }
+    }
+
+    await submitLostItem();
+  };
+
+  const submitLostItem = async () => {
+    setShowDuplicateWarning(false);
     setLoading(true);
     try {
       const response = await lostItemsApi.create({
@@ -133,6 +162,16 @@ const ReportLostPage: React.FC = () => {
     : [];
 
   return (
+    <>
+      {showDuplicateWarning && (
+        <DuplicateWarning
+          candidates={duplicateCandidates}
+          itemType="lost"
+          onContinue={() => submitLostItem()}
+          onViewDuplicate={(id, type) => navigate(`/${type === 'lost' ? 'lost-items' : 'found-items'}/${id}`)}
+          onCancel={() => { setShowDuplicateWarning(false); setDuplicateCandidates([]); }}
+        />
+      )}
     <div className="max-w-2xl mx-auto px-4 py-8">
       {/* Header */}
       <div className="mb-8">
@@ -358,6 +397,15 @@ const ReportLostPage: React.FC = () => {
             </div>
           ))}
 
+          {/* NOVEL: Verification Strength Analyzer */}
+          <VerificationStrengthIndicator
+            questions={formData.verification_questions.map(q => q.question)}
+            answers={formData.verification_questions.map(q => q.answer)}
+            category={formData.category}
+            description={formData.description}
+            onSelectTemplate={(index, question) => updateQuestion(index, 'question', question)}
+          />
+
           <Alert type="warning" className="mb-6">
             <AlertCircle className="w-4 h-4 inline mr-2" />
             <strong>Remember your answers!</strong> You'll need them to verify ownership if someone 
@@ -377,6 +425,7 @@ const ReportLostPage: React.FC = () => {
         </Card>
       )}
     </div>
+    </>
   );
 };
 

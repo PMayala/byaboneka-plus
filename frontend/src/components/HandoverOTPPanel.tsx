@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { handoverApi, getErrorMessage } from '../services/api';
 
 /**
  * HandoverOTPPanel Component for Byaboneka+
@@ -9,6 +10,10 @@ import React, { useState, useEffect } from 'react';
  * - HAND-03: Single-use indication
  * - HAND-04: Finder OTP input
  * - HAND-05: Attempt tracking
+ * 
+ * FIX #4: Now uses centralized axios `api` instance instead of raw fetch().
+ *         This ensures proper auth token injection, refresh handling, and
+ *         correct base URL in production (Vercel → Render).
  */
 
 interface HandoverOTPPanelProps {
@@ -47,13 +52,9 @@ export const HandoverOTPPanel: React.FC<HandoverOTPPanelProps> = ({
 
   const fetchHandoverStatus = async () => {
     try {
-      const token = localStorage.getItem('accessToken');
-      const response = await fetch(`/api/v1/claims/${claimId}/handover`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const data = await response.json();
-      if (data.success) {
-        setStatus(data.data);
+      const response = await handoverApi.getStatus(claimId);
+      if (response.data.success) {
+        setStatus(response.data.data);
       }
     } catch (err) {
       console.error('Failed to fetch handover status:', err);
@@ -67,27 +68,12 @@ export const HandoverOTPPanel: React.FC<HandoverOTPPanelProps> = ({
     setGeneratedOTP(null);
 
     try {
-      const token = localStorage.getItem('accessToken');
-      const response = await fetch(`/api/v1/claims/${claimId}/handover/otp`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to generate code');
-      }
-
-      setGeneratedOTP(data.data.otp);
+      const response = await handoverApi.generateOtp(claimId);
+      setGeneratedOTP(response.data.data.otp);
       setSuccess('Handover code generated! Share it only when meeting in person.');
       fetchHandoverStatus();
-
     } catch (err: any) {
-      setError(err.message);
+      setError(getErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -106,32 +92,17 @@ export const HandoverOTPPanel: React.FC<HandoverOTPPanelProps> = ({
     setError('');
 
     try {
-      const token = localStorage.getItem('accessToken');
-      const response = await fetch(`/api/v1/claims/${claimId}/handover/verify`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ otp: otpInput })
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.message || 'Invalid code');
-        if (data.attempts_remaining !== undefined) {
-          setError(`Invalid code. ${data.attempts_remaining} attempts remaining.`);
-        }
-        fetchHandoverStatus();
-        return;
-      }
-
-      setSuccess(data.message);
+      const response = await handoverApi.confirmHandover(claimId, otpInput);
+      setSuccess(response.data.message || 'Handover confirmed!');
       onHandoverComplete?.();
-
     } catch (err: any) {
-      setError(err.message);
+      const errData = err.response?.data;
+      if (errData?.attempts_remaining !== undefined) {
+        setError(`Invalid code. ${errData.attempts_remaining} attempts remaining.`);
+      } else {
+        setError(getErrorMessage(err));
+      }
+      fetchHandoverStatus();
     } finally {
       setLoading(false);
       setOtpInput('');

@@ -8,6 +8,7 @@ import cron from 'node-cron';
 
 import routes from './routes';
 import enhancedRoutes from './routes/enhancedRoutes';
+import novelFeatureRoutes from './routes/novelFeatureRoutes';
 import { checkConnection, closePool, query } from './config/database';
 import { apiLimiter } from './middleware/rateLimiter';
 import { notFoundHandler, errorHandler } from './middleware/errorHandler';
@@ -70,6 +71,7 @@ app.use('/uploads', express.static(path.resolve(uploadPath)));
 // API routes (core + enhanced)
 app.use('/api/v1', routes);
 app.use('/api/v1', enhancedRoutes);
+app.use('/api/v1', novelFeatureRoutes);
 
 // Root endpoint
 app.get('/', (req: Request, res: Response) => {

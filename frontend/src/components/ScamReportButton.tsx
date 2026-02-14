@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
+import { messagesApi, getErrorMessage } from '../services/api';
 
 /**
  * ScamReportButton Component for Byaboneka+
  * 
  * Implements COMM-03: Scam report button in every message thread
  * Allows users to report suspicious messages or behavior
+ * 
+ * FIX #4: Now uses centralized axios instance instead of raw fetch().
+ * FIX: Uses correct backend route: POST /messages/:messageId/report
+ *      (not the non-existent POST /scam-reports endpoint)
  */
 
 interface ScamReportButtonProps {
   claimId: number;
-  messageId?: number;
+  messageId: number;
   reportedUserId: number;
   reportedUserName: string;
   onReportSubmitted?: () => void;
@@ -40,26 +45,8 @@ export const ScamReportButton: React.FC<ScamReportButtonProps> = ({
     setError('');
 
     try {
-      const token = localStorage.getItem('accessToken');
-      const response = await fetch(`/api/v1/scam-reports`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          claim_id: claimId,
-          message_id: messageId,
-          reported_user_id: reportedUserId,
-          reason: reason.trim()
-        })
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to submit report');
-      }
+      // Uses the correct backend route: POST /messages/:messageId/report
+      await messagesApi.reportScam(messageId, reason.trim());
 
       setSuccess(true);
       setTimeout(() => {
@@ -68,9 +55,8 @@ export const ScamReportButton: React.FC<ScamReportButtonProps> = ({
         setReason('');
         onReportSubmitted?.();
       }, 2000);
-
     } catch (err: any) {
-      setError(err.message || 'Failed to submit report. Please try again.');
+      setError(getErrorMessage(err));
     } finally {
       setIsSubmitting(false);
     }

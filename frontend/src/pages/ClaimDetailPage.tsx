@@ -5,11 +5,25 @@ import {
   Key, MessageSquare, AlertCircle, Copy, Check
 } from 'lucide-react';
 import { Button, Card, Badge, LoadingSpinner, Alert, Input, Modal } from '../components/ui';
-import { claimsApi, handoverApi, messagesApi } from '../services/api';
+import { claimsApi, messagesApi, disputeApi } from '../services/api';
+import { HandoverOTPPanel } from '../components/HandoverOTPPanel';
+import { DisputeForm } from '../components/DisputeForm';
+import { SafetyWarningBanner } from '../components/SafetyWarningBanner';
+import { ScamReportButton } from '../components/ScamReportButton';
+import SafeHandoverLocationPicker from '../components/SafeHandoverLocationPicker';
 import { Claim, Message, CATEGORY_INFO, STATUS_INFO } from '../types';
 import { useAuthStore } from '../store/authStore';
 import { formatDate } from '../utils/dateUtils';
 import toast from 'react-hot-toast';
+
+/**
+ * ClaimDetailPage - FIXED VERSION
+ * 
+ * FIX #13: Now uses HandoverOTPPanel component instead of inline OTP logic
+ * FIX #13: Now includes DisputeForm component
+ * FIX #15: Now includes SafetyWarningBanner
+ * FIX #16: Now includes ScamReportButton on messages
+ */
 
 const ClaimDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -27,12 +41,13 @@ const ClaimDetailPage: React.FC = () => {
     attempts_remaining: number;
   } | null>(null);
 
-  const [otp, setOtp] = useState('');
-  const [generatedOtp, setGeneratedOtp] = useState<string | null>(null);
-  const [otpCopied, setOtpCopied] = useState(false);
-  const [generatingOtp, setGeneratingOtp] = useState(false);
-  const [confirmingOtp, setConfirmingOtp] = useState(false);
-  const [showOtpModal, setShowOtpModal] = useState(false);
+  // Dispute state
+  const [existingDispute, setExistingDispute] = useState<{
+    id: number;
+    status: string;
+    reason: string;
+    created_at: string;
+  } | null>(null);
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
@@ -50,6 +65,10 @@ const ClaimDetailPage: React.FC = () => {
     }
     if (claim && ['VERIFIED', 'PENDING'].includes(claim.status)) {
       loadMessages();
+    }
+    // Load dispute status for relevant claim states
+    if (claim && ['PENDING', 'VERIFIED', 'REJECTED'].includes(claim.status)) {
+      loadDispute();
     }
   }, [claim, isOwner]);
 
@@ -79,9 +98,24 @@ const ClaimDetailPage: React.FC = () => {
   const loadMessages = async () => {
     try {
       const response = await messagesApi.getMessages(parseInt(id!));
+      // Backend returns data as array directly (not paginated)
       setMessages(response.data.data || []);
     } catch (error) {
       console.error('Failed to load messages:', error);
+    }
+  };
+
+  const loadDispute = async () => {
+    try {
+      const response = await disputeApi.get(parseInt(id!));
+      if (response.data.success && response.data.data) {
+        setExistingDispute(response.data.data);
+      }
+    } catch (error: any) {
+      // 404 = no dispute, that's fine
+      if (error.response?.status !== 404) {
+        console.error('Failed to load dispute:', error);
+      }
     }
   };
 
@@ -108,44 +142,6 @@ const ClaimDetailPage: React.FC = () => {
     }
   };
 
-  const handleGenerateOtp = async () => {
-    setGeneratingOtp(true);
-    try {
-      const response = await handoverApi.generateOtp(parseInt(id!));
-      setGeneratedOtp(response.data.data.otp);
-      setShowOtpModal(true);
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to generate OTP');
-    } finally {
-      setGeneratingOtp(false);
-    }
-  };
-
-  const handleConfirmOtp = async () => {
-    if (otp.length !== 6) {
-      toast.error('Enter 6-digit OTP');
-      return;
-    }
-    setConfirmingOtp(true);
-    try {
-      await handoverApi.confirmHandover(parseInt(id!), otp);
-      toast.success('Item return confirmed!');
-      loadClaim();
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Invalid OTP');
-    } finally {
-      setConfirmingOtp(false);
-    }
-  };
-
-  const copyOtp = () => {
-    if (generatedOtp) {
-      navigator.clipboard.writeText(generatedOtp);
-      setOtpCopied(true);
-      setTimeout(() => setOtpCopied(false), 2000);
-    }
-  };
-
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
@@ -166,6 +162,21 @@ const ClaimDetailPage: React.FC = () => {
 
   const statusInfo = STATUS_INFO[claim.status];
 
+  // Determine the user's role in this claim for the handover panel
+  const getUserRole = (): 'owner' | 'finder' | 'coop_staff' => {
+    if (user?.role === 'coop_staff') return 'coop_staff';
+    if (isOwner) return 'owner';
+    return 'finder';
+  };
+
+  // Get the other party info for scam reporting
+  const getOtherPartyFromMessage = (msg: Message) => {
+    return {
+      id: msg.sender_id,
+      name: msg.sender_name || 'Unknown user',
+    };
+  };
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <Link to="/dashboard" className="inline-flex items-center text-gray-600 hover:text-gray-900 mb-6">
@@ -185,6 +196,7 @@ const ClaimDetailPage: React.FC = () => {
 
       <div className="grid md:grid-cols-3 gap-6">
         <div className="md:col-span-2">
+          {/* Verification Challenge */}
           {claim.status === 'PENDING' && isOwner && (
             <Card className="p-6 mb-6">
               <div className="flex items-center gap-3 mb-6">
@@ -215,26 +227,26 @@ const ClaimDetailPage: React.FC = () => {
             </Card>
           )}
 
+          {/* FIX #13: Use the dedicated HandoverOTPPanel component */}
           {claim.status === 'VERIFIED' && (
-            <Card className="p-6 mb-6">
-              <div className="flex items-center gap-3 mb-6">
-                <Key className="w-6 h-6 text-trust-500" />
-                <h2 className="text-lg font-semibold">Handover</h2>
-              </div>
-              {isOwner ? (
-                <div>
-                  <Alert type="info" className="mb-4">Generate OTP only when meeting in person!</Alert>
-                  <Button onClick={handleGenerateOtp} loading={generatingOtp}><Key className="w-4 h-4 mr-2" />Generate Code</Button>
-                </div>
-              ) : (
-                <div className="flex gap-3">
-                  <Input value={otp} onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))} placeholder="6-digit OTP" maxLength={6} className="font-mono text-2xl tracking-widest" />
-                  <Button onClick={handleConfirmOtp} loading={confirmingOtp}><CheckCircle className="w-4 h-4 mr-2" />Confirm</Button>
-                </div>
-              )}
-            </Card>
+            <div className="mb-6">
+              {/* NOVEL: Safe handover location recommendations */}
+              <SafeHandoverLocationPicker
+                itemArea={''}
+                itemCategory={claim.category || 'OTHER'}
+                onSelectLocation={(loc) => console.log('Selected handover location:', loc.name)}
+              />
+              <div className="mt-4" />
+              <HandoverOTPPanel
+                claimId={claim.id}
+                claimStatus={claim.status}
+                userRole={getUserRole()}
+                onHandoverComplete={() => loadClaim()}
+              />
+            </div>
           )}
 
+          {/* Item Returned */}
           {claim.status === 'RETURNED' && (
             <Card className="p-6 mb-6 bg-trust-50 border-trust-200 text-center">
               <CheckCircle className="w-16 h-16 text-trust-500 mx-auto mb-4" />
@@ -242,8 +254,14 @@ const ClaimDetailPage: React.FC = () => {
             </Card>
           )}
 
+          {/* FIX #15: Safety Warning Banner */}
           {['PENDING', 'VERIFIED'].includes(claim.status) && (
-            <Card className="p-6">
+            <SafetyWarningBanner variant="full" />
+          )}
+
+          {/* Messages Section */}
+          {['PENDING', 'VERIFIED'].includes(claim.status) && (
+            <Card className="p-6 mt-6">
               <div className="flex items-center gap-3 mb-4">
                 <MessageSquare className="w-5 h-5 text-gray-500" />
                 <h2 className="font-semibold">Messages</h2>
@@ -253,9 +271,29 @@ const ClaimDetailPage: React.FC = () => {
                   <p className="text-center text-gray-500 py-8">No messages yet</p>
                 ) : messages.map((m) => (
                   <div key={m.id} className={`flex ${m.is_mine ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[80%] p-3 rounded-xl ${m.is_mine ? 'bg-primary-500 text-white' : 'bg-gray-100'}`}>
-                      <p className="text-sm">{m.content}</p>
-                      <p className={`text-xs mt-1 ${m.is_mine ? 'text-primary-200' : 'text-gray-500'}`}>{formatDate(m.created_at, 'h:mm a')}</p>
+                    <div className={`max-w-[80%] ${m.is_mine ? '' : ''}`}>
+                      <div className={`p-3 rounded-xl ${m.is_mine ? 'bg-primary-500 text-white' : 'bg-gray-100'}`}>
+                        {/* FIX: Show warning on flagged messages */}
+                        {m.is_flagged && m.warning && (
+                          <p className={`text-xs mb-1 ${m.is_mine ? 'text-primary-200' : 'text-orange-600'}`}>
+                            ⚠️ {m.warning}
+                          </p>
+                        )}
+                        <p className="text-sm">{m.content}</p>
+                        <p className={`text-xs mt-1 ${m.is_mine ? 'text-primary-200' : 'text-gray-500'}`}>{formatDate(m.created_at, 'h:mm a')}</p>
+                      </div>
+                      {/* FIX #16: ScamReportButton on received messages */}
+                      {!m.is_mine && (
+                        <div className="mt-1 ml-1">
+                          <ScamReportButton
+                            claimId={claim.id}
+                            messageId={m.id}
+                            reportedUserId={m.sender_id}
+                            reportedUserName={m.sender_name || 'Unknown'}
+                            onReportSubmitted={() => toast.success('Report submitted')}
+                          />
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -266,8 +304,21 @@ const ClaimDetailPage: React.FC = () => {
               </form>
             </Card>
           )}
+
+          {/* FIX #13: DisputeForm component integration */}
+          {isOwner && ['PENDING', 'VERIFIED', 'REJECTED'].includes(claim.status) && (
+            <div className="mt-6">
+              <DisputeForm
+                claimId={claim.id}
+                claimStatus={claim.status}
+                existingDispute={existingDispute}
+                onDisputeOpened={() => loadDispute()}
+              />
+            </div>
+          )}
         </div>
 
+        {/* Sidebar */}
         <div>
           <Card className="p-6 mb-6">
             <h3 className="font-semibold mb-4">Progress</h3>
@@ -292,16 +343,6 @@ const ClaimDetailPage: React.FC = () => {
           </Card>
         </div>
       </div>
-
-      <Modal isOpen={showOtpModal} onClose={() => setShowOtpModal(false)} title="Your Handover Code">
-        <Alert type="warning" className="mb-4">Only share when receiving item!</Alert>
-        <div className="bg-gray-100 rounded-xl p-6 mb-4 text-center">
-          <p className="font-mono text-4xl font-bold tracking-widest text-primary-600">{generatedOtp}</p>
-        </div>
-        <Button variant="secondary" onClick={copyOtp} className="w-full">
-          {otpCopied ? <><Check className="w-4 h-4 mr-2" />Copied!</> : <><Copy className="w-4 h-4 mr-2" />Copy</>}
-        </Button>
-      </Modal>
     </div>
   );
 };

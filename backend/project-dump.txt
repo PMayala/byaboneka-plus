@@ -1,16 +1,16 @@
 ╔══════════════════════════════════════════════════════════════╗
 ║  Byaboneka+ Backend                                        ║
 ║  Project Code Dump — AI Review Edition                      ║
-║  Generated: 2026-02-13T17:59:27.995Z                       ║
+║  Generated: 2026-02-14T12:29:54.661Z                       ║
 ╚══════════════════════════════════════════════════════════════╝
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   PROJECT SUMMARY
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  Files included:  57
-  Total lines:     14,679
-  Total size:      480.6 KB
-  Languages:       YAML (2), TypeScript (47), Text (4), JSON (3), JavaScript (1)
+  Files included:  63
+  Total lines:     16,522
+  Total size:      547.7 KB
+  Languages:       YAML (2), TypeScript (53), Text (4), JSON (3), JavaScript (1)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   DIRECTORY STRUCTURE
@@ -22,7 +22,7 @@
   │   │   └── swagger.ts (51.7 KB)
   │   ├── controllers/
   │   │   ├── adminController.ts (10.1 KB)
-  │   │   ├── authController.ts (15.6 KB)
+  │   │   ├── authController.ts (16.6 KB)
   │   │   ├── claimsController.ts (19.5 KB)
   │   │   ├── cooperativesController.ts (10.5 KB)
   │   │   ├── foundItemsController.ts (11.9 KB)
@@ -41,32 +41,38 @@
   │   │   └── run.ts (395 B)
   │   ├── routes/
   │   │   ├── enhancedRoutes.ts (14.4 KB)
-  │   │   └── index.ts (9.0 KB)
+  │   │   ├── index.ts (9.2 KB)
+  │   │   └── novelFeatureRoutes.ts (7.0 KB)
   │   ├── seeds/
   │   │   └── run.ts (50.0 KB)
   │   ├── services/
   │   │   ├── auditService.ts (6.5 KB)
+  │   │   ├── cooperativeAccountabilityService.ts (13.6 KB)
   │   │   ├── disputeService.ts (12.6 KB)
   │   │   ├── duplicateDetectionService.ts (10.0 KB)
   │   │   ├── emailVerificationService.ts (4.6 KB)
   │   │   ├── expiryService.ts (5.9 KB)
+  │   │   ├── fraudDetectionService.ts (14.7 KB)
   │   │   ├── matchingService.ts (9.2 KB)
   │   │   ├── otpService.ts (10.8 KB)
+  │   │   ├── sensitiveRedactionService.ts (8.3 KB)
   │   │   ├── trustService.ts (6.7 KB)
   │   │   ├── verificationAttemptsService.ts (2.0 KB)
-  │   │   └── verificationCooldownService.ts (7.1 KB)
+  │   │   ├── verificationCooldownService.ts (7.1 KB)
+  │   │   └── verificationStrengthService.ts (13.2 KB)
   │   ├── types/
   │   │   └── index.ts (7.4 KB)
   │   ├── utils/
-  │   │   └── index.ts (11.8 KB)
+  │   │   └── index.ts (12.0 KB)
   │   ├── index.swagger-patch.ts (1016 B)
-  │   └── index.ts (6.4 KB)
+  │   └── index.ts (6.5 KB)
   ├── tests/
   │   ├── integration/
   │   │   └── api.test.ts (12.1 KB)
   │   ├── unit/
   │   │   ├── matching.test.ts (5.2 KB)
   │   │   ├── middleware.test.ts (4.0 KB)
+  │   │   ├── novel-features.test.ts (8.9 KB)
   │   │   ├── trust.test.ts (3.4 KB)
   │   │   ├── utils.test.ts (5.8 KB)
   │   │   └── validation.test.ts (6.4 KB)
@@ -84,9 +90,9 @@
   ├── Byaboneka_Plus_API.postman_collection.json (27.8 KB)
   ├── docker-compose.yml (1.1 KB)
   ├── Dockerfile (1.3 KB)
-  ├── jest.config.js (791 B)
+  ├── jest.config.js (773 B)
   ├── package.json (2.3 KB)
-  └── tsconfig.json (491 B)
+  └── tsconfig.json (521 B)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   TABLE OF CONTENTS
@@ -99,7 +105,7 @@
       1. src/config/database.ts  [86 lines | TypeScript]
       2. src/config/swagger.ts  [1231 lines | TypeScript]
       3. src/controllers/adminController.ts  [308 lines | TypeScript]
-      4. src/controllers/authController.ts  [625 lines | TypeScript]
+      4. src/controllers/authController.ts  [639 lines | TypeScript]
       5. src/controllers/claimsController.ts  [643 lines | TypeScript]
       6. src/controllers/cooperativesController.ts  [336 lines | TypeScript]
       7. src/controllers/foundItemsController.ts  [360 lines | TypeScript]
@@ -115,36 +121,42 @@
      17. src/migrations/rollback.ts  [20 lines | TypeScript]
      18. src/migrations/run.ts  [20 lines | TypeScript]
      19. src/routes/enhancedRoutes.ts  [547 lines | TypeScript]
-     20. src/routes/index.ts  [399 lines | TypeScript]
-     21. src/seeds/run.ts  [654 lines | TypeScript]
-     22. src/services/auditService.ts  [272 lines | TypeScript]
-     23. src/services/disputeService.ts  [458 lines | TypeScript]
-     24. src/services/duplicateDetectionService.ts  [343 lines | TypeScript]
-     25. src/services/emailVerificationService.ts  [188 lines | TypeScript]
-     26. src/services/expiryService.ts  [210 lines | TypeScript]
-     27. src/services/matchingService.ts  [306 lines | TypeScript]
-     28. src/services/otpService.ts  [371 lines | TypeScript]
-     29. src/services/trustService.ts  [287 lines | TypeScript]
-     30. src/services/verificationAttemptsService.ts  [62 lines | TypeScript]
-     31. src/services/verificationCooldownService.ts  [264 lines | TypeScript]
-     32. src/types/index.ts  [380 lines | TypeScript]
-     33. src/utils/index.ts  [364 lines | TypeScript]
-     34. src/index.swagger-patch.ts  [32 lines | TypeScript]
-     35. src/index.ts  [213 lines | TypeScript]
+     20. src/routes/index.ts  [405 lines | TypeScript]
+     21. src/routes/novelFeatureRoutes.ts  [238 lines | TypeScript]
+     22. src/seeds/run.ts  [654 lines | TypeScript]
+     23. src/services/auditService.ts  [272 lines | TypeScript]
+     24. src/services/cooperativeAccountabilityService.ts  [322 lines | TypeScript]
+     25. src/services/disputeService.ts  [458 lines | TypeScript]
+     26. src/services/duplicateDetectionService.ts  [343 lines | TypeScript]
+     27. src/services/emailVerificationService.ts  [188 lines | TypeScript]
+     28. src/services/expiryService.ts  [210 lines | TypeScript]
+     29. src/services/fraudDetectionService.ts  [413 lines | TypeScript]
+     30. src/services/matchingService.ts  [306 lines | TypeScript]
+     31. src/services/otpService.ts  [371 lines | TypeScript]
+     32. src/services/sensitiveRedactionService.ts  [261 lines | TypeScript]
+     33. src/services/trustService.ts  [287 lines | TypeScript]
+     34. src/services/verificationAttemptsService.ts  [62 lines | TypeScript]
+     35. src/services/verificationCooldownService.ts  [264 lines | TypeScript]
+     36. src/services/verificationStrengthService.ts  [311 lines | TypeScript]
+     37. src/types/index.ts  [380 lines | TypeScript]
+     38. src/utils/index.ts  [374 lines | TypeScript]
+     39. src/index.swagger-patch.ts  [32 lines | TypeScript]
+     40. src/index.ts  [216 lines | TypeScript]
 
   📁 tests/
       1. tests/integration/api.test.ts  [319 lines | TypeScript]
       2. tests/unit/matching.test.ts  [143 lines | TypeScript]
       3. tests/unit/middleware.test.ts  [132 lines | TypeScript]
-      4. tests/unit/trust.test.ts  [114 lines | TypeScript]
-      5. tests/unit/utils.test.ts  [167 lines | TypeScript]
-      6. tests/unit/validation.test.ts  [191 lines | TypeScript]
-      7. tests/integration.test.ts  [230 lines | TypeScript]
-      8. tests/matching.test.ts  [126 lines | TypeScript]
-      9. tests/setup.ts  [25 lines | TypeScript]
-     10. tests/trust.test.ts  [143 lines | TypeScript]
-     11. tests/utils.test.ts  [395 lines | TypeScript]
-     12. tests/validation.test.ts  [383 lines | TypeScript]
+      4. tests/unit/novel-features.test.ts  [262 lines | TypeScript]
+      5. tests/unit/trust.test.ts  [114 lines | TypeScript]
+      6. tests/unit/utils.test.ts  [167 lines | TypeScript]
+      7. tests/unit/validation.test.ts  [191 lines | TypeScript]
+      8. tests/integration.test.ts  [230 lines | TypeScript]
+      9. tests/matching.test.ts  [126 lines | TypeScript]
+     10. tests/setup.ts  [25 lines | TypeScript]
+     11. tests/trust.test.ts  [143 lines | TypeScript]
+     12. tests/utils.test.ts  [395 lines | TypeScript]
+     13. tests/validation.test.ts  [383 lines | TypeScript]
 
   📁 (root)/
       1. .dockerignore  [18 lines | Text]
@@ -153,9 +165,9 @@
       4. Byaboneka_Plus_API.postman_collection.json  [711 lines | JSON]
       5. docker-compose.yml  [44 lines | YAML]
       6. Dockerfile  [55 lines | Text]
-      7. jest.config.js  [34 lines | JavaScript]
+      7. jest.config.js  [35 lines | JavaScript]
       8. package.json  [73 lines | JSON]
-      9. tsconfig.json  [25 lines | JSON]
+      9. tsconfig.json  [27 lines | JSON]
 
 
 
@@ -2004,7 +2016,7 @@ export async function triggerCleanup(req: Request, res: Response): Promise<void>
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: src/controllers/authController.ts
-│ Language: TypeScript | Lines: 625 | Size: 15.6 KB
+│ Language: TypeScript | Lines: 639 | Size: 16.6 KB
 └────────────────────────────────────────────────────────────┘
 
 import { Request, Response } from 'express';
@@ -2067,7 +2079,7 @@ export async function register(req: Request, res: Response): Promise<void> {
     const result = await query(
       `INSERT INTO users (email, password_hash, name, phone, role, trust_score)
        VALUES ($1, $2, $3, $4, $5, $6)
-       RETURNING id, email, name, phone, role, trust_score, created_at`,
+       RETURNING id, email, name, phone, role, trust_score, email_verified, phone_verified, created_at`,
       [email.toLowerCase(), passwordHash, name, phone || null, UserRole.CITIZEN, 0]
     );
 
@@ -2102,6 +2114,7 @@ export async function register(req: Request, res: Response): Promise<void> {
       userAgent
     });
 
+    // FIX #5: Include email_verified and phone_verified in response
     res.status(201).json({
       success: true,
       data: {
@@ -2111,7 +2124,10 @@ export async function register(req: Request, res: Response): Promise<void> {
           name: user.name,
           phone: user.phone,
           role: user.role,
-          trust_score: user.trust_score
+          trust_score: user.trust_score,
+          email_verified: user.email_verified || false,
+          phone_verified: user.phone_verified || false,
+          created_at: user.created_at
         },
         tokens: {
           accessToken,
@@ -2134,10 +2150,14 @@ export async function login(req: Request, res: Response): Promise<void> {
   try {
     const { email, password } = req.body;
 
-    // Find user
+    // FIX #5 & #17: Include email_verified, phone_verified, cooperative fields in login query
     const result = await query(
-      `SELECT id, email, password_hash, name, phone, role, trust_score, is_banned, ban_reason
-       FROM users WHERE email = $1`,
+      `SELECT u.id, u.email, u.password_hash, u.name, u.phone, u.role, u.trust_score,
+              u.is_banned, u.ban_reason, u.email_verified, u.phone_verified,
+              u.cooperative_id, c.name as cooperative_name, u.created_at
+       FROM users u
+       LEFT JOIN cooperatives c ON u.cooperative_id = c.id
+       WHERE u.email = $1`,
       [email.toLowerCase()]
     );
 
@@ -2192,6 +2212,7 @@ export async function login(req: Request, res: Response): Promise<void> {
     // Log login
     await logLogin(req, user.id);
 
+    // FIX #5 & #17: Include all fields frontend expects
     res.json({
       success: true,
       data: {
@@ -2201,7 +2222,12 @@ export async function login(req: Request, res: Response): Promise<void> {
           name: user.name,
           phone: user.phone,
           role: user.role,
-          trust_score: user.trust_score
+          trust_score: user.trust_score,
+          email_verified: user.email_verified || false,
+          phone_verified: user.phone_verified || false,
+          cooperative_id: user.cooperative_id || undefined,
+          cooperative_name: user.cooperative_name || undefined,
+          created_at: user.created_at
         },
         tokens: {
           accessToken,
@@ -2523,10 +2549,11 @@ export async function updateProfile(req: Request, res: Response): Promise<void> 
       }
     }
 
+    // FIX: Return all fields the frontend needs
     const result = await query(
       `UPDATE users SET name = COALESCE($1, name), phone = COALESCE($2, phone)
        WHERE id = $3
-       RETURNING id, email, name, phone, role, trust_score`,
+       RETURNING id, email, name, phone, role, trust_score, email_verified, phone_verified, created_at`,
       [name, phone, userId]
     );
 
@@ -2631,7 +2658,6 @@ export async function changePassword(req: Request, res: Response): Promise<void>
     });
   }
 }
-
 
 
 ┌────────────────────────────────────────────────────────────┐
@@ -6722,7 +6748,7 @@ export default enhancedRouter;
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: src/routes/index.ts
-│ Language: TypeScript | Lines: 399 | Size: 9.0 KB
+│ Language: TypeScript | Lines: 405 | Size: 9.2 KB
 └────────────────────────────────────────────────────────────┘
 
 import { Router } from 'express';
@@ -6748,6 +6774,7 @@ import { authLimiter, reportLimiter, claimLimiter, verificationLimiter, otpLimit
          passwordResetLimiter, searchLimiter } from '../middleware/rateLimiter';
 import { UserRole } from '../types';
 import { checkConnection } from '../config/database';
+import { fraudCheck } from '../services/fraudDetectionService';
 
 const router = Router();
 
@@ -6839,6 +6866,7 @@ router.post('/auth/change-password',
 router.post('/lost-items',
   authenticate,
   reportLimiter,
+  fraudCheck('REPORT_CREATE'),
   validate(createLostItemSchema),
   lostItemsController.createLostItem
 );
@@ -6882,6 +6910,7 @@ router.get('/users/me/lost-items',
 router.post('/found-items',
   authenticate,
   reportLimiter,
+  fraudCheck('REPORT_CREATE'),
   validate(createFoundItemSchema),
   foundItemsController.createFoundItem
 );
@@ -6931,6 +6960,7 @@ router.get('/users/me/found-items',
 router.post('/claims',
   authenticate,
   claimLimiter,
+  fraudCheck('CLAIM_CREATE'),
   validate(createClaimSchema),
   claimsController.createClaim
 );
@@ -6949,6 +6979,7 @@ router.get('/claims/:claimId/questions',
 router.post('/claims/:claimId/verify',
   authenticate,
   verificationLimiter,
+  fraudCheck('CLAIM_VERIFY'),
   validate(verifyClaimSchema),
   claimsController.verifyClaim
 );
@@ -6985,6 +7016,7 @@ router.get('/messages/threads/:claimId',
 router.post('/messages/threads/:claimId',
   authenticate,
   messageLimiter,
+  fraudCheck('MESSAGE_SEND'),
   validate(sendMessageSchema),
   messagesController.sendMessage
 );
@@ -7122,6 +7154,251 @@ router.get('/health', async (req, res) => {
     database: dbOk ? 'connected' : 'unreachable'
   });
 });
+
+export default router;
+
+
+┌────────────────────────────────────────────────────────────┐
+│ FILE: src/routes/novelFeatureRoutes.ts
+│ Language: TypeScript | Lines: 238 | Size: 7.0 KB
+└────────────────────────────────────────────────────────────┘
+
+import { Router, Request, Response } from 'express';
+import { authenticate, adminOnly } from '../middleware/auth';
+import { fraudCheck } from '../services/fraudDetectionService';
+import { getFlaggedUsers } from '../services/fraudDetectionService';
+import {
+  analyzeVerificationStrength,
+  getTemplatesForCategory,
+  QUESTION_TEMPLATES
+} from '../services/verificationStrengthService';
+import { redactSensitiveContent } from '../services/sensitiveRedactionService';
+import {
+  computeCooperativeAccountability,
+  getCooperativeAccountability,
+  recommendHandoverLocations,
+  SAFE_HANDOVER_POINTS
+} from '../services/cooperativeAccountabilityService';
+
+const router = Router();
+
+// ============================================
+// FRAUD DETECTION ROUTES (Admin)
+// ============================================
+
+/**
+ * GET /api/v1/admin/fraud/flagged-users
+ * Returns users with high-risk fraud assessments in the last 7 days
+ */
+router.get('/admin/fraud/flagged-users',
+  authenticate,
+  adminOnly,
+  async (req: Request, res: Response) => {
+    try {
+      const flaggedUsers = await getFlaggedUsers();
+      res.json({ success: true, data: flaggedUsers });
+    } catch (error) {
+      console.error('Failed to get flagged users:', error);
+      res.status(500).json({ success: false, message: 'Failed to retrieve flagged users' });
+    }
+  }
+);
+
+// ============================================
+// VERIFICATION STRENGTH ROUTES
+// ============================================
+
+/**
+ * POST /api/v1/verification/analyze-strength
+ * Analyze the quality of verification questions before saving them
+ * 
+ * Body: { questions: string[], answers: string[], category: string, description: string }
+ */
+router.post('/verification/analyze-strength',
+  authenticate,
+  async (req: Request, res: Response) => {
+    try {
+      const { questions, answers, category, description } = req.body;
+
+      if (!questions || !answers || !category) {
+        res.status(400).json({
+          success: false,
+          message: 'questions, answers, and category are required'
+        });
+        return;
+      }
+
+      const analysis = analyzeVerificationStrength(
+        questions,
+        answers,
+        category,
+        description || ''
+      );
+
+      res.json({ success: true, data: analysis });
+    } catch (error) {
+      console.error('Verification strength analysis error:', error);
+      res.status(500).json({ success: false, message: 'Analysis failed' });
+    }
+  }
+);
+
+/**
+ * GET /api/v1/verification/templates/:category
+ * Get category-specific question templates
+ */
+router.get('/verification/templates/:category',
+  authenticate,
+  async (req: Request, res: Response) => {
+    const { category } = req.params;
+    const templates = getTemplatesForCategory(category);
+    res.json({ success: true, data: templates });
+  }
+);
+
+/**
+ * GET /api/v1/verification/templates
+ * Get all question templates grouped by category
+ */
+router.get('/verification/templates',
+  authenticate,
+  async (req: Request, res: Response) => {
+    res.json({ success: true, data: QUESTION_TEMPLATES });
+  }
+);
+
+// ============================================
+// SENSITIVE CONTENT REDACTION ROUTES
+// ============================================
+
+/**
+ * POST /api/v1/privacy/preview-redaction
+ * Preview what a description would look like after redaction
+ * (Useful for testing during development and for admin review)
+ */
+router.post('/privacy/preview-redaction',
+  authenticate,
+  async (req: Request, res: Response) => {
+    try {
+      const { text, category } = req.body;
+
+      if (!text) {
+        res.status(400).json({ success: false, message: 'text is required' });
+        return;
+      }
+
+      const result = redactSensitiveContent(text, category, false);
+      res.json({ success: true, data: result });
+    } catch (error) {
+      console.error('Redaction preview error:', error);
+      res.status(500).json({ success: false, message: 'Redaction failed' });
+    }
+  }
+);
+
+// ============================================
+// COOPERATIVE ACCOUNTABILITY ROUTES
+// ============================================
+
+/**
+ * GET /api/v1/cooperatives/leaderboard
+ * Public endpoint: cooperative accountability rankings
+ */
+router.get('/cooperatives/leaderboard',
+  async (req: Request, res: Response) => {
+    try {
+      const rankings = await computeCooperativeAccountability();
+      res.json({
+        success: true,
+        data: rankings,
+        meta: {
+          total: rankings.length,
+          computed_at: new Date().toISOString(),
+          scoring_weights: {
+            return_rate: '35%',
+            speed: '25%',
+            reliability: '20%',
+            staff_quality: '20%'
+          }
+        }
+      });
+    } catch (error) {
+      console.error('Leaderboard computation error:', error);
+      res.status(500).json({ success: false, message: 'Failed to compute leaderboard' });
+    }
+  }
+);
+
+/**
+ * GET /api/v1/cooperatives/:id/accountability
+ * Detailed accountability report for a single cooperative
+ */
+router.get('/cooperatives/:id/accountability',
+  async (req: Request, res: Response) => {
+    try {
+      const cooperativeId = parseInt(req.params.id);
+      const report = await getCooperativeAccountability(cooperativeId);
+
+      if (!report) {
+        res.status(404).json({ success: false, message: 'Cooperative not found' });
+        return;
+      }
+
+      res.json({ success: true, data: report });
+    } catch (error) {
+      console.error('Accountability report error:', error);
+      res.status(500).json({ success: false, message: 'Failed to generate report' });
+    }
+  }
+);
+
+// ============================================
+// SAFE HANDOVER LOCATION ROUTES
+// ============================================
+
+/**
+ * GET /api/v1/handover/safe-locations
+ * Get all safe handover locations
+ */
+router.get('/handover/safe-locations',
+  authenticate,
+  async (req: Request, res: Response) => {
+    res.json({ success: true, data: SAFE_HANDOVER_POINTS });
+  }
+);
+
+/**
+ * GET /api/v1/handover/recommended-locations
+ * Get recommended handover locations based on item area and category
+ * 
+ * Query: ?area=Kimironko&category=PHONE
+ */
+router.get('/handover/recommended-locations',
+  authenticate,
+  async (req: Request, res: Response) => {
+    const { area, category } = req.query;
+
+    if (!area) {
+      res.status(400).json({ success: false, message: 'area query parameter is required' });
+      return;
+    }
+
+    const recommendations = recommendHandoverLocations(
+      area as string,
+      (category as string) || 'OTHER'
+    );
+
+    res.json({
+      success: true,
+      data: recommendations,
+      meta: {
+        search_area: area,
+        category: category || 'OTHER',
+        safety_note: 'Always meet at the recommended location during operating hours. For sensitive items (ID, wallet, phone), cooperative offices and sector offices are strongly recommended.'
+      }
+    });
+  }
+);
 
 export default router;
 
@@ -8064,6 +8341,335 @@ export async function getAuditLogs(filter: AuditLogFilter) {
   };
 }
 
+
+
+┌────────────────────────────────────────────────────────────┐
+│ FILE: src/services/cooperativeAccountabilityService.ts
+│ Language: TypeScript | Lines: 322 | Size: 13.6 KB
+└────────────────────────────────────────────────────────────┘
+
+import { query } from '../config/database';
+
+/**
+ * ============================================
+ * COOPERATIVE ACCOUNTABILITY INDEX
+ * ============================================
+ * 
+ * NOVEL FEATURE: No lost-and-found platform creates a public, data-driven
+ * accountability ranking for partner organizations. This transforms
+ * cooperatives from passive custodians into competitively ranked actors.
+ * 
+ * Citizens can see which cooperative returns items fastest and most
+ * reliably, creating market-based incentives for good behavior without
+ * regulatory enforcement.
+ * 
+ * Computes:
+ *   - return_rate: items returned / items received
+ *   - avg_return_hours: average time from report to return
+ *   - dispute_rate: disputes / total claims through this coop
+ *   - staff_trust_avg: average trust score of cooperative staff
+ *   - accountability_score: weighted composite (0-100)
+ */
+
+// ============================================
+// TYPES
+// ============================================
+
+export interface CooperativeAccountability {
+  cooperative_id: number;
+  cooperative_name: string;
+  registration_number: string;
+
+  // Raw metrics
+  total_items_received: number;
+  total_items_returned: number;
+  total_claims_processed: number;
+  total_disputes: number;
+  avg_return_hours: number | null;
+  staff_count: number;
+  staff_trust_average: number;
+
+  // Computed scores (0-100 each)
+  return_rate_score: number;
+  speed_score: number;
+  reliability_score: number;    // inverse of dispute rate
+  staff_quality_score: number;
+
+  // Final composite
+  accountability_score: number;
+  accountability_grade: 'A' | 'B' | 'C' | 'D' | 'F';
+  rank: number;
+
+  // Trend
+  trend: 'IMPROVING' | 'STABLE' | 'DECLINING';
+}
+
+// ============================================
+// WEIGHTS FOR ACCOUNTABILITY SCORE
+// ============================================
+
+const WEIGHTS = {
+  RETURN_RATE: 0.35,       // Most important: do items actually get returned?
+  SPEED: 0.25,             // How fast?
+  RELIABILITY: 0.20,       // Low dispute rate
+  STAFF_QUALITY: 0.20,     // Staff trust scores
+};
+
+// Benchmarks for scoring
+const BENCHMARKS = {
+  EXCELLENT_RETURN_RATE: 0.80,
+  GOOD_RETURN_RATE: 0.50,
+  EXCELLENT_RETURN_HOURS: 24,
+  GOOD_RETURN_HOURS: 72,
+  POOR_RETURN_HOURS: 168,
+};
+
+// ============================================
+// COMPUTE ACCOUNTABILITY INDEX
+// ============================================
+
+export async function computeCooperativeAccountability(): Promise<CooperativeAccountability[]> {
+  // Get all verified cooperatives with their metrics
+  const result = await query(`
+    WITH coop_items AS (
+      SELECT 
+        c.id as cooperative_id,
+        c.name as cooperative_name,
+        c.registration_number,
+        COUNT(fi.id) as total_items_received,
+        COUNT(fi.id) FILTER (WHERE fi.status = 'RETURNED') as total_items_returned,
+        AVG(
+          CASE WHEN fi.status = 'RETURNED' AND hc.returned_at IS NOT NULL
+          THEN EXTRACT(EPOCH FROM (hc.returned_at - fi.created_at)) / 3600
+          ELSE NULL END
+        ) as avg_return_hours
+      FROM cooperatives c
+      LEFT JOIN found_items fi ON fi.cooperative_id = c.id
+      LEFT JOIN claims cl ON cl.found_item_id = fi.id AND cl.status = 'RETURNED'
+      LEFT JOIN handover_confirmations hc ON hc.claim_id = cl.id AND hc.otp_verified = true
+      WHERE c.status = 'VERIFIED'
+      GROUP BY c.id, c.name, c.registration_number
+    ),
+    coop_claims AS (
+      SELECT
+        fi.cooperative_id,
+        COUNT(DISTINCT cl.id) as total_claims,
+        COUNT(DISTINCT d.id) as total_disputes
+      FROM found_items fi
+      JOIN claims cl ON cl.found_item_id = fi.id
+      LEFT JOIN claim_disputes d ON d.claim_id = cl.id
+      WHERE fi.cooperative_id IS NOT NULL
+      GROUP BY fi.cooperative_id
+    ),
+    coop_staff AS (
+      SELECT
+        u.cooperative_id,
+        COUNT(u.id) as staff_count,
+        COALESCE(AVG(u.trust_score), 0) as staff_trust_avg
+      FROM users u
+      WHERE u.role = 'coop_staff' AND u.cooperative_id IS NOT NULL
+      GROUP BY u.cooperative_id
+    )
+    SELECT
+      ci.*,
+      COALESCE(cc.total_claims, 0) as total_claims_processed,
+      COALESCE(cc.total_disputes, 0) as total_disputes,
+      COALESCE(cs.staff_count, 0) as staff_count,
+      COALESCE(cs.staff_trust_avg, 0) as staff_trust_average
+    FROM coop_items ci
+    LEFT JOIN coop_claims cc ON cc.cooperative_id = ci.cooperative_id
+    LEFT JOIN coop_staff cs ON cs.cooperative_id = ci.cooperative_id
+    ORDER BY ci.cooperative_id
+  `);
+
+  const cooperatives: CooperativeAccountability[] = result.rows.map(row => {
+    const totalReceived = parseInt(row.total_items_received) || 0;
+    const totalReturned = parseInt(row.total_items_returned) || 0;
+    const totalClaims = parseInt(row.total_claims_processed) || 0;
+    const totalDisputes = parseInt(row.total_disputes) || 0;
+    const avgHours = row.avg_return_hours ? parseFloat(row.avg_return_hours) : null;
+    const staffTrustAvg = parseFloat(row.staff_trust_average) || 0;
+
+    // ── Return Rate Score (0-100) ──
+    let returnRateScore = 0;
+    if (totalReceived > 0) {
+      const rate = totalReturned / totalReceived;
+      if (rate >= BENCHMARKS.EXCELLENT_RETURN_RATE) returnRateScore = 100;
+      else if (rate >= BENCHMARKS.GOOD_RETURN_RATE) returnRateScore = 50 + (rate - 0.5) / 0.3 * 50;
+      else returnRateScore = rate / 0.5 * 50;
+    }
+
+    // ── Speed Score (0-100) ──
+    let speedScore = 50; // Default for no data
+    if (avgHours !== null) {
+      if (avgHours <= BENCHMARKS.EXCELLENT_RETURN_HOURS) speedScore = 100;
+      else if (avgHours <= BENCHMARKS.GOOD_RETURN_HOURS) speedScore = 70 - (avgHours - 24) / 48 * 20;
+      else if (avgHours <= BENCHMARKS.POOR_RETURN_HOURS) speedScore = 50 - (avgHours - 72) / 96 * 30;
+      else speedScore = Math.max(10, 20 - (avgHours - 168) / 168 * 10);
+    }
+
+    // ── Reliability Score (0-100, inverse of dispute rate) ──
+    let reliabilityScore = 100; // Perfect if no claims
+    if (totalClaims > 0) {
+      const disputeRate = totalDisputes / totalClaims;
+      reliabilityScore = Math.max(0, 100 - disputeRate * 200); // 50% disputes = 0 score
+    }
+
+    // ── Staff Quality Score (0-100) ──
+    let staffQualityScore = 50; // Default
+    if (staffTrustAvg >= 15) staffQualityScore = 100;
+    else if (staffTrustAvg >= 5) staffQualityScore = 60 + (staffTrustAvg - 5) / 10 * 40;
+    else if (staffTrustAvg >= 0) staffQualityScore = 40 + staffTrustAvg / 5 * 20;
+    else staffQualityScore = Math.max(0, 40 + staffTrustAvg * 4); // Negative trust tanks score
+
+    // ── Composite Accountability Score ──
+    const accountabilityScore = Math.round(
+      returnRateScore * WEIGHTS.RETURN_RATE +
+      speedScore * WEIGHTS.SPEED +
+      reliabilityScore * WEIGHTS.RELIABILITY +
+      staffQualityScore * WEIGHTS.STAFF_QUALITY
+    );
+
+    // ── Grade ──
+    let grade: 'A' | 'B' | 'C' | 'D' | 'F';
+    if (accountabilityScore >= 85) grade = 'A';
+    else if (accountabilityScore >= 70) grade = 'B';
+    else if (accountabilityScore >= 55) grade = 'C';
+    else if (accountabilityScore >= 40) grade = 'D';
+    else grade = 'F';
+
+    return {
+      cooperative_id: parseInt(row.cooperative_id),
+      cooperative_name: row.cooperative_name,
+      registration_number: row.registration_number,
+      total_items_received: totalReceived,
+      total_items_returned: totalReturned,
+      total_claims_processed: totalClaims,
+      total_disputes: totalDisputes,
+      avg_return_hours: avgHours ? Math.round(avgHours) : null,
+      staff_count: parseInt(row.staff_count) || 0,
+      staff_trust_average: Math.round(staffTrustAvg * 10) / 10,
+      return_rate_score: Math.round(returnRateScore),
+      speed_score: Math.round(speedScore),
+      reliability_score: Math.round(reliabilityScore),
+      staff_quality_score: Math.round(staffQualityScore),
+      accountability_score: accountabilityScore,
+      accountability_grade: grade,
+      rank: 0, // Set after sorting
+      trend: 'STABLE' as const, // TODO: compute from historical data
+    };
+  });
+
+  // Sort by accountability score and assign ranks
+  cooperatives.sort((a, b) => b.accountability_score - a.accountability_score);
+  cooperatives.forEach((c, i) => { c.rank = i + 1; });
+
+  return cooperatives;
+}
+
+// ============================================
+// GET SINGLE COOPERATIVE ACCOUNTABILITY
+// ============================================
+
+export async function getCooperativeAccountability(
+  cooperativeId: number
+): Promise<CooperativeAccountability | null> {
+  const all = await computeCooperativeAccountability();
+  return all.find(c => c.cooperative_id === cooperativeId) || null;
+}
+
+// ============================================
+// SAFE HANDOVER LOCATIONS
+// ============================================
+
+export interface SafeHandoverPoint {
+  id: number;
+  name: string;
+  type: 'COOPERATIVE_OFFICE' | 'SECTOR_OFFICE' | 'POLICE_POST' | 'TRANSIT_HUB';
+  address: string;
+  area: string;
+  operating_hours: string;
+  safety_rating: number; // 1-5
+  latitude?: number;
+  longitude?: number;
+}
+
+/**
+ * NOVEL FEATURE: Structured handover location recommendations.
+ * Returns safe meeting points ranked by proximity to the item's location area.
+ * 
+ * Fills spec gap HAND-05 and Algorithm Spec 3.5.2.
+ */
+export const SAFE_HANDOVER_POINTS: SafeHandoverPoint[] = [
+  // Cooperative offices
+  { id: 1, name: 'RFTC Nyabugogo Office', type: 'COOPERATIVE_OFFICE', address: 'Nyabugogo Bus Terminal', area: 'Nyabugogo', operating_hours: '06:00-20:00', safety_rating: 5 },
+  { id: 2, name: 'Kigali Bus Services Kimironko', type: 'COOPERATIVE_OFFICE', address: 'Kimironko Bus Stop', area: 'Kimironko', operating_hours: '06:00-20:00', safety_rating: 5 },
+  { id: 3, name: 'Royal Express Remera', type: 'COOPERATIVE_OFFICE', address: 'Remera Bus Station', area: 'Remera', operating_hours: '06:00-19:00', safety_rating: 4 },
+  { id: 4, name: 'Volcano Express Downtown', type: 'COOPERATIVE_OFFICE', address: 'KN 4 Ave, City Center', area: 'Nyarugenge', operating_hours: '07:00-18:00', safety_rating: 5 },
+  
+  // Sector offices
+  { id: 10, name: 'Kimironko Sector Office', type: 'SECTOR_OFFICE', address: 'Kimironko, Gasabo District', area: 'Kimironko', operating_hours: '07:00-17:00 Mon-Fri', safety_rating: 5 },
+  { id: 11, name: 'Remera Sector Office', type: 'SECTOR_OFFICE', address: 'Remera, Gasabo District', area: 'Remera', operating_hours: '07:00-17:00 Mon-Fri', safety_rating: 5 },
+  { id: 12, name: 'Nyamirambo Sector Office', type: 'SECTOR_OFFICE', address: 'Nyamirambo, Nyarugenge District', area: 'Nyamirambo', operating_hours: '07:00-17:00 Mon-Fri', safety_rating: 5 },
+  { id: 13, name: 'Kicukiro Sector Office', type: 'SECTOR_OFFICE', address: 'Kicukiro Center', area: 'Kicukiro', operating_hours: '07:00-17:00 Mon-Fri', safety_rating: 5 },
+  
+  // Police posts
+  { id: 20, name: 'Remera Police Station', type: 'POLICE_POST', address: 'KG 11 Ave, Remera', area: 'Remera', operating_hours: '24/7', safety_rating: 5 },
+  { id: 21, name: 'Kacyiru Police Station', type: 'POLICE_POST', address: 'Kacyiru, Gasabo District', area: 'Kacyiru', operating_hours: '24/7', safety_rating: 5 },
+  { id: 22, name: 'Nyarugenge Police Station', type: 'POLICE_POST', address: 'City Center', area: 'Nyarugenge', operating_hours: '24/7', safety_rating: 5 },
+  
+  // Transit hubs
+  { id: 30, name: 'Nyabugogo Bus Terminal', type: 'TRANSIT_HUB', address: 'Nyabugogo Main Terminal', area: 'Nyabugogo', operating_hours: '05:00-21:00', safety_rating: 4 },
+  { id: 31, name: 'Kigali Bus Terminal (Downtown)', type: 'TRANSIT_HUB', address: 'KN 2 Ave, Nyarugenge', area: 'Nyarugenge', operating_hours: '05:30-20:30', safety_rating: 4 },
+  { id: 32, name: 'Kimironko Market Area', type: 'TRANSIT_HUB', address: 'Kimironko Commercial Center', area: 'Kimironko', operating_hours: '06:00-19:00', safety_rating: 3 },
+];
+
+export function recommendHandoverLocations(
+  itemLocationArea: string,
+  itemCategory: string
+): SafeHandoverPoint[] {
+  const areaLower = itemLocationArea.toLowerCase();
+  
+  // Score each location by proximity and appropriateness
+  const scored = SAFE_HANDOVER_POINTS.map(point => {
+    let score = 0;
+    
+    // Same area = highest score
+    if (point.area.toLowerCase() === areaLower) score += 10;
+    // Same district area
+    else if (isAdjacent(point.area, itemLocationArea)) score += 5;
+    
+    // For sensitive items (ID, WALLET, PHONE), prefer official locations
+    if (['ID', 'WALLET', 'PHONE'].includes(itemCategory)) {
+      if (point.type === 'COOPERATIVE_OFFICE' || point.type === 'SECTOR_OFFICE') score += 3;
+      if (point.type === 'POLICE_POST') score += 2;
+    }
+    
+    // Safety rating bonus
+    score += point.safety_rating;
+    
+    return { ...point, _score: score };
+  });
+
+  // Sort by score descending, return top 5
+  scored.sort((a, b) => b._score - a._score);
+  return scored.slice(0, 5).map(({ _score, ...point }) => point);
+}
+
+function isAdjacent(area1: string, area2: string): boolean {
+  const adjacency: Record<string, string[]> = {
+    'nyabugogo': ['nyarugenge', 'gitega', 'muhima'],
+    'kimironko': ['remera', 'kibagabaga', 'gisozi'],
+    'remera': ['kimironko', 'kacyiru', 'gisozi'],
+    'kacyiru': ['remera', 'kimihurura', 'nyarutarama'],
+    'nyamirambo': ['nyarugenge', 'biryogo', 'rwezamenyo'],
+    'kicukiro': ['gatenga', 'gikondo', 'kanombe'],
+    'nyarugenge': ['nyabugogo', 'nyamirambo', 'muhima', 'kacyiru'],
+  };
+  const a1 = area1.toLowerCase();
+  const a2 = area2.toLowerCase();
+  return adjacency[a1]?.includes(a2) || adjacency[a2]?.includes(a1) || false;
+}
 
 
 ┌────────────────────────────────────────────────────────────┐
@@ -9294,6 +9900,426 @@ export default {
 
 
 ┌────────────────────────────────────────────────────────────┐
+│ FILE: src/services/fraudDetectionService.ts
+│ Language: TypeScript | Lines: 413 | Size: 14.7 KB
+└────────────────────────────────────────────────────────────┘
+
+import { query } from '../config/database';
+import { logAudit } from './auditService';
+
+/**
+ * ============================================
+ * BEHAVIORAL FRAUD FINGERPRINTING ENGINE
+ * ============================================
+ * 
+ * NOVEL FEATURE: No existing lost-and-found platform implements
+ * multi-factor behavioral fraud scoring. This applies financial-grade
+ * transaction monitoring patterns to a lost-and-found context.
+ * 
+ * Implements Algorithm Spec section 3.4 (was 100% missing from codebase).
+ * 
+ * 6-Factor Risk Scoring:
+ *   Factor 1: Account age (newer = riskier)
+ *   Factor 2: Verification status (unverified = riskier)
+ *   Factor 3: Recent failed claims (pattern of suspicious behavior)
+ *   Factor 4: IP/device anomalies (new device/IP = riskier)
+ *   Factor 5: Behavioral velocity (too many actions too fast)
+ *   Factor 6: Trust score trajectory (declining = riskier)
+ */
+
+// ============================================
+// TYPES
+// ============================================
+
+export type RiskLevel = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+
+export interface FraudRiskAssessment {
+  score: number;           // 0-100
+  level: RiskLevel;
+  factors: string[];
+  requires_review: boolean;
+  should_block: boolean;
+  recommendation: string;
+}
+
+export type ActionType = 
+  | 'CLAIM_CREATE'
+  | 'CLAIM_VERIFY' 
+  | 'REPORT_CREATE'
+  | 'MESSAGE_SEND'
+  | 'HANDOVER_OTP';
+
+interface ActionContext {
+  user_id: number;
+  ip_address?: string;
+  user_agent?: string;
+  target_id?: number;   // item or claim ID
+}
+
+// ============================================
+// DETECTION RULES (from Algorithm Spec 3.4.1)
+// ============================================
+
+const THRESHOLDS = {
+  // Risk score thresholds
+  BLOCK: 70,              // Auto-block the action
+  REVIEW: 40,             // Flag for admin review
+  
+  // Behavioral velocity
+  CLAIMS_PER_HOUR_LIMIT: 5,
+  REPORTS_PER_DAY_LIMIT: 10,
+  MESSAGES_PER_HOUR_LIMIT: 50,
+  ACTIONS_PER_HOUR_LIMIT: 30,
+  
+  // Account age risk windows (days)
+  VERY_NEW_ACCOUNT: 1,
+  NEW_ACCOUNT: 7,
+  
+  // Failure pattern thresholds
+  FAILED_CLAIMS_24H_ALERT: 3,
+  FAILED_CLAIMS_CROSS_ITEM_ALERT: 5,
+};
+
+// ============================================
+// CORE FRAUD RISK CALCULATOR
+// ============================================
+
+export async function calculateFraudRisk(
+  actionType: ActionType,
+  context: ActionContext
+): Promise<FraudRiskAssessment> {
+  let riskScore = 0;
+  const factors: string[] = [];
+
+  try {
+    // ────────────────────────────────────
+    // FACTOR 1: Account Age
+    // ────────────────────────────────────
+    const ageResult = await query(
+      `SELECT EXTRACT(EPOCH FROM (NOW() - created_at)) / 86400 as age_days
+       FROM users WHERE id = $1`,
+      [context.user_id]
+    );
+    
+    if (ageResult.rows.length > 0) {
+      const ageDays = parseFloat(ageResult.rows[0].age_days);
+      if (ageDays < THRESHOLDS.VERY_NEW_ACCOUNT) {
+        riskScore += 20;
+        factors.push(`Very new account (${Math.round(ageDays * 24)}h old): +20`);
+      } else if (ageDays < THRESHOLDS.NEW_ACCOUNT) {
+        riskScore += 10;
+        factors.push(`New account (${Math.round(ageDays)}d old): +10`);
+      }
+    }
+
+    // ────────────────────────────────────
+    // FACTOR 2: Verification Status
+    // ────────────────────────────────────
+    const verifyResult = await query(
+      `SELECT email_verified, phone_verified FROM users WHERE id = $1`,
+      [context.user_id]
+    );
+    
+    if (verifyResult.rows.length > 0) {
+      const user = verifyResult.rows[0];
+      if (!user.email_verified && !user.phone_verified) {
+        riskScore += 15;
+        factors.push('No email or phone verified: +15');
+      } else if (!user.phone_verified) {
+        riskScore += 5;
+        factors.push('Phone not verified: +5');
+      }
+    }
+
+    // ────────────────────────────────────
+    // FACTOR 3: Recent Failed Claims
+    // ────────────────────────────────────
+    const failedResult = await query(
+      `SELECT 
+         COUNT(*) FILTER (WHERE attempt_status = 'FAILED' AND attempt_at > NOW() - INTERVAL '24 hours') as failed_24h,
+         COUNT(DISTINCT claim_id) FILTER (WHERE attempt_status = 'FAILED' AND attempt_at > NOW() - INTERVAL '7 days') as failed_items_7d
+       FROM verification_attempts va
+       JOIN claims c ON va.claim_id = c.id
+       WHERE c.claimant_id = $1`,
+      [context.user_id]
+    );
+    
+    if (failedResult.rows.length > 0) {
+      const failed24h = parseInt(failedResult.rows[0].failed_24h) || 0;
+      const failedItems7d = parseInt(failedResult.rows[0].failed_items_7d) || 0;
+      
+      // Failed claims in last 24h
+      if (failed24h > 0) {
+        const failScore = Math.min(failed24h * 10, 30);
+        riskScore += failScore;
+        factors.push(`${failed24h} failed verification(s) in 24h: +${failScore}`);
+      }
+      
+      // Claim spraying: failed on multiple DIFFERENT items (Algorithm Spec 3.4.1)
+      if (failedItems7d >= THRESHOLDS.FAILED_CLAIMS_CROSS_ITEM_ALERT) {
+        riskScore += 25;
+        factors.push(`Claim spraying: failed on ${failedItems7d} different items in 7d: +25`);
+      }
+    }
+
+    // ────────────────────────────────────
+    // FACTOR 4: IP Anomalies
+    // ────────────────────────────────────
+    if (context.ip_address) {
+      // Check if this IP was used by other accounts recently
+      const ipResult = await query(
+        `SELECT COUNT(DISTINCT actor_id) as unique_users
+         FROM audit_logs
+         WHERE ip_address = $1
+         AND timestamp > NOW() - INTERVAL '24 hours'
+         AND actor_id != $2`,
+        [context.ip_address, context.user_id]
+      );
+      
+      const otherUsersOnIP = parseInt(ipResult.rows[0]?.unique_users) || 0;
+      if (otherUsersOnIP >= 3) {
+        riskScore += 15;
+        factors.push(`IP shared with ${otherUsersOnIP} other accounts in 24h: +15`);
+      } else if (otherUsersOnIP >= 1) {
+        riskScore += 5;
+        factors.push(`IP shared with ${otherUsersOnIP} other account(s): +5`);
+      }
+      
+      // Check if this is a new IP for this user
+      const knownIPResult = await query(
+        `SELECT COUNT(*) as count FROM audit_logs
+         WHERE actor_id = $1 AND ip_address = $2
+         AND timestamp < NOW() - INTERVAL '1 hour'`,
+        [context.user_id, context.ip_address]
+      );
+      
+      if (parseInt(knownIPResult.rows[0]?.count) === 0) {
+        riskScore += 5;
+        factors.push('First time using this IP address: +5');
+      }
+    }
+
+    // ────────────────────────────────────
+    // FACTOR 5: Behavioral Velocity
+    // ────────────────────────────────────
+    const velocityResult = await query(
+      `SELECT 
+         COUNT(*) FILTER (WHERE action IN ('CREATE') AND resource_type = 'claim' AND timestamp > NOW() - INTERVAL '1 hour') as claims_1h,
+         COUNT(*) FILTER (WHERE action = 'CREATE' AND resource_type IN ('lost_item', 'found_item') AND timestamp > NOW() - INTERVAL '24 hours') as reports_24h,
+         COUNT(*) FILTER (WHERE timestamp > NOW() - INTERVAL '1 hour') as all_actions_1h
+       FROM audit_logs
+       WHERE actor_id = $1`,
+      [context.user_id]
+    );
+    
+    if (velocityResult.rows.length > 0) {
+      const v = velocityResult.rows[0];
+      const claims1h = parseInt(v.claims_1h) || 0;
+      const reports24h = parseInt(v.reports_24h) || 0;
+      const allActions1h = parseInt(v.all_actions_1h) || 0;
+      
+      if (claims1h >= THRESHOLDS.CLAIMS_PER_HOUR_LIMIT) {
+        riskScore += 25;
+        factors.push(`Claim velocity: ${claims1h} claims in 1 hour: +25`);
+      }
+      
+      if (reports24h >= THRESHOLDS.REPORTS_PER_DAY_LIMIT) {
+        riskScore += 20;
+        factors.push(`Report flooding: ${reports24h} reports in 24h: +20`);
+      }
+      
+      if (allActions1h >= THRESHOLDS.ACTIONS_PER_HOUR_LIMIT) {
+        riskScore += 15;
+        factors.push(`High activity velocity: ${allActions1h} actions/hour: +15`);
+      }
+    }
+
+    // ────────────────────────────────────
+    // FACTOR 6: Trust Score
+    // ────────────────────────────────────
+    const trustResult = await query(
+      `SELECT trust_score FROM users WHERE id = $1`,
+      [context.user_id]
+    );
+    
+    if (trustResult.rows.length > 0) {
+      const trustScore = parseInt(trustResult.rows[0].trust_score) || 0;
+      if (trustScore < -10) {
+        riskScore += 20;
+        factors.push(`Very low trust score (${trustScore}): +20`);
+      } else if (trustScore < 0) {
+        const penalty = Math.abs(trustScore) * 2;
+        riskScore += Math.min(penalty, 15);
+        factors.push(`Negative trust (${trustScore}): +${Math.min(penalty, 15)}`);
+      }
+    }
+
+  } catch (error) {
+    console.error('Fraud risk calculation error:', error);
+    // On error, don't block - return low risk
+    return {
+      score: 0,
+      level: 'LOW',
+      factors: ['Risk calculation error - defaulting to LOW'],
+      requires_review: false,
+      should_block: false,
+      recommendation: 'Proceed (calculation error)'
+    };
+  }
+
+  // ────────────────────────────────────
+  // DETERMINE RISK LEVEL
+  // ────────────────────────────────────
+  const cappedScore = Math.min(riskScore, 100);
+  let level: RiskLevel;
+  let should_block = false;
+  let recommendation = '';
+
+  if (cappedScore >= THRESHOLDS.BLOCK) {
+    level = 'CRITICAL';
+    should_block = true;
+    recommendation = 'Block action and notify admin';
+  } else if (cappedScore >= THRESHOLDS.REVIEW) {
+    level = 'HIGH';
+    should_block = false;
+    recommendation = 'Allow but flag for admin review';
+  } else if (cappedScore >= 20) {
+    level = 'MEDIUM';
+    should_block = false;
+    recommendation = 'Allow with enhanced monitoring';
+  } else {
+    level = 'LOW';
+    should_block = false;
+    recommendation = 'Proceed normally';
+  }
+
+  const assessment: FraudRiskAssessment = {
+    score: cappedScore,
+    level,
+    factors,
+    requires_review: level === 'HIGH' || level === 'CRITICAL',
+    should_block,
+    recommendation
+  };
+
+  // Log the assessment for audit trail
+  if (level !== 'LOW') {
+    await logFraudAssessment(context.user_id, actionType, assessment, context.ip_address);
+  }
+
+  return assessment;
+}
+
+// ============================================
+// FRAUD ASSESSMENT LOGGING
+// ============================================
+
+async function logFraudAssessment(
+  userId: number,
+  actionType: ActionType,
+  assessment: FraudRiskAssessment,
+  ipAddress?: string
+): Promise<void> {
+  try {
+    await logAudit({
+      actorId: userId,
+      action: 'FRAUD_RISK_ASSESSED',
+      resourceType: 'fraud_detection',
+      resourceId: userId,
+      changes: {
+        action_type: actionType,
+        risk_score: assessment.score,
+        risk_level: assessment.level,
+        factors: assessment.factors,
+        blocked: assessment.should_block,
+        recommendation: assessment.recommendation
+      },
+      ipAddress: ipAddress || 'unknown',
+      userAgent: ''
+    });
+  } catch (error) {
+    console.error('Failed to log fraud assessment:', error);
+  }
+}
+
+// ============================================
+// EXPRESS MIDDLEWARE
+// ============================================
+
+import { Request, Response, NextFunction } from 'express';
+
+/**
+ * Middleware factory that checks fraud risk before allowing an action.
+ * Usage: router.post('/claims', fraudCheck('CLAIM_CREATE'), createClaim);
+ */
+export function fraudCheck(actionType: ActionType) {
+  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    if (!req.user) {
+      next();
+      return;
+    }
+
+    const context: ActionContext = {
+      user_id: req.user.userId,
+      ip_address: req.ip || req.socket?.remoteAddress,
+      user_agent: req.get('User-Agent'),
+      target_id: parseInt(req.params.id || req.params.claimId) || undefined
+    };
+
+    try {
+      const assessment = await calculateFraudRisk(actionType, context);
+
+      // Attach to request for downstream use
+      (req as any).fraudAssessment = assessment;
+
+      if (assessment.should_block) {
+        res.status(403).json({
+          success: false,
+          message: 'This action has been temporarily blocked due to unusual activity. Please try again later or contact support.',
+          risk_level: assessment.level
+        });
+        return;
+      }
+
+      next();
+    } catch (error) {
+      // On error, don't block legitimate users
+      console.error('Fraud check middleware error:', error);
+      next();
+    }
+  };
+}
+
+// ============================================
+// ADMIN: GET FLAGGED USERS
+// ============================================
+
+export async function getFlaggedUsers(): Promise<any[]> {
+  const result = await query(
+    `SELECT 
+       u.id, u.name, u.email, u.trust_score, u.created_at,
+       COUNT(DISTINCT al.id) FILTER (WHERE al.action = 'FRAUD_RISK_ASSESSED' 
+         AND (al.changes->>'risk_level')::text IN ('HIGH', 'CRITICAL')
+         AND al.timestamp > NOW() - INTERVAL '7 days') as high_risk_events,
+       COUNT(DISTINCT va.id) FILTER (WHERE va.attempt_status = 'FAILED' 
+         AND va.attempt_at > NOW() - INTERVAL '7 days') as failed_verifications_7d
+     FROM users u
+     LEFT JOIN audit_logs al ON al.actor_id = u.id
+     LEFT JOIN claims c ON c.claimant_id = u.id
+     LEFT JOIN verification_attempts va ON va.claim_id = c.id
+     GROUP BY u.id
+     HAVING COUNT(DISTINCT al.id) FILTER (WHERE al.action = 'FRAUD_RISK_ASSESSED' 
+       AND (al.changes->>'risk_level')::text IN ('HIGH', 'CRITICAL')
+       AND al.timestamp > NOW() - INTERVAL '7 days') > 0
+     ORDER BY high_risk_events DESC
+     LIMIT 50`,
+    []
+  );
+  return result.rows;
+}
+
+
+┌────────────────────────────────────────────────────────────┐
 │ FILE: src/services/matchingService.ts
 │ Language: TypeScript | Lines: 306 | Size: 9.2 KB
 └────────────────────────────────────────────────────────────┘
@@ -9985,6 +11011,274 @@ export async function regenerateOTP(
 
 
 ┌────────────────────────────────────────────────────────────┐
+│ FILE: src/services/sensitiveRedactionService.ts
+│ Language: TypeScript | Lines: 261 | Size: 8.3 KB
+└────────────────────────────────────────────────────────────┘
+
+/**
+ * ============================================
+ * PRIVACY-PRESERVING SENSITIVE ITEM REDACTION
+ * ============================================
+ * 
+ * NOVEL FEATURE: Intelligent content-level redaction that detects and
+ * masks specific sensitive patterns (Rwanda national ID numbers, phone 
+ * numbers, IMEI numbers, bank account numbers) in descriptions while 
+ * keeping the rest of the content visible.
+ * 
+ * Unlike crude show/hide toggles, this provides surgical, pattern-aware
+ * redaction specific to Rwandan document formats.
+ * 
+ * Fills spec gap THREAT-7.4 (Privacy leak prevention).
+ */
+
+// ============================================
+// TYPES
+// ============================================
+
+export interface RedactionResult {
+  redacted_text: string;
+  redactions_applied: RedactionMatch[];
+  sensitivity_level: 'NONE' | 'LOW' | 'MEDIUM' | 'HIGH';
+}
+
+export interface RedactionMatch {
+  pattern_type: string;
+  original_length: number;
+  position: number;
+  reason: string;
+}
+
+// ============================================
+// RWANDA-SPECIFIC SENSITIVE PATTERNS
+// ============================================
+
+const PATTERNS: Array<{
+  name: string;
+  regex: RegExp;
+  reason: string;
+  sensitivity: 'LOW' | 'MEDIUM' | 'HIGH';
+  mask: (match: string) => string;
+}> = [
+  {
+    // Rwanda National ID: 16 digits starting with 1
+    // Format: 1 YYYY MM DD X XXXXX XX (e.g., 1199880012345678)
+    name: 'RWANDA_NATIONAL_ID',
+    regex: /\b(1[12]\d{14})\b/g,
+    reason: 'Rwanda national ID number detected',
+    sensitivity: 'HIGH',
+    mask: (m) => m[0] + '*'.repeat(m.length - 2) + m[m.length - 1],
+  },
+  {
+    // Rwanda phone numbers: +250 7XX XXX XXX or 07XX XXX XXX
+    name: 'PHONE_NUMBER_RW',
+    regex: /(\+?250\s?|0)([7]\d{2}[\s.-]?\d{3}[\s.-]?\d{3})\b/g,
+    reason: 'Phone number detected - hidden for privacy',
+    sensitivity: 'MEDIUM',
+    mask: (m) => {
+      const digits = m.replace(/\D/g, '');
+      return digits.slice(0, 4) + '***' + digits.slice(-2);
+    },
+  },
+  {
+    // IMEI numbers: 15 digits
+    name: 'IMEI_NUMBER',
+    regex: /(?<!\d)(\d{15})(?!\d)/g,
+    reason: 'Possible IMEI number detected',
+    sensitivity: 'HIGH',
+    mask: (m) => m.slice(0, 4) + '***********',
+  },
+  {
+    // Bank account numbers: 10-16 digit sequences with common prefixes
+    name: 'BANK_ACCOUNT',
+    regex: /(?<!\d)(\d{10,13})(?!\d)/g,
+    reason: 'Possible bank/account number detected',
+    sensitivity: 'HIGH',
+    mask: (m) => m.slice(0, 2) + '*'.repeat(m.length - 4) + m.slice(-2),
+  },
+  {
+    // Email addresses
+    name: 'EMAIL',
+    regex: /\b([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})\b/g,
+    reason: 'Email address detected',
+    sensitivity: 'MEDIUM',
+    mask: (m) => {
+      const [local, domain] = m.split('@');
+      return local[0] + '***@' + domain;
+    },
+  },
+  {
+    // Rwanda driver license pattern
+    name: 'DRIVER_LICENSE_RW',
+    regex: /\b(DL[-\s]?\d{6,8})\b/gi,
+    reason: 'Possible driver license number detected',
+    sensitivity: 'HIGH',
+    mask: (m) => m.slice(0, 3) + '****',
+  },
+  {
+    // Passport numbers (common format: 2 letters + 7 digits)
+    name: 'PASSPORT',
+    regex: /\b([A-Z]{2}\d{7})\b/g,
+    reason: 'Possible passport number detected',
+    sensitivity: 'HIGH',
+    mask: (m) => m.slice(0, 2) + '*****' + m.slice(-2),
+  },
+];
+
+// ============================================
+// CORE REDACTION FUNCTION
+// ============================================
+
+/**
+ * Redact sensitive information from text.
+ * 
+ * @param text - The text to redact
+ * @param category - Item category (ID/WALLET get stricter redaction)
+ * @param isOwner - If true, skip redaction (owner can see their own data)
+ * @returns RedactionResult with masked text and metadata
+ */
+export function redactSensitiveContent(
+  text: string,
+  category?: string,
+  isOwner: boolean = false
+): RedactionResult {
+  // Owner always sees full text
+  if (isOwner) {
+    return {
+      redacted_text: text,
+      redactions_applied: [],
+      sensitivity_level: 'NONE'
+    };
+  }
+
+  let redactedText = text;
+  const redactions: RedactionMatch[] = [];
+  let highestSensitivity: 'NONE' | 'LOW' | 'MEDIUM' | 'HIGH' = 'NONE';
+
+  // Apply patterns
+  for (const pattern of PATTERNS) {
+    // For non-ID/WALLET categories, skip bank account pattern (too many false positives)
+    if (pattern.name === 'BANK_ACCOUNT' && !['ID', 'WALLET'].includes(category || '')) {
+      continue;
+    }
+
+    let match;
+    const regex = new RegExp(pattern.regex.source, pattern.regex.flags);
+    
+    while ((match = regex.exec(text)) !== null) {
+      const original = match[0];
+      const masked = pattern.mask(original);
+      
+      // Only redact if the mask actually changes something
+      if (masked !== original) {
+        redactedText = redactedText.replace(original, masked);
+        redactions.push({
+          pattern_type: pattern.name,
+          original_length: original.length,
+          position: match.index,
+          reason: pattern.reason
+        });
+
+        // Track highest sensitivity
+        const levels = { NONE: 0, LOW: 1, MEDIUM: 2, HIGH: 3 };
+        if (levels[pattern.sensitivity] > levels[highestSensitivity]) {
+          highestSensitivity = pattern.sensitivity;
+        }
+      }
+    }
+  }
+
+  // For ID/WALLET categories, apply extra strictness
+  if (['ID', 'WALLET'].includes(category || '') && highestSensitivity === 'NONE') {
+    // Even if no patterns matched, truncate long descriptions for sensitive categories
+    if (text.length > 200) {
+      redactedText = text.substring(0, 200) + '... [Full details visible after verification]';
+      highestSensitivity = 'LOW';
+    }
+  }
+
+  return {
+    redacted_text: redactedText,
+    redactions_applied: redactions,
+    sensitivity_level: highestSensitivity
+  };
+}
+
+// ============================================
+// EXPRESS MIDDLEWARE
+// ============================================
+
+import { Request, Response, NextFunction } from 'express';
+
+/**
+ * Middleware that automatically redacts sensitive content in item responses.
+ * Attach after the main handler has set res.locals.itemData.
+ * 
+ * Usage in routes:
+ *   router.get('/found-items/:id', getFoundItem, redactItemMiddleware);
+ * 
+ * Or call directly in controller:
+ *   const result = redactSensitiveContent(item.description, item.category, isOwner);
+ */
+export function redactItemResponse(isOwnerCheck: (req: Request, itemData: any) => boolean) {
+  return (req: Request, res: Response, next: NextFunction): void => {
+    // Hook into res.json to intercept the response
+    const originalJson = res.json.bind(res);
+    
+    res.json = (body: any) => {
+      if (body?.success && body?.data) {
+        const item = body.data;
+        const isOwner = isOwnerCheck(req, item);
+
+        // Redact description
+        if (item.description) {
+          const descResult = redactSensitiveContent(item.description, item.category, isOwner);
+          item.description = descResult.redacted_text;
+          if (descResult.redactions_applied.length > 0) {
+            item._privacy_notice = 'Some sensitive information has been redacted for privacy protection.';
+            item._redaction_count = descResult.redactions_applied.length;
+          }
+        }
+
+        // Redact title too
+        if (item.title) {
+          const titleResult = redactSensitiveContent(item.title, item.category, isOwner);
+          item.title = titleResult.redacted_text;
+        }
+
+        body.data = item;
+      }
+      return originalJson(body);
+    };
+
+    next();
+  };
+}
+
+// ============================================
+// BATCH REDACTION (for list endpoints)
+// ============================================
+
+export function redactItemList(
+  items: any[],
+  userId?: number
+): any[] {
+  return items.map(item => {
+    const isOwner = userId !== undefined && (item.user_id === userId || item.finder_id === userId);
+    
+    if (item.description) {
+      const result = redactSensitiveContent(item.description, item.category, isOwner);
+      item.description = result.redacted_text;
+    }
+    if (item.title) {
+      const result = redactSensitiveContent(item.title, item.category, isOwner);
+      item.title = result.redacted_text;
+    }
+    return item;
+  });
+}
+
+
+┌────────────────────────────────────────────────────────────┐
 │ FILE: src/services/trustService.ts
 │ Language: TypeScript | Lines: 287 | Size: 6.7 KB
 └────────────────────────────────────────────────────────────┘
@@ -10619,6 +11913,324 @@ export async function checkSuspiciousPatterns(userId: number): Promise<{
 
 
 ┌────────────────────────────────────────────────────────────┐
+│ FILE: src/services/verificationStrengthService.ts
+│ Language: TypeScript | Lines: 311 | Size: 13.2 KB
+└────────────────────────────────────────────────────────────┘
+
+/**
+ * ============================================
+ * VERIFICATION STRENGTH ANALYZER
+ * ============================================
+ * 
+ * NOVEL FEATURE: No lost-and-found platform analyzes the QUALITY of
+ * verification questions. This service scores questions on specificity,
+ * guessability, and redundancy, then gives users actionable feedback.
+ * 
+ * Also provides category-specific question templates as defined in
+ * Algorithm Spec section 3.2.2 (was missing from codebase).
+ */
+
+// ============================================
+// TYPES
+// ============================================
+
+export type StrengthLevel = 'WEAK' | 'MODERATE' | 'STRONG';
+
+export interface QuestionAnalysis {
+  question_index: number;
+  strength: StrengthLevel;
+  score: number;       // 0-100
+  issues: string[];
+  suggestions: string[];
+}
+
+export interface VerificationStrengthResult {
+  overall_strength: StrengthLevel;
+  overall_score: number;        // 0-100
+  questions: QuestionAnalysis[];
+  redundancy_warning: boolean;
+  improvement_tips: string[];
+}
+
+export interface QuestionTemplate {
+  category: string;
+  question: string;
+  why_effective: string;
+}
+
+// ============================================
+// CATEGORY-SPECIFIC TEMPLATES (from Algo Spec 3.2.2)
+// ============================================
+
+export const QUESTION_TEMPLATES: Record<string, QuestionTemplate[]> = {
+  PHONE: [
+    { category: 'PHONE', question: 'What is your lockscreen wallpaper?', why_effective: 'Only the owner would know this - it cannot be guessed from the phone exterior.' },
+    { category: 'PHONE', question: 'What color/design is the phone case?', why_effective: 'Specific physical detail that requires having seen the phone.' },
+    { category: 'PHONE', question: 'What are the last 4 digits of the IMEI number?', why_effective: 'Unique identifier that only the owner would have recorded.' },
+    { category: 'PHONE', question: 'Name one specific app on the home screen', why_effective: 'Personal customization that is unique to each user.' },
+    { category: 'PHONE', question: 'What is the phone ringtone or notification sound?', why_effective: 'Personal setting that distinguishes one phone from others.' },
+  ],
+  ID: [
+    { category: 'ID', question: 'What are the last 3 characters of the ID number?', why_effective: 'Partial identifier that the owner would know.' },
+    { category: 'ID', question: 'What are the name initials on the document?', why_effective: 'Verifies the document belongs to the claimant.' },
+    { category: 'ID', question: 'Which district issued the document?', why_effective: 'Administrative detail that only the holder would know.' },
+    { category: 'ID', question: 'What year was the document issued?', why_effective: 'Temporal detail specific to this particular document.' },
+  ],
+  WALLET: [
+    { category: 'WALLET', question: 'How many cards are inside the wallet?', why_effective: 'Specific content count that requires having owned the wallet.' },
+    { category: 'WALLET', question: 'Name one specific card (bank/ID/other) inside', why_effective: 'Identifies specific contents only the owner would know.' },
+    { category: 'WALLET', question: 'Approximately how much cash was inside (in RWF)?', why_effective: 'Content detail that is hard to guess correctly.' },
+    { category: 'WALLET', question: 'Are there any photos inside? If yes, describe one.', why_effective: 'Personal content that uniquely identifies the wallet.' },
+    { category: 'WALLET', question: 'What color is the wallet interior?', why_effective: 'Physical detail only visible when the wallet is open.' },
+  ],
+  BAG: [
+    { category: 'BAG', question: 'Describe any distinctive marks, stickers, or damage', why_effective: 'Unique physical features that identify this specific bag.' },
+    { category: 'BAG', question: 'What brand is the bag?', why_effective: 'Manufacturer detail that narrows identification.' },
+    { category: 'BAG', question: 'How many compartments does it have?', why_effective: 'Structural detail requiring familiarity with the bag.' },
+    { category: 'BAG', question: 'Name one specific item that was inside', why_effective: 'Contents knowledge only the owner would have.' },
+  ],
+  KEYS: [
+    { category: 'KEYS', question: 'How many keys are on the keyring?', why_effective: 'Specific count that the owner would know.' },
+    { category: 'KEYS', question: 'Describe the keychain or any attachment', why_effective: 'Decorative details unique to this key set.' },
+    { category: 'KEYS', question: 'Are there any distinctive or unusual key shapes?', why_effective: 'Physical detail that distinguishes these keys.' },
+  ],
+  OTHER: [
+    { category: 'OTHER', question: 'Describe a specific unique mark or feature on the item', why_effective: 'Physical uniqueness proves familiarity.' },
+    { category: 'OTHER', question: 'What was the item being used for when last seen?', why_effective: 'Contextual detail only the owner would know.' },
+    { category: 'OTHER', question: 'Where exactly was the item stored or placed before loss?', why_effective: 'Specific location knowledge proves ownership.' },
+  ],
+};
+
+// ============================================
+// WEAK QUESTION PATTERNS
+// ============================================
+
+const GENERIC_PATTERNS = [
+  /^what colou?r/i,
+  /^what is the colou?r/i,
+  /^is it (a |my )?/i,
+  /^what brand/i,
+  /^where did/i,
+  /^when did/i,
+  /^how old/i,
+];
+
+const TOO_SHORT_THRESHOLD = 15;   // Characters
+const TOO_VAGUE_WORDS = ['thing', 'stuff', 'something', 'item', 'object', 'it'];
+const YES_NO_PATTERNS = [/^is /i, /^are /i, /^was /i, /^were /i, /^do /i, /^does /i, /^did /i, /^can /i, /^has /i, /^have /i];
+
+// ============================================
+// CORE ANALYSIS FUNCTION
+// ============================================
+
+export function analyzeVerificationStrength(
+  questions: string[],
+  answers: string[],
+  itemCategory: string,
+  itemDescription: string
+): VerificationStrengthResult {
+  const questionAnalyses: QuestionAnalysis[] = [];
+
+  // Analyze each question individually
+  for (let i = 0; i < questions.length; i++) {
+    const q = questions[i] || '';
+    const a = answers[i] || '';
+    questionAnalyses.push(analyzeQuestion(q, a, itemDescription, i));
+  }
+
+  // Check for redundancy (all questions asking about the same thing)
+  const redundancyWarning = checkRedundancy(questions);
+
+  // Calculate overall score
+  const avgScore = questionAnalyses.reduce((sum, qa) => sum + qa.score, 0) / questionAnalyses.length;
+  const redundancyPenalty = redundancyWarning ? 15 : 0;
+  const overallScore = Math.max(0, Math.round(avgScore - redundancyPenalty));
+
+  let overallStrength: StrengthLevel;
+  if (overallScore >= 70) overallStrength = 'STRONG';
+  else if (overallScore >= 40) overallStrength = 'MODERATE';
+  else overallStrength = 'WEAK';
+
+  // Generate tips
+  const tips: string[] = [];
+  if (overallStrength === 'WEAK') {
+    tips.push('Your verification questions may not protect your item. Consider using our suggested templates.');
+  }
+  if (redundancyWarning) {
+    tips.push('Your questions are too similar. Use different types of questions for better security.');
+  }
+  const weakQ = questionAnalyses.filter(qa => qa.strength === 'WEAK');
+  if (weakQ.length > 0) {
+    tips.push(`${weakQ.length} of your ${questions.length} questions are weak. Tap on each for improvement suggestions.`);
+  }
+
+  // Add category-specific tips
+  const templates = QUESTION_TEMPLATES[itemCategory] || QUESTION_TEMPLATES['OTHER'];
+  if (overallStrength !== 'STRONG') {
+    tips.push(`For ${itemCategory.toLowerCase()} items, try questions like: "${templates[0].question}"`);
+  }
+
+  return {
+    overall_strength: overallStrength,
+    overall_score: overallScore,
+    questions: questionAnalyses,
+    redundancy_warning: redundancyWarning,
+    improvement_tips: tips
+  };
+}
+
+// ============================================
+// INDIVIDUAL QUESTION ANALYSIS
+// ============================================
+
+function analyzeQuestion(
+  question: string,
+  answer: string,
+  itemDescription: string,
+  index: number
+): QuestionAnalysis {
+  let score = 50; // Start at middle
+  const issues: string[] = [];
+  const suggestions: string[] = [];
+
+  // ── Check 1: Question length (too short = vague) ──
+  if (question.length < TOO_SHORT_THRESHOLD) {
+    score -= 20;
+    issues.push('Question is too short and vague');
+    suggestions.push('Add more specific details to your question');
+  }
+
+  // ── Check 2: Yes/No questions (low entropy) ──
+  const isYesNo = YES_NO_PATTERNS.some(p => p.test(question));
+  if (isYesNo) {
+    score -= 25;
+    issues.push('Yes/no questions are easy to guess (50% chance)');
+    suggestions.push('Rephrase as an open-ended question (e.g., "What is..." or "Describe...")');
+  }
+
+  // ── Check 3: Generic patterns ──
+  const isGeneric = GENERIC_PATTERNS.some(p => p.test(question));
+  if (isGeneric) {
+    score -= 15;
+    issues.push('This is a very common question type that others might guess');
+    suggestions.push('Ask about something more specific and personal to the item');
+  }
+
+  // ── Check 4: Answer quality ──
+  if (answer.length <= 2) {
+    score -= 20;
+    issues.push('Answer is too short - easy to guess');
+    suggestions.push('Use a more detailed answer (at least 3 characters)');
+  } else if (answer.length <= 5) {
+    score -= 10;
+    issues.push('Short answers are easier to brute-force');
+  } else if (answer.length >= 10) {
+    score += 10; // Bonus for detailed answers
+  }
+
+  // ── Check 5: Answer in item description (guessable!) ──
+  const descLower = itemDescription.toLowerCase();
+  const ansLower = answer.toLowerCase().trim();
+  if (ansLower.length > 2 && descLower.includes(ansLower)) {
+    score -= 30;
+    issues.push('CRITICAL: Your answer appears in the item description! Anyone can see it.');
+    suggestions.push('Choose a secret that is NOT mentioned in your public item description');
+  }
+
+  // ── Check 6: Common/guessable answers ──
+  const commonAnswers = ['yes', 'no', 'black', 'white', 'red', 'blue', 'green', '1', '2', '3', 'none', 'n/a'];
+  if (commonAnswers.includes(ansLower)) {
+    score -= 15;
+    issues.push('This answer is very common and easy to guess');
+    suggestions.push('Use a more unique and specific answer');
+  }
+
+  // ── Check 7: Vague words ──
+  const hasVagueWords = TOO_VAGUE_WORDS.some(w => question.toLowerCase().includes(w));
+  if (hasVagueWords) {
+    score -= 10;
+    issues.push('Question uses vague words');
+    suggestions.push('Replace vague terms with specific details');
+  }
+
+  // ── Check 8: Good question patterns (bonus) ──
+  const specificPatterns = [/how many/i, /describe/i, /last \d/i, /name (one|a|the)/i, /specific/i, /exact/i];
+  const isSpecific = specificPatterns.some(p => p.test(question));
+  if (isSpecific) {
+    score += 15;
+  }
+
+  // Clamp score
+  score = Math.max(0, Math.min(100, score));
+
+  let strength: StrengthLevel;
+  if (score >= 65) strength = 'STRONG';
+  else if (score >= 35) strength = 'MODERATE';
+  else strength = 'WEAK';
+
+  return {
+    question_index: index,
+    strength,
+    score,
+    issues,
+    suggestions
+  };
+}
+
+// ============================================
+// REDUNDANCY CHECK
+// ============================================
+
+function checkRedundancy(questions: string[]): boolean {
+  if (questions.length < 2) return false;
+
+  // Spelling normalization (UK→US, common synonyms)
+  const NORMALIZE_MAP: Record<string, string> = {
+    'colour': 'color', 'colours': 'color', 'coloured': 'color', 'colored': 'color',
+    'grey': 'gray', 'favourite': 'favorite', 'centre': 'center',
+    'describe': 'detail', 'description': 'detail', 'explain': 'detail',
+  };
+
+  const normalizeWord = (w: string): string => NORMALIZE_MAP[w] || w;
+
+  // Extract key topic words from each question
+  const stopwords = new Set(['what', 'is', 'the', 'a', 'an', 'of', 'my', 'your', 'it', 'this', 'that', 'how', 'where', 'when', 'which', 'does', 'do', 'are', 'was', 'were', 'on', 'in', 'about', 'can', 'you', 'tell', 'me']);
+  
+  const topicSets = questions.map(q => {
+    const words = q.toLowerCase().replace(/[?.,!]/g, '').split(/\s+/)
+      .filter(w => !stopwords.has(w) && w.length > 2)
+      .map(normalizeWord);
+    return new Set(words);
+  });
+
+  // Check overlap between all pairs
+  let highOverlapCount = 0;
+  for (let i = 0; i < topicSets.length; i++) {
+    for (let j = i + 1; j < topicSets.length; j++) {
+      const intersection = [...topicSets[i]].filter(w => topicSets[j].has(w));
+      const minSize = Math.min(topicSets[i].size, topicSets[j].size);
+      if (minSize > 0 && intersection.length / minSize >= 0.5) {
+        highOverlapCount++;
+      }
+    }
+  }
+
+  // If most question pairs have high overlap, flag redundancy
+  const totalPairs = (questions.length * (questions.length - 1)) / 2;
+  return highOverlapCount / totalPairs >= 0.5;
+}
+
+// ============================================
+// API ENDPOINT HELPER
+// ============================================
+
+export function getTemplatesForCategory(category: string): QuestionTemplate[] {
+  return QUESTION_TEMPLATES[category.toUpperCase()] || QUESTION_TEMPLATES['OTHER'];
+}
+
+
+
+┌────────────────────────────────────────────────────────────┐
 │ FILE: src/types/index.ts
 │ Language: TypeScript | Lines: 380 | Size: 7.4 KB
 └────────────────────────────────────────────────────────────┘
@@ -11007,7 +12619,7 @@ export interface TrustScoreChange {
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: src/utils/index.ts
-│ Language: TypeScript | Lines: 364 | Size: 11.8 KB
+│ Language: TypeScript | Lines: 374 | Size: 12.0 KB
 └────────────────────────────────────────────────────────────┘
 
 import bcrypt from 'bcryptjs';
@@ -11132,7 +12744,7 @@ const STOPWORDS = new Set([
   'few', 'more', 'most', 'other', 'some', 'such', 'no', 'not', 'only', 'same', 'so',
   'than', 'too', 'very', 'just', 'also', 'now', 'here', 'there', 'then', 'once',
   'with', 'about', 'after', 'before', 'above', 'below', 'between', 'into', 'through',
-  'during', 'under', 'again', 'further', 'while', 'lost', 'found', 'item', 'phone',
+  'during', 'under', 'again', 'further', 'while', 'lost', 'found', 'item',
   // Kinyarwanda common
   'mu', 'ku', 'ni', 'na', 'ndi', 'uri', 'ari', 'dufite', 'nta', 'hari', 'ya', 'yo',
   'by', 'bya', 'cy', 'cya', 'ry', 'rya', 'wa', 'wo', 'ba', 'bo', 'ka', 'ko', 'ha',
@@ -11175,7 +12787,7 @@ export function extractKeywords(text: string): string[] {
       continue;
     }
 
-    if (word.length >= 4) {
+    if (word.length >= 3) {
       keywords.add(word);
     }
   }
@@ -11284,29 +12896,39 @@ export function computeLocationDistance(area1: string, area2: string): number {
 // FRAUD DETECTION UTILITIES
 // ============================================
 
-const EXTORTION_KEYWORDS = [
+const PAYMENT_KEYWORDS = [
   'pay', 'money', 'cash', 'mtn', 'momo', 'airtel', 'transfer', 'send',
-  'price', 'reward', 'fee', 'cost', 'charge', 'first', 'before',
+  'price', 'reward', 'fee', 'cost', 'charge',
   'amafaranga', 'hishyura', 'ohereze'
 ];
 
+const CONDITIONAL_KEYWORDS = ['first', 'before'];
+
 export function detectExtortionKeywords(message: string): string[] {
   const lower = message.toLowerCase();
-  return EXTORTION_KEYWORDS.filter(keyword => lower.includes(keyword));
+
+  const hasPayment = PAYMENT_KEYWORDS.some(k => lower.includes(k));
+  const hasCondition = CONDITIONAL_KEYWORDS.some(k => lower.includes(k));
+
+  // Only flag when it sounds like “pay first / pay before…”
+  if (hasPayment && hasCondition) return ['payment_before_return'];
+
+  return [];
 }
 
 export function isMessageFlaggable(message: string): { flagged: boolean; reason?: string } {
-  const suspiciousKeywords = detectExtortionKeywords(message);
+  const suspicious = detectExtortionKeywords(message);
 
-  if (suspiciousKeywords.length >= 2) {
+  if (suspicious.length >= 1) {
     return {
       flagged: true,
-      reason: `Message contains suspicious keywords: ${suspiciousKeywords.join(', ')}`
+      reason: `Message suggests payment before return (${suspicious.join(', ')})`
     };
   }
 
   return { flagged: false };
 }
+
 
 // ============================================
 // DATE UTILITIES
@@ -11369,7 +12991,7 @@ export function parsePaginationParams(
   limit?: string | number
 ): { page: number; limit: number; offset: number } {
   const parsedPage = Math.max(1, parseInt(String(page)) || 1);
-  const parsedLimit = Math.min(100, Math.max(1, parseInt(String(limit)) || 10));
+  const parsedLimit = Math.min(100, Math.max(1, parseInt(String(limit)) || 20));
   const offset = (parsedPage - 1) * parsedLimit;
 
   return { page: parsedPage, limit: parsedLimit, offset };
@@ -11417,7 +13039,7 @@ app.get('/api-docs.json', (req, res) => {
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: src/index.ts
-│ Language: TypeScript | Lines: 213 | Size: 6.4 KB
+│ Language: TypeScript | Lines: 216 | Size: 6.5 KB
 └────────────────────────────────────────────────────────────┘
 
 import express, { Express, Request, Response, NextFunction } from 'express';
@@ -11430,6 +13052,7 @@ import cron from 'node-cron';
 
 import routes from './routes';
 import enhancedRoutes from './routes/enhancedRoutes';
+import novelFeatureRoutes from './routes/novelFeatureRoutes';
 import { checkConnection, closePool, query } from './config/database';
 import { apiLimiter } from './middleware/rateLimiter';
 import { notFoundHandler, errorHandler } from './middleware/errorHandler';
@@ -11492,6 +13115,7 @@ app.use('/uploads', express.static(path.resolve(uploadPath)));
 // API routes (core + enhanced)
 app.use('/api/v1', routes);
 app.use('/api/v1', enhancedRoutes);
+app.use('/api/v1', novelFeatureRoutes);
 
 // Root endpoint
 app.get('/', (req: Request, res: Response) => {
@@ -11633,6 +13257,7 @@ async function startServer() {
 startServer();
 
 export default app;
+
 
 
 
@@ -12251,6 +13876,275 @@ describe('Rate Limiter Configuration', () => {
 
   it('API rate limit matches spec (100/min)', () => {
     expect(SPEC_LIMITS.apiRequests).toBe(100);
+  });
+});
+
+
+┌────────────────────────────────────────────────────────────┐
+│ FILE: tests/unit/novel-features.test.ts
+│ Language: TypeScript | Lines: 262 | Size: 8.9 KB
+└────────────────────────────────────────────────────────────┘
+
+/**
+ * ============================================
+ * UNIT TESTS FOR NOVEL FEATURES
+ * ============================================
+ * 
+ * Test coverage for:
+ * - Verification Strength Analyzer
+ * - Sensitive Item Redaction
+ * - Cooperative Accountability scoring math
+ * 
+ * Run with: npx jest tests/unit/novel-features.test.ts
+ */
+
+// ── Mock database before imports ──
+jest.mock('../../src/config/database', () => ({
+  query: jest.fn(),
+}));
+
+jest.mock('../../src/services/auditService', () => ({
+  logAudit: jest.fn(),
+}));
+
+import {
+  analyzeVerificationStrength,
+  getTemplatesForCategory,
+  QUESTION_TEMPLATES,
+} from '../../src/services/verificationStrengthService';
+
+import {
+  redactSensitiveContent,
+  redactItemList,
+} from '../../src/services/sensitiveRedactionService';
+
+// ============================================
+// VERIFICATION STRENGTH TESTS
+// ============================================
+
+describe('Verification Strength Analyzer', () => {
+  
+  describe('analyzeVerificationStrength', () => {
+    
+    it('should rate strong questions as STRONG', () => {
+      const result = analyzeVerificationStrength(
+        [
+          'How many cards are inside the wallet?',
+          'Describe the keychain attached to the keys',
+          'What specific app is on the phone home screen?'
+        ],
+        ['three cards', 'small wooden elephant', 'whatsapp business'],
+        'WALLET',
+        'Black leather wallet lost near Kimironko'
+      );
+      
+      expect(result.overall_strength).not.toBe('WEAK');
+      expect(result.overall_score).toBeGreaterThanOrEqual(40);
+    });
+
+    it('should rate yes/no questions as WEAK', () => {
+      const result = analyzeVerificationStrength(
+        ['Is it black?', 'Is it mine?', 'Was it lost?'],
+        ['yes', 'yes', 'yes'],
+        'PHONE',
+        'Black phone lost in Remera'
+      );
+      
+      expect(result.overall_strength).toBe('WEAK');
+      expect(result.questions[0].issues).toContain('Yes/no questions are easy to guess (50% chance)');
+    });
+
+    it('should flag answers that appear in the item description', () => {
+      const result = analyzeVerificationStrength(
+        ['What color is the phone?', 'What brand?', 'What model?'],
+        ['black', 'samsung', 'galaxy s21'],
+        'PHONE',
+        'Black Samsung Galaxy S21 lost at Nyabugogo bus stop'
+      );
+
+      // At least one question should flag the answer-in-description issue
+      const flagged = result.questions.filter(q => 
+        q.issues.some(i => i.includes('answer appears in the item description'))
+      );
+      expect(flagged.length).toBeGreaterThan(0);
+    });
+
+    it('should detect redundant questions', () => {
+      const result = analyzeVerificationStrength(
+        ['What color is the phone?', 'What colour is the phone case?', 'Describe the phone color'],
+        ['black', 'black case', 'dark black'],
+        'PHONE',
+        'Phone lost'
+      );
+
+      expect(result.redundancy_warning).toBe(true);
+    });
+
+    it('should penalize very short answers', () => {
+      const result = analyzeVerificationStrength(
+        ['Describe the item', 'What is unique about it?', 'Secret detail?'],
+        ['x', 'y', 'z'],
+        'OTHER',
+        'Lost item'
+      );
+
+      result.questions.forEach(q => {
+        expect(q.issues.some(i => i.includes('too short'))).toBe(true);
+      });
+    });
+
+    it('should give bonus for specific question patterns', () => {
+      const specific = analyzeVerificationStrength(
+        ['How many compartments does the bag have?'],
+        ['three compartments with a hidden zipper'],
+        'BAG',
+        'Lost bag'
+      );
+
+      const generic = analyzeVerificationStrength(
+        ['Is it a bag?'],
+        ['yes'],
+        'BAG',
+        'Lost bag'
+      );
+
+      expect(specific.questions[0].score).toBeGreaterThan(generic.questions[0].score);
+    });
+  });
+
+  describe('getTemplatesForCategory', () => {
+    
+    it('should return PHONE templates for PHONE category', () => {
+      const templates = getTemplatesForCategory('PHONE');
+      expect(templates.length).toBeGreaterThan(0);
+      expect(templates[0].category).toBe('PHONE');
+      expect(templates.some(t => t.question.toLowerCase().includes('lockscreen'))).toBe(true);
+    });
+
+    it('should return OTHER templates for unknown category', () => {
+      const templates = getTemplatesForCategory('SPACESHIP');
+      expect(templates.length).toBeGreaterThan(0);
+      expect(templates[0].category).toBe('OTHER');
+    });
+
+    it('should have templates for all defined categories', () => {
+      const categories = ['PHONE', 'ID', 'WALLET', 'BAG', 'KEYS', 'OTHER'];
+      categories.forEach(cat => {
+        expect(QUESTION_TEMPLATES[cat]).toBeDefined();
+        expect(QUESTION_TEMPLATES[cat].length).toBeGreaterThan(0);
+      });
+    });
+  });
+});
+
+// ============================================
+// SENSITIVE REDACTION TESTS
+// ============================================
+
+describe('Sensitive Item Redaction', () => {
+  
+  describe('redactSensitiveContent', () => {
+    
+    it('should redact Rwanda national ID numbers (16 digits starting with 1)', () => {
+      const result = redactSensitiveContent(
+        'Found ID card number 1199880012345678 near bus stop',
+        'ID'
+      );
+      
+      expect(result.redacted_text).not.toContain('1199880012345678');
+      expect(result.redacted_text).toContain('1');    // First digit preserved
+      expect(result.redacted_text).toContain('8');    // Last digit preserved
+      expect(result.redactions_applied.length).toBeGreaterThan(0);
+      expect(result.sensitivity_level).toBe('HIGH');
+    });
+
+    it('should redact Rwandan phone numbers', () => {
+      const result = redactSensitiveContent(
+        'Contact me at +250788123456 or 0722987654',
+        'OTHER'
+      );
+
+      expect(result.redacted_text).not.toContain('788123456');
+      expect(result.redacted_text).not.toContain('722987654');
+      expect(result.redactions_applied.length).toBeGreaterThan(0);
+    });
+
+    it('should redact email addresses', () => {
+      const result = redactSensitiveContent(
+        'The ID belongs to john.doe@gmail.com',
+        'ID'
+      );
+
+      expect(result.redacted_text).not.toContain('john.doe@gmail.com');
+      expect(result.redacted_text).toContain('j***@gmail.com');
+    });
+
+    it('should NOT redact when user is the owner', () => {
+      const result = redactSensitiveContent(
+        'Found ID card number 1199880012345678',
+        'ID',
+        true  // isOwner
+      );
+
+      expect(result.redacted_text).toContain('1199880012345678');
+      expect(result.redactions_applied.length).toBe(0);
+      expect(result.sensitivity_level).toBe('NONE');
+    });
+
+    it('should return NONE sensitivity for text without sensitive data', () => {
+      const result = redactSensitiveContent(
+        'Lost my black phone near Kimironko market',
+        'PHONE'
+      );
+
+      expect(result.redacted_text).toBe('Lost my black phone near Kimironko market');
+      expect(result.redactions_applied.length).toBe(0);
+    });
+
+    it('should truncate long descriptions for ID/WALLET categories', () => {
+      const longText = 'A'.repeat(300);
+      const result = redactSensitiveContent(longText, 'ID');
+
+      expect(result.redacted_text.length).toBeLessThan(longText.length);
+      expect(result.redacted_text).toContain('Full details visible after verification');
+    });
+
+    it('should handle multiple sensitive patterns in one text', () => {
+      const result = redactSensitiveContent(
+        'Found wallet with ID 1199880012345678, contact john@test.com or call +250788111222',
+        'WALLET'
+      );
+
+      expect(result.redactions_applied.length).toBeGreaterThanOrEqual(2);
+      expect(result.sensitivity_level).toBe('HIGH');
+    });
+  });
+
+  describe('redactItemList', () => {
+    
+    it('should redact descriptions for non-owners', () => {
+      const items = [
+        { user_id: 1, description: 'ID number 1199880012345678', category: 'ID', title: 'Found ID' },
+        { user_id: 2, description: 'Black phone found', category: 'PHONE', title: 'Phone' },
+      ];
+
+      const redacted = redactItemList(items, 1); // user 1 viewing
+
+      // Item 1: user IS owner, should NOT be redacted
+      expect(redacted[0].description).toContain('1199880012345678');
+      
+      // Item 2: user is NOT owner, but no sensitive patterns, so unchanged
+      expect(redacted[1].description).toBe('Black phone found');
+    });
+
+    it('should redact for anonymous users (no userId)', () => {
+      const items = [
+        { user_id: 1, description: 'Call me at +250788999888', category: 'OTHER', title: 'Item' },
+      ];
+
+      const redacted = redactItemList(items);
+      expect(redacted[0].description).not.toContain('788999888');
+    });
   });
 });
 
@@ -15111,7 +17005,7 @@ CMD ["node", "dist/index.js"]
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: jest.config.js
-│ Language: JavaScript | Lines: 34 | Size: 791 B
+│ Language: JavaScript | Lines: 35 | Size: 773 B
 └────────────────────────────────────────────────────────────┘
 
 /** @type {import('ts-jest').JestConfigWithTsJest} */
@@ -15134,15 +17028,16 @@ module.exports = {
     '!src/types/**',
     '!src/config/swagger.ts',
   ],
-  coverageThresholds: {
-    global: {
-      branches: 60,
-      functions: 70,
-      lines: 70,
-      statements: 70,
-    },
+  coverageThreshold: {
+  global: {
+    branches: 60,
+    functions: 70,
+    lines: 70,
+    statements: 70,
   },
-  setupFilesAfterSetup: ['<rootDir>/tests/setup.ts'],
+},
+
+setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
   testTimeout: 30000,
   verbose: true,
   forceExit: true,
@@ -15232,7 +17127,7 @@ module.exports = {
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: tsconfig.json
-│ Language: JSON | Lines: 25 | Size: 491 B
+│ Language: JSON | Lines: 27 | Size: 521 B
 └────────────────────────────────────────────────────────────┘
 
 {
@@ -15255,6 +17150,8 @@ module.exports = {
     "declarationMap": true,
     "sourceMap": true,
 
+    "isolatedModules": true,
+
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "tests"]
@@ -15263,5 +17160,5 @@ module.exports = {
 
 
 ══════════════════════════════════════════════════════════════
-  END OF DUMP — 57 files | 14,679 lines
+  END OF DUMP — 63 files | 16,522 lines
 ══════════════════════════════════════════════════════════════
