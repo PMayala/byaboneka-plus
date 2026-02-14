@@ -1,16 +1,16 @@
 ╔══════════════════════════════════════════════════════════════╗
 ║  Byaboneka+ Frontend                                       ║
 ║  Project Code Dump — AI Review Edition                      ║
-║  Generated: 2026-02-14T12:30:14.011Z                       ║
+║  Generated: 2026-02-14T17:57:19.879Z                       ║
 ╚══════════════════════════════════════════════════════════════╝
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   PROJECT SUMMARY
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  Files included:  52
-  Total lines:     10,325
-  Total size:      364.6 KB
-  Languages:       SVG (1), TSX (32), TypeScript (8), CSS (1), Text (3), HTML (1), JSON (4), JavaScript (2)
+  Files included:  57
+  Total lines:     11,353
+  Total size:      407.7 KB
+  Languages:       SVG (1), TSX (37), TypeScript (8), CSS (1), Text (3), HTML (1), JSON (4), JavaScript (2)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   DIRECTORY STRUCTURE
@@ -36,7 +36,7 @@
   ├── src/
   │   ├── components/
   │   │   ├── layout/
-  │   │   │   └── index.tsx (12.8 KB)
+  │   │   │   └── index.tsx (13.0 KB)
   │   │   ├── ui/
   │   │   │   └── index.tsx (24.0 KB)
   │   │   ├── CooperativeLeaderboard.tsx (9.2 KB)
@@ -48,37 +48,43 @@
   │   │   ├── ScamReportButton.tsx (8.1 KB)
   │   │   └── VerificationStrengthIndicator.tsx (9.4 KB)
   │   ├── pages/
-  │   │   ├── AdminDashboardPage.tsx (7.1 KB)
+  │   │   ├── AboutPage.tsx (0 B)
+  │   │   ├── AdminDashboardPage.tsx (7.4 KB)
   │   │   ├── AdminFraudDashboard.tsx (7.6 KB)
   │   │   ├── AdminScamReportsPage.tsx (11.9 KB)
   │   │   ├── AdminUsersPage.tsx (12.1 KB)
   │   │   ├── ClaimDetailPage.tsx (13.9 KB)
+  │   │   ├── ContactPage.tsx (9.0 KB)
   │   │   ├── CoopDashboardPage.tsx (6.0 KB)
   │   │   ├── DashboardPage.tsx (13.4 KB)
+  │   │   ├── EditFoundItemPage.tsx (9.7 KB)
+  │   │   ├── EditLostItemPage.tsx (8.6 KB)
   │   │   ├── ForgotPasswordPage.tsx (3.4 KB)
-  │   │   ├── FoundItemDetailPage.tsx (12.8 KB)
-  │   │   ├── HomePage.tsx (12.7 KB)
+  │   │   ├── FoundItemDetailPage.tsx (16.1 KB)
+  │   │   ├── HomePage.tsx (13.5 KB)
   │   │   ├── LoginPage.tsx (5.3 KB)
   │   │   ├── LostItemDetailPage.tsx (13.5 KB)
   │   │   ├── MessagesPage.tsx (4.2 KB)
   │   │   ├── MyItemsPage.tsx (14.0 KB)
+  │   │   ├── PrivacyPolicyPage.tsx (4.4 KB)
   │   │   ├── RegisterPage.tsx (9.6 KB)
   │   │   ├── ReportFoundPage.tsx (14.4 KB)
   │   │   ├── ReportLostPage.tsx (16.3 KB)
   │   │   ├── ResetPasswordPage.tsx (5.4 KB)
   │   │   ├── SearchPage.tsx (16.6 KB)
-  │   │   └── SettingsPage.tsx (11.3 KB)
+  │   │   ├── SettingsPage.tsx (11.3 KB)
+  │   │   └── TermsPage.tsx (5.4 KB)
   │   ├── services/
   │   │   ├── api.ts (18.0 KB)
   │   │   └── novelFeatureApi.ts (2.6 KB)
   │   ├── store/
   │   │   └── authStore.ts (1.7 KB)
   │   ├── types/
-  │   │   └── index.ts (7.6 KB)
+  │   │   └── index.ts (7.8 KB)
   │   ├── utils/
   │   │   ├── dateUtils.ts (1.8 KB)
   │   │   └── index.ts (29 B)
-  │   ├── App.tsx (7.9 KB)
+  │   ├── App.tsx (9.1 KB)
   │   ├── index.css (4.3 KB)
   │   ├── main.tsx (236 B)
   │   └── vite-env.d.ts (157 B)
@@ -112,36 +118,41 @@
       8. src/components/SafetyWarningBanner.tsx  [128 lines | TSX]
       9. src/components/ScamReportButton.tsx  [204 lines | TSX]
      10. src/components/VerificationStrengthIndicator.tsx  [255 lines | TSX]
-     11. src/pages/AdminDashboardPage.tsx  [168 lines | TSX]
+     11. src/pages/AdminDashboardPage.tsx  [172 lines | TSX]
      12. src/pages/AdminFraudDashboard.tsx  [234 lines | TSX]
      13. src/pages/AdminScamReportsPage.tsx  [320 lines | TSX]
      14. src/pages/AdminUsersPage.tsx  [326 lines | TSX]
      15. src/pages/ClaimDetailPage.tsx  [350 lines | TSX]
-     16. src/pages/CoopDashboardPage.tsx  [177 lines | TSX]
-     17. src/pages/DashboardPage.tsx  [319 lines | TSX]
-     18. src/pages/ForgotPasswordPage.tsx  [101 lines | TSX]
-     19. src/pages/FoundItemDetailPage.tsx  [334 lines | TSX]
-     20. src/pages/HomePage.tsx  [244 lines | TSX]
-     21. src/pages/LoginPage.tsx  [141 lines | TSX]
-     22. src/pages/LostItemDetailPage.tsx  [365 lines | TSX]
-     23. src/pages/MessagesPage.tsx  [113 lines | TSX]
-     24. src/pages/MyItemsPage.tsx  [306 lines | TSX]
-     25. src/pages/RegisterPage.tsx  [257 lines | TSX]
-     26. src/pages/ReportFoundPage.tsx  [382 lines | TSX]
-     27. src/pages/ReportLostPage.tsx  [432 lines | TSX]
-     28. src/pages/ResetPasswordPage.tsx  [170 lines | TSX]
-     29. src/pages/SearchPage.tsx  [428 lines | TSX]
-     30. src/pages/SettingsPage.tsx  [312 lines | TSX]
-     31. src/services/api.ts  [562 lines | TypeScript]
-     32. src/services/novelFeatureApi.ts  [83 lines | TypeScript]
-     33. src/store/authStore.ts  [70 lines | TypeScript]
-     34. src/types/index.ts  [315 lines | TypeScript]
-     35. src/utils/dateUtils.ts  [61 lines | TypeScript]
-     36. src/utils/index.ts  [2 lines | TypeScript]
-     37. src/App.tsx  [296 lines | TSX]
-     38. src/index.css  [208 lines | CSS]
-     39. src/main.tsx  [11 lines | TSX]
-     40. src/vite-env.d.ts  [10 lines | TypeScript]
+     16. src/pages/ContactPage.tsx  [178 lines | TSX]
+     17. src/pages/CoopDashboardPage.tsx  [177 lines | TSX]
+     18. src/pages/DashboardPage.tsx  [319 lines | TSX]
+     19. src/pages/EditFoundItemPage.tsx  [273 lines | TSX]
+     20. src/pages/EditLostItemPage.tsx  [249 lines | TSX]
+     21. src/pages/ForgotPasswordPage.tsx  [101 lines | TSX]
+     22. src/pages/FoundItemDetailPage.tsx  [406 lines | TSX]
+     23. src/pages/HomePage.tsx  [263 lines | TSX]
+     24. src/pages/LoginPage.tsx  [141 lines | TSX]
+     25. src/pages/LostItemDetailPage.tsx  [365 lines | TSX]
+     26. src/pages/MessagesPage.tsx  [113 lines | TSX]
+     27. src/pages/MyItemsPage.tsx  [306 lines | TSX]
+     28. src/pages/PrivacyPolicyPage.tsx  [91 lines | TSX]
+     29. src/pages/RegisterPage.tsx  [257 lines | TSX]
+     30. src/pages/ReportFoundPage.tsx  [382 lines | TSX]
+     31. src/pages/ReportLostPage.tsx  [432 lines | TSX]
+     32. src/pages/ResetPasswordPage.tsx  [170 lines | TSX]
+     33. src/pages/SearchPage.tsx  [428 lines | TSX]
+     34. src/pages/SettingsPage.tsx  [312 lines | TSX]
+     35. src/pages/TermsPage.tsx  [105 lines | TSX]
+     36. src/services/api.ts  [562 lines | TypeScript]
+     37. src/services/novelFeatureApi.ts  [83 lines | TypeScript]
+     38. src/store/authStore.ts  [70 lines | TypeScript]
+     39. src/types/index.ts  [320 lines | TypeScript]
+     40. src/utils/dateUtils.ts  [61 lines | TypeScript]
+     41. src/utils/index.ts  [2 lines | TypeScript]
+     42. src/App.tsx  [328 lines | TSX]
+     43. src/index.css  [208 lines | CSS]
+     44. src/main.tsx  [11 lines | TSX]
+     45. src/vite-env.d.ts  [10 lines | TypeScript]
 
   📁 (root)/
       1. .env.example  [6 lines | Text]
@@ -187,7 +198,7 @@
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: src/components/layout/index.tsx
-│ Language: TSX | Lines: 315 | Size: 12.8 KB
+│ Language: TSX | Lines: 315 | Size: 13.0 KB
 └────────────────────────────────────────────────────────────┘
 
 import React, { useState } from 'react';
@@ -195,7 +206,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { 
   Menu, X, Search, Bell, User, LogOut, 
   Home, FileText, Package, MessageSquare, Settings,
-  Shield, ChevronDown
+  Shield, ChevronDown, Trophy
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useAuthStore } from '../../store/authStore';
@@ -229,6 +240,7 @@ export const Header: React.FC = () => {
     { href: '/search', label: 'Search', icon: Search },
     { href: '/report-lost', label: 'Report Lost', icon: FileText },
     { href: '/report-found', label: 'Report Found', icon: Package },
+    { href: '/leaderboard', label: 'Leaderboard', icon: Trophy },
   ];
 
   const isActive = (href: string) => location.pathname === href;
@@ -254,7 +266,7 @@ export const Header: React.FC = () => {
                 key={link.href}
                 to={link.href}
                 className={clsx(
-                  'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
+                  'px-3 py-2 rounded-lg text-sm font-medium transition-colors',
                   isActive(link.href)
                     ? 'bg-primary-50 text-primary-600'
                     : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
@@ -275,7 +287,6 @@ export const Header: React.FC = () => {
                   className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg relative"
                 >
                   <Bell className="w-5 h-5" />
-                  {/* Badge for unread */}
                 </Link>
 
                 {/* Profile Dropdown */}
@@ -432,7 +443,7 @@ export const Header: React.FC = () => {
 };
 
 // ============================================
-// FOOTER
+// FOOTER (FIX: All links now point to real pages)
 // ============================================
 
 export const Footer: React.FC = () => {
@@ -454,7 +465,7 @@ export const Footer: React.FC = () => {
             </p>
           </div>
 
-          {/* Quick Links */}
+          {/* Quick Links - FIX: Updated to point to real pages */}
           <div>
             <h4 className="font-semibold text-gray-900 mb-4">Quick Links</h4>
             <ul className="space-y-2">
@@ -462,10 +473,11 @@ export const Footer: React.FC = () => {
               <li><Link to="/report-lost" className="text-sm text-gray-600 hover:text-primary-500">Report Lost</Link></li>
               <li><Link to="/report-found" className="text-sm text-gray-600 hover:text-primary-500">Report Found</Link></li>
               <li><Link to="/how-it-works" className="text-sm text-gray-600 hover:text-primary-500">How It Works</Link></li>
+              <li><Link to="/leaderboard" className="text-sm text-gray-600 hover:text-primary-500">Leaderboard</Link></li>
             </ul>
           </div>
 
-          {/* Support */}
+          {/* Support - FIX: Updated to point to real pages */}
           <div>
             <h4 className="font-semibold text-gray-900 mb-4">Support</h4>
             <ul className="space-y-2">
@@ -504,7 +516,6 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
     </div>
   );
 };
-
 
 
 ┌────────────────────────────────────────────────────────────┐
@@ -3159,14 +3170,14 @@ export default VerificationStrengthIndicator;
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: src/pages/AdminDashboardPage.tsx
-│ Language: TSX | Lines: 168 | Size: 7.1 KB
+│ Language: TSX | Lines: 172 | Size: 7.4 KB
 └────────────────────────────────────────────────────────────┘
 
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Users, FileText, Package, Shield, AlertTriangle, 
-  CheckCircle, TrendingUp, Activity, ChevronRight
+  CheckCircle, TrendingUp, Activity, ChevronRight, Eye
 } from 'lucide-react';
 import { Card, LoadingSpinner, Badge } from '../components/ui';
 import { adminApi, AdminStats } from '../services/api';
@@ -3176,7 +3187,8 @@ import { formatDate, formatDateShort, formatDateTime } from '../utils/dateUtils'
  * AdminDashboardPage - FIXED VERSION
  * 
  * FIX #2: Uses proper AdminStats type that matches backend response
- * FIX #12: Removed links to non-existent /admin/audit-logs and /admin/cooperatives pages
+ * FIX #12: Only links to pages that actually exist
+ * FIX: Added Fraud Dashboard link to Quick Actions
  */
 
 const AdminDashboardPage: React.FC = () => {
@@ -3191,7 +3203,6 @@ const AdminDashboardPage: React.FC = () => {
 
   const loadDashboard = async () => {
     try {
-      // FIX: Use typed adminApi methods instead of raw api.get
       const [statsRes, usersRes, reportsRes] = await Promise.all([
         adminApi.getStats(),
         adminApi.getUsers({ limit: 5 }),
@@ -3311,10 +3322,10 @@ const AdminDashboardPage: React.FC = () => {
         </Card>
       </div>
 
-      {/* Quick Actions - FIX #12: Only link to pages that actually exist */}
+      {/* Quick Actions - FIX: Added Fraud Dashboard link */}
       <Card className="p-6 mt-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           <Link to="/admin/users" className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors text-center">
             <Users className="w-6 h-6 text-gray-600 mx-auto mb-2" />
             <p className="text-sm font-medium">Manage Users</p>
@@ -3322,6 +3333,10 @@ const AdminDashboardPage: React.FC = () => {
           <Link to="/admin/scam-reports" className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors text-center">
             <AlertTriangle className="w-6 h-6 text-gray-600 mx-auto mb-2" />
             <p className="text-sm font-medium">Scam Reports</p>
+          </Link>
+          <Link to="/admin/fraud" className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors text-center">
+            <Eye className="w-6 h-6 text-gray-600 mx-auto mb-2" />
+            <p className="text-sm font-medium">Fraud Detection</p>
           </Link>
         </div>
       </Card>
@@ -4591,6 +4606,191 @@ export default ClaimDetailPage;
 
 
 ┌────────────────────────────────────────────────────────────┐
+│ FILE: src/pages/ContactPage.tsx
+│ Language: TSX | Lines: 178 | Size: 9.0 KB
+└────────────────────────────────────────────────────────────┘
+
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { 
+  ArrowLeft, Mail, Phone, MapPin, MessageSquare, 
+  ChevronDown, ChevronUp, HelpCircle, Send
+} from 'lucide-react';
+import { Button, Card, Input } from '../components/ui';
+import toast from 'react-hot-toast';
+
+interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+const faqs: FaqItem[] = [
+  {
+    question: 'How do I report a lost item?',
+    answer: 'Log in to your account and click "Report Lost Item" from the dashboard or navigation menu. Fill in the category, description, location area, date, and set verification questions that only the true owner would know. These questions are critical for proving ownership later.'
+  },
+  {
+    question: 'How does the matching system work?',
+    answer: 'Our algorithm compares your lost item report against all found items using multiple signals: matching categories, location proximity, time correlation, and keyword overlap in descriptions. Matches are scored from 0-13 and ranked so you see the most likely matches first.'
+  },
+  {
+    question: 'What are verification questions?',
+    answer: 'When reporting a lost item, you set 3 questions and answers that only the true owner would know — like "What is your phone\'s lock screen wallpaper?" or "How many cards are in the wallet?". When someone claims a matching found item, they must answer these correctly to prove ownership.'
+  },
+  {
+    question: 'How does the OTP handover work?',
+    answer: 'Once a claim is verified, the item owner generates a 6-digit OTP code from the platform. When meeting the finder for the physical handover, the owner shares this code with the finder who enters it on the platform. This confirms both parties were present and the item was exchanged.'
+  },
+  {
+    question: 'What is the trust score?',
+    answer: 'Your trust score starts at 5 and changes based on your behavior. Successfully returning items, completing handovers, and being a good community member increases it. Failed verifications, scam reports against you, and policy violations decrease it. Higher trust scores unlock more features.'
+  },
+  {
+    question: 'How long before my item report expires?',
+    answer: 'Lost items with status "Active" and found items with status "Unclaimed" automatically expire after 30 days of no updates. You\'ll receive a warning at 23 days. Pending claims expire after 7 days. You can always create a new report if needed.'
+  },
+  {
+    question: 'What if someone falsely claims my item?',
+    answer: 'The verification system protects you — claimants must correctly answer your verification questions. If they fail, the claim is rejected. If you believe there\'s an issue with a verified claim, you can open a dispute which will be reviewed by our administrators.'
+  },
+  {
+    question: 'Can cooperatives use the platform?',
+    answer: 'Yes! Transport cooperatives are key partners. Cooperative staff can register found items turned in by drivers, and the cooperative accountability leaderboard tracks performance. This creates transparency and incentivizes good behavior across Rwanda\'s transport ecosystem.'
+  },
+  {
+    question: 'Is my personal information safe?',
+    answer: 'Yes. Passwords are hashed with bcrypt, verification answers are stored securely, and our system automatically detects and redacts sensitive information like ID numbers and phone numbers from item descriptions. Your contact info is only shared with verified claimants.'
+  },
+  {
+    question: 'Where should I meet for item handover?',
+    answer: 'The platform recommends safe handover locations such as police stations, sector offices, and cooperative offices in your area. We strongly recommend using these locations rather than private meeting spots, especially for valuable items.'
+  },
+];
+
+const ContactPage: React.FC = () => {
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!contactForm.name || !contactForm.email || !contactForm.message) {
+      toast.error('Please fill in all fields');
+      return;
+    }
+    toast.success('Message sent! We\'ll get back to you soon.');
+    setContactForm({ name: '', email: '', message: '' });
+  };
+
+  return (
+    <div className="max-w-5xl mx-auto px-4 py-8 sm:py-12">
+      <Link to="/" className="inline-flex items-center text-gray-600 hover:text-gray-900 mb-6">
+        <ArrowLeft className="w-4 h-4 mr-2" />Back to Home
+      </Link>
+
+      <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Help & Contact</h1>
+      <p className="text-gray-600 mb-8">Find answers to common questions or get in touch with us</p>
+
+      <div className="grid lg:grid-cols-3 gap-8">
+        {/* FAQ Section */}
+        <div className="lg:col-span-2">
+          <div className="flex items-center gap-2 mb-6">
+            <HelpCircle className="w-5 h-5 text-primary-500" />
+            <h2 className="text-xl font-semibold text-gray-900">Frequently Asked Questions</h2>
+          </div>
+
+          <div className="space-y-3">
+            {faqs.map((faq, index) => (
+              <Card key={index} className="overflow-hidden">
+                <button
+                  onClick={() => setOpenFaq(openFaq === index ? null : index)}
+                  className="w-full p-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
+                >
+                  <span className="font-medium text-gray-900 pr-4">{faq.question}</span>
+                  {openFaq === index ? (
+                    <ChevronUp className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                  ) : (
+                    <ChevronDown className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                  )}
+                </button>
+                {openFaq === index && (
+                  <div className="px-4 pb-4 text-gray-600 text-sm border-t border-gray-100 pt-3">
+                    {faq.answer}
+                  </div>
+                )}
+              </Card>
+            ))}
+          </div>
+        </div>
+
+        {/* Contact Info & Form */}
+        <div>
+          <Card className="p-6 mb-6">
+            <h3 className="font-semibold text-gray-900 mb-4">Contact Info</h3>
+            <div className="space-y-3">
+              <div className="flex items-center gap-3 text-sm text-gray-600">
+                <Mail className="w-4 h-4 text-primary-500" />
+                <a href="mailto:support@byaboneka.rw" className="hover:text-primary-500">support@byaboneka.rw</a>
+              </div>
+              <div className="flex items-center gap-3 text-sm text-gray-600">
+                <Phone className="w-4 h-4 text-primary-500" />
+                <span>+250 788 000 000</span>
+              </div>
+              <div className="flex items-center gap-3 text-sm text-gray-600">
+                <MapPin className="w-4 h-4 text-primary-500" />
+                <span>Kigali, Rwanda</span>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <MessageSquare className="w-5 h-5 text-primary-500" />
+              <h3 className="font-semibold text-gray-900">Send Us a Message</h3>
+            </div>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                <Input
+                  value={contactForm.name}
+                  onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
+                  placeholder="Your name"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <Input
+                  type="email"
+                  value={contactForm.email}
+                  onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
+                  placeholder="your@email.com"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                <textarea
+                  value={contactForm.message}
+                  onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
+                  placeholder="How can we help?"
+                  rows={4}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm resize-none"
+                />
+              </div>
+              <Button type="submit" className="w-full">
+                <Send className="w-4 h-4 mr-2" />
+                Send Message
+              </Button>
+            </form>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ContactPage;
+
+
+┌────────────────────────────────────────────────────────────┐
 │ FILE: src/pages/CoopDashboardPage.tsx
 │ Language: TSX | Lines: 177 | Size: 6.0 KB
 └────────────────────────────────────────────────────────────┘
@@ -5101,6 +5301,542 @@ export default DashboardPage;
 
 
 ┌────────────────────────────────────────────────────────────┐
+│ FILE: src/pages/EditFoundItemPage.tsx
+│ Language: TSX | Lines: 273 | Size: 9.7 KB
+└────────────────────────────────────────────────────────────┘
+
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import {
+  ArrowLeft, Save, MapPin, Calendar,
+  Smartphone, CreditCard, Wallet, Briefcase, Key, Package
+} from 'lucide-react';
+import { Button, Card, Input, Textarea, LoadingSpinner, Alert } from '../components/ui';
+import { foundItemsApi } from '../services/api';
+import { FoundItem, ItemCategory, CATEGORY_INFO, RWANDA_LOCATIONS } from '../types';
+import { useAuthStore } from '../store/authStore';
+import toast from 'react-hot-toast';
+
+const CATEGORY_ICONS: Record<ItemCategory, React.ReactNode> = {
+  [ItemCategory.PHONE]: <Smartphone className="w-6 h-6" />,
+  [ItemCategory.ID]: <CreditCard className="w-6 h-6" />,
+  [ItemCategory.WALLET]: <Wallet className="w-6 h-6" />,
+  [ItemCategory.BAG]: <Briefcase className="w-6 h-6" />,
+  [ItemCategory.KEYS]: <Key className="w-6 h-6" />,
+  [ItemCategory.OTHER]: <Package className="w-6 h-6" />,
+};
+
+const EditFoundItemPage: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { user } = useAuthStore();
+
+  const [item, setItem] = useState<FoundItem | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    location_area: '',
+    location_hint: '',
+  });
+
+  useEffect(() => {
+    loadItem();
+  }, [id]);
+
+  const loadItem = async () => {
+    try {
+      const response = await foundItemsApi.getById(parseInt(id!));
+      const data = response.data.data;
+
+      // Only allow owner to edit
+      if (data.user_id !== user?.id) {
+        toast.error('You can only edit your own items');
+        navigate(`/found-items/${id}`);
+        return;
+      }
+
+      setItem(data);
+      setFormData({
+        title: data.title || '',
+        description: data.description || '',
+        location_area: data.location_area || '',
+        location_hint: data.location_hint || '',
+      });
+    } catch (error) {
+      toast.error('Failed to load item');
+      navigate('/my-items?tab=found');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const validate = (): boolean => {
+    const newErrors: Record<string, string> = {};
+    if (!formData.title || formData.title.length < 3) {
+      newErrors.title = 'Title must be at least 3 characters';
+    }
+    if (!formData.description || formData.description.length < 10) {
+      newErrors.description = 'Description must be at least 10 characters';
+    }
+    if (!formData.location_area) {
+      newErrors.location_area = 'Please select a location';
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validate()) return;
+
+    setSaving(true);
+    try {
+      await foundItemsApi.update(parseInt(id!), {
+        title: formData.title,
+        description: formData.description,
+        location_area: formData.location_area,
+        location_hint: formData.location_hint || undefined,
+      });
+      toast.success('Item updated successfully');
+      navigate(`/found-items/${id}`);
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Failed to update item');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center py-12">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
+
+  if (!item) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-12 text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">Item Not Found</h1>
+        <Button onClick={() => navigate('/my-items?tab=found')}>Back to My Items</Button>
+      </div>
+    );
+  }
+
+  const categoryInfo = CATEGORY_INFO[item.category as ItemCategory];
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 py-8">
+      {/* Back Link */}
+      <button
+        onClick={() => navigate(`/found-items/${id}`)}
+        className="inline-flex items-center text-gray-600 hover:text-gray-900 mb-6"
+      >
+        <ArrowLeft className="w-4 h-4 mr-2" />
+        Back to Item
+      </button>
+
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">Edit Found Item</h1>
+        <p className="text-gray-600">Update the details of your found item report</p>
+      </div>
+
+      {item.status !== 'AVAILABLE' && (
+        <Alert type="warning" className="mb-6">
+          This item is currently <strong>{item.status.toLowerCase()}</strong>. Some fields may not be editable.
+        </Alert>
+      )}
+
+      <form onSubmit={handleSubmit}>
+        <Card className="p-6 mb-6">
+          {/* Category (read-only) */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+              <span className="text-gray-500">
+                {CATEGORY_ICONS[item.category as ItemCategory]}
+              </span>
+              <span className="font-medium text-gray-700">{categoryInfo?.label || item.category}</span>
+              <span className="text-xs text-gray-400 ml-auto">Cannot be changed</span>
+            </div>
+          </div>
+
+          {/* Title */}
+          <div className="mb-6">
+            <Input
+              label="Title *"
+              value={formData.title}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              placeholder="e.g., Black phone found at bus station"
+              error={errors.title}
+            />
+          </div>
+
+          {/* Description */}
+          <div className="mb-6">
+            <Textarea
+              label="Description *"
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              placeholder="Describe the found item in detail..."
+              rows={4}
+              error={errors.description}
+            />
+          </div>
+
+          {/* Location */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              <MapPin className="w-4 h-4 inline mr-1" />
+              Location Area *
+            </label>
+            <select
+              value={formData.location_area}
+              onChange={(e) => setFormData({ ...formData, location_area: e.target.value })}
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
+                errors.location_area ? 'border-red-500' : 'border-gray-300'
+              }`}
+            >
+              <option value="">Select location</option>
+              {RWANDA_LOCATIONS.map((loc) => (
+                <option key={loc} value={loc}>{loc}</option>
+              ))}
+            </select>
+            {errors.location_area && (
+              <p className="mt-1 text-sm text-red-500">{errors.location_area}</p>
+            )}
+          </div>
+
+          {/* Location Hint */}
+          <div className="mb-6">
+            <Textarea
+              label="Specific Location (Optional)"
+              value={formData.location_hint}
+              onChange={(e) => setFormData({ ...formData, location_hint: e.target.value })}
+              placeholder="e.g., Under seat 23 on bus KM-456-A, near the market entrance..."
+              rows={2}
+            />
+          </div>
+
+          {/* Date (read-only) */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              <Calendar className="w-4 h-4 inline mr-1" />
+              Date Found
+            </label>
+            <input
+              type="date"
+              value={item.found_date?.split('T')[0] || ''}
+              disabled
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500"
+            />
+            <p className="text-xs text-gray-400 mt-1">Date cannot be changed after submission</p>
+          </div>
+
+          {/* Images (read-only info) */}
+          {item.image_urls && item.image_urls.length > 0 && (
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Current Photos</label>
+              <div className="grid grid-cols-4 gap-3">
+                {item.image_urls.map((url, index) => (
+                  <div key={index} className="aspect-square rounded-lg overflow-hidden bg-gray-100">
+                    <img
+                      src={url}
+                      alt={`Photo ${index + 1}`}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = 'none';
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+              <p className="text-xs text-gray-400 mt-1">
+                To update photos, please delete and re-report the item
+              </p>
+            </div>
+          )}
+        </Card>
+
+        {/* Actions */}
+        <div className="flex justify-between">
+          <Button type="button" variant="secondary" onClick={() => navigate(`/found-items/${id}`)}>
+            Cancel
+          </Button>
+          <Button type="submit" loading={saving}>
+            <Save className="w-4 h-4 mr-2" />
+            Save Changes
+          </Button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+export default EditFoundItemPage;
+
+
+┌────────────────────────────────────────────────────────────┐
+│ FILE: src/pages/EditLostItemPage.tsx
+│ Language: TSX | Lines: 249 | Size: 8.6 KB
+└────────────────────────────────────────────────────────────┘
+
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import {
+  ArrowLeft, Save, MapPin, Calendar,
+  Smartphone, CreditCard, Wallet, Briefcase, Key, Package
+} from 'lucide-react';
+import { Button, Card, Input, Textarea, LoadingSpinner, Alert } from '../components/ui';
+import { lostItemsApi } from '../services/api';
+import { LostItem, ItemCategory, CATEGORY_INFO, RWANDA_LOCATIONS } from '../types';
+import { useAuthStore } from '../store/authStore';
+import toast from 'react-hot-toast';
+
+const CATEGORY_ICONS: Record<ItemCategory, React.ReactNode> = {
+  [ItemCategory.PHONE]: <Smartphone className="w-6 h-6" />,
+  [ItemCategory.ID]: <CreditCard className="w-6 h-6" />,
+  [ItemCategory.WALLET]: <Wallet className="w-6 h-6" />,
+  [ItemCategory.BAG]: <Briefcase className="w-6 h-6" />,
+  [ItemCategory.KEYS]: <Key className="w-6 h-6" />,
+  [ItemCategory.OTHER]: <Package className="w-6 h-6" />,
+};
+
+const EditLostItemPage: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { user } = useAuthStore();
+
+  const [item, setItem] = useState<LostItem | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    location_area: '',
+    location_hint: '',
+  });
+
+  useEffect(() => {
+    loadItem();
+  }, [id]);
+
+  const loadItem = async () => {
+    try {
+      const response = await lostItemsApi.getById(parseInt(id!));
+      const data = response.data.data;
+
+      // Only allow owner to edit
+      if (data.user_id !== user?.id) {
+        toast.error('You can only edit your own items');
+        navigate(`/lost-items/${id}`);
+        return;
+      }
+
+      setItem(data);
+      setFormData({
+        title: data.title || '',
+        description: data.description || '',
+        location_area: data.location_area || '',
+        location_hint: data.location_hint || '',
+      });
+    } catch (error) {
+      toast.error('Failed to load item');
+      navigate('/my-items');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const validate = (): boolean => {
+    const newErrors: Record<string, string> = {};
+    if (!formData.title || formData.title.length < 3) {
+      newErrors.title = 'Title must be at least 3 characters';
+    }
+    if (!formData.description || formData.description.length < 10) {
+      newErrors.description = 'Description must be at least 10 characters';
+    }
+    if (!formData.location_area) {
+      newErrors.location_area = 'Please select a location';
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validate()) return;
+
+    setSaving(true);
+    try {
+      await lostItemsApi.update(parseInt(id!), {
+        title: formData.title,
+        description: formData.description,
+        location_area: formData.location_area,
+        location_hint: formData.location_hint || undefined,
+      });
+      toast.success('Item updated successfully');
+      navigate(`/lost-items/${id}`);
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Failed to update item');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center py-12">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
+
+  if (!item) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-12 text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">Item Not Found</h1>
+        <Button onClick={() => navigate('/my-items')}>Back to My Items</Button>
+      </div>
+    );
+  }
+
+  const categoryInfo = CATEGORY_INFO[item.category as ItemCategory];
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 py-8">
+      {/* Back Link */}
+      <button
+        onClick={() => navigate(`/lost-items/${id}`)}
+        className="inline-flex items-center text-gray-600 hover:text-gray-900 mb-6"
+      >
+        <ArrowLeft className="w-4 h-4 mr-2" />
+        Back to Item
+      </button>
+
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">Edit Lost Item</h1>
+        <p className="text-gray-600">Update the details of your lost item report</p>
+      </div>
+
+      {item.status !== 'ACTIVE' && (
+        <Alert type="warning" className="mb-6">
+          This item is currently <strong>{item.status.toLowerCase()}</strong>. Some fields may not be editable.
+        </Alert>
+      )}
+
+      <form onSubmit={handleSubmit}>
+        <Card className="p-6 mb-6">
+          {/* Category (read-only) */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+              <span className="text-gray-500">
+                {CATEGORY_ICONS[item.category as ItemCategory]}
+              </span>
+              <span className="font-medium text-gray-700">{categoryInfo?.label || item.category}</span>
+              <span className="text-xs text-gray-400 ml-auto">Cannot be changed</span>
+            </div>
+          </div>
+
+          {/* Title */}
+          <div className="mb-6">
+            <Input
+              label="Title *"
+              value={formData.title}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              placeholder="e.g., Black iPhone 13 Pro with blue case"
+              error={errors.title}
+            />
+          </div>
+
+          {/* Description */}
+          <div className="mb-6">
+            <Textarea
+              label="Description *"
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              placeholder="Describe your item in detail..."
+              rows={4}
+              error={errors.description}
+            />
+          </div>
+
+          {/* Location */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              <MapPin className="w-4 h-4 inline mr-1" />
+              Location Area *
+            </label>
+            <select
+              value={formData.location_area}
+              onChange={(e) => setFormData({ ...formData, location_area: e.target.value })}
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
+                errors.location_area ? 'border-red-500' : 'border-gray-300'
+              }`}
+            >
+              <option value="">Select location</option>
+              {RWANDA_LOCATIONS.map((loc) => (
+                <option key={loc} value={loc}>{loc}</option>
+              ))}
+            </select>
+            {errors.location_area && (
+              <p className="mt-1 text-sm text-red-500">{errors.location_area}</p>
+            )}
+          </div>
+
+          {/* Location Hint */}
+          <div className="mb-6">
+            <Textarea
+              label="Location Details (Optional)"
+              value={formData.location_hint}
+              onChange={(e) => setFormData({ ...formData, location_hint: e.target.value })}
+              placeholder="e.g., Near the main bus station, inside a moto taxi..."
+              rows={2}
+            />
+          </div>
+
+          {/* Date (read-only) */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              <Calendar className="w-4 h-4 inline mr-1" />
+              Date Lost
+            </label>
+            <input
+              type="date"
+              value={item.lost_date?.split('T')[0] || ''}
+              disabled
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500"
+            />
+            <p className="text-xs text-gray-400 mt-1">Date cannot be changed after submission</p>
+          </div>
+        </Card>
+
+        {/* Actions */}
+        <div className="flex justify-between">
+          <Button type="button" variant="secondary" onClick={() => navigate(`/lost-items/${id}`)}>
+            Cancel
+          </Button>
+          <Button type="submit" loading={saving}>
+            <Save className="w-4 h-4 mr-2" />
+            Save Changes
+          </Button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+export default EditLostItemPage;
+
+
+┌────────────────────────────────────────────────────────────┐
 │ FILE: src/pages/ForgotPasswordPage.tsx
 │ Language: TSX | Lines: 101 | Size: 3.4 KB
 └────────────────────────────────────────────────────────────┘
@@ -5210,7 +5946,7 @@ export default ForgotPasswordPage;
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: src/pages/FoundItemDetailPage.tsx
-│ Language: TSX | Lines: 334 | Size: 12.8 KB
+│ Language: TSX | Lines: 406 | Size: 16.1 KB
 └────────────────────────────────────────────────────────────┘
 
 import React, { useState, useEffect } from 'react';
@@ -5221,10 +5957,23 @@ import {
 } from 'lucide-react';
 import { Button, Card, Badge, LoadingSpinner, Alert, Modal } from '../components/ui';
 import { foundItemsApi } from '../services/api';
-import { FoundItem, CATEGORY_INFO, STATUS_INFO } from '../types';
+import { FoundItem, LostItem, CATEGORY_INFO, STATUS_INFO } from '../types';
 import { useAuthStore } from '../store/authStore';
 import { formatDate, formatDateShort, formatDateLong, formatDateTime } from '../utils/dateUtils';
 import toast from 'react-hot-toast';
+
+interface MatchResult {
+  lost_item: LostItem;
+  score: number;
+  explanation: string[];
+}
+
+// Helper function to map match scores to valid badge variants
+const getMatchScoreBadgeVariant = (score: number): "verified" | "pending" | "default" => {
+  if (score >= 8) return "verified"; // High confidence
+  if (score >= 5) return "pending"; // Medium confidence
+  return "default"; // Low confidence
+};
 
 const FoundItemDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -5236,6 +5985,10 @@ const FoundItemDetailPage: React.FC = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
+
+  // Matches state
+  const [matches, setMatches] = useState<MatchResult[]>([]);
+  const [matchesLoading, setMatchesLoading] = useState(false);
 
   const isFinder = user?.id === item?.finder_id;
 
@@ -5252,6 +6005,19 @@ const FoundItemDetailPage: React.FC = () => {
       navigate('/search?type=found');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadMatches = async () => {
+    if (!id) return;
+    setMatchesLoading(true);
+    try {
+      const response = await foundItemsApi.getMatches(parseInt(id));
+      setMatches(response.data.data || []);
+    } catch (error) {
+      console.error('Failed to load matches:', error);
+    } finally {
+      setMatchesLoading(false);
     }
   };
 
@@ -5454,6 +6220,49 @@ const FoundItemDetailPage: React.FC = () => {
                 verified owners. Claim this item and complete verification to access all information.
               </Alert>
             )}
+
+            {/* Potential Matching Lost Items - visible to the finder */}
+            {isFinder && (
+              <div className="mt-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-semibold text-gray-900">Potential Matching Lost Items</h3>
+                  <Button variant="ghost" size="sm" onClick={loadMatches} disabled={matchesLoading}>
+                    {matchesLoading ? 'Searching...' : matches.length > 0 ? 'Refresh' : 'Find Matches'}
+                  </Button>
+                </div>
+                {matchesLoading ? (
+                  <LoadingSpinner size="sm" />
+                ) : matches.length === 0 ? (
+                  <div className="text-center py-4">
+                    <p className="text-gray-500 mb-2">No matches found yet</p>
+                    <p className="text-sm text-gray-400">Click "Find Matches" to search for lost items that might belong to this finder.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {matches.map((match) => (
+                      <Card key={match.lost_item?.id || Math.random()} className="p-4 border border-gray-200 hover:border-primary-300 transition-colors">
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <Link to={`/lost-items/${match.lost_item?.id}`} className="font-medium text-gray-900 hover:text-primary-600">
+                              {match.lost_item?.title || 'Untitled'}
+                            </Link>
+                            <p className="text-sm text-gray-500 mt-1">{match.lost_item?.description?.slice(0, 100)}...</p>
+                            <div className="flex flex-wrap gap-1 mt-2">
+                              {match.explanation?.map((reason, i) => (
+                                <Badge key={i} variant="info" className="text-xs">{reason}</Badge>
+                              ))}
+                            </div>
+                          </div>
+                          <Badge variant={getMatchScoreBadgeVariant(match.score)}>
+                            {match.score}/13
+                          </Badge>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </Card>
         </div>
 
@@ -5548,14 +6357,13 @@ const FoundItemDetailPage: React.FC = () => {
 export default FoundItemDetailPage;
 
 
-
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: src/pages/HomePage.tsx
-│ Language: TSX | Lines: 244 | Size: 12.7 KB
+│ Language: TSX | Lines: 263 | Size: 13.5 KB
 └────────────────────────────────────────────────────────────┘
 
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   Search, Shield, MapPin, CheckCircle, ArrowRight, Users, 
   Package, FileText, Building2, TrendingUp, Clock, Star
@@ -5568,9 +6376,11 @@ import { formatDateShort } from '../utils/dateUtils';
 
 const HomePage: React.FC = () => {
   const { isAuthenticated } = useAuthStore();
+  const navigate = useNavigate();
   const [recentFound, setRecentFound] = useState<FoundItem[]>([]);
   const [recentLost, setRecentLost] = useState<LostItem[]>([]);
   const [stats, setStats] = useState({ found: 0, lost: 0, returned: 0 });
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     loadData();
@@ -5592,6 +6402,17 @@ const HomePage: React.FC = () => {
     } catch (error) {
       console.error('Failed to load data:', error);
     }
+  };
+
+  // FIX: Search bar now passes the keyword to /search page
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const params = new URLSearchParams();
+    params.set('type', 'found');
+    if (searchQuery.trim()) {
+      params.set('keyword', searchQuery.trim());
+    }
+    navigate(`/search?${params.toString()}`);
   };
 
   return (
@@ -5645,22 +6466,22 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* Quick Search Bar */}
+      {/* Quick Search Bar - FIX: Now actually submits search query */}
       <section className="bg-white border-b sticky top-16 z-30 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-4">
-          <form onSubmit={(e) => { e.preventDefault(); }} className="flex gap-2 sm:gap-4">
+          <form onSubmit={handleSearch} className="flex gap-2 sm:gap-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search for lost or found items..."
                 className="w-full pl-10 pr-4 py-2.5 sm:py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm sm:text-base"
               />
             </div>
-            <Link to="/search">
-              <Button size="md" className="hidden sm:flex">Search</Button>
-              <Button size="md" className="sm:hidden px-3"><Search className="w-5 h-5" /></Button>
-            </Link>
+            <Button type="submit" size="md" className="hidden sm:flex">Search</Button>
+            <Button type="submit" size="md" className="sm:hidden px-3"><Search className="w-5 h-5" /></Button>
           </form>
         </div>
       </section>
@@ -5721,6 +6542,13 @@ const HomePage: React.FC = () => {
                 )}
               </div>
             ))}
+          </div>
+          <div className="text-center mt-8">
+            <Link to="/how-it-works">
+              <Button variant="outline" rightIcon={<ArrowRight className="w-4 h-4" />}>
+                Learn More
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
@@ -5797,7 +6625,6 @@ const HomePage: React.FC = () => {
 };
 
 export default HomePage;
-
 
 
 ┌────────────────────────────────────────────────────────────┐
@@ -6751,6 +7578,104 @@ const MyItemsPage: React.FC = () => {
 
 export default MyItemsPage;
 
+
+
+┌────────────────────────────────────────────────────────────┐
+│ FILE: src/pages/PrivacyPolicyPage.tsx
+│ Language: TSX | Lines: 91 | Size: 4.4 KB
+└────────────────────────────────────────────────────────────┘
+
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowLeft, Shield } from 'lucide-react';
+import { Card } from '../components/ui';
+
+const PrivacyPolicyPage: React.FC = () => {
+  return (
+    <div className="max-w-3xl mx-auto px-4 py-8 sm:py-12">
+      <Link to="/" className="inline-flex items-center text-gray-600 hover:text-gray-900 mb-6">
+        <ArrowLeft className="w-4 h-4 mr-2" />Back to Home
+      </Link>
+
+      <div className="flex items-center gap-3 mb-8">
+        <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
+          <Shield className="w-6 h-6 text-primary-600" />
+        </div>
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Privacy Policy</h1>
+          <p className="text-sm text-gray-500">Last updated: February 2026</p>
+        </div>
+      </div>
+
+      <Card className="p-6 sm:p-8 prose prose-gray max-w-none">
+        <h2 className="text-lg font-semibold text-gray-900 mt-0">1. Information We Collect</h2>
+        <p className="text-gray-600">
+          Byaboneka+ collects information necessary to operate the lost and found platform effectively. 
+          This includes your name, email address, phone number (optional), and any item descriptions 
+          you provide when reporting lost or found items.
+        </p>
+
+        <h2 className="text-lg font-semibold text-gray-900">2. How We Use Your Information</h2>
+        <p className="text-gray-600">Your information is used to:</p>
+        <ul className="text-gray-600 list-disc pl-5 space-y-1">
+          <li>Create and manage your account</li>
+          <li>Facilitate lost and found item matching</li>
+          <li>Enable secure communication between owners and finders</li>
+          <li>Generate and verify handover OTP codes</li>
+          <li>Calculate trust scores based on platform activity</li>
+          <li>Detect and prevent fraudulent activity</li>
+          <li>Send notifications about item matches and claims</li>
+        </ul>
+
+        <h2 className="text-lg font-semibold text-gray-900">3. Sensitive Information Protection</h2>
+        <p className="text-gray-600">
+          Byaboneka+ automatically detects and redacts sensitive information such as national ID numbers, 
+          phone numbers, and financial details from item descriptions. This protects your privacy even 
+          when descriptions are publicly visible. Verification answers are stored in hashed form and 
+          cannot be read by platform administrators.
+        </p>
+
+        <h2 className="text-lg font-semibold text-gray-900">4. Data Sharing</h2>
+        <p className="text-gray-600">
+          We do not sell or share your personal information with third parties. Item descriptions are 
+          visible to other users for matching purposes. Your contact details are only shared with 
+          verified claimants after successful ownership verification.
+        </p>
+
+        <h2 className="text-lg font-semibold text-gray-900">5. Data Security</h2>
+        <p className="text-gray-600">
+          We implement industry-standard security measures including JWT authentication, 
+          bcrypt password hashing, rate limiting, and SQL injection prevention. All API 
+          communications are encrypted via HTTPS.
+        </p>
+
+        <h2 className="text-lg font-semibold text-gray-900">6. Data Retention</h2>
+        <p className="text-gray-600">
+          Item reports are automatically expired after 30 days of inactivity. Pending claims 
+          expire after 7 days. You may delete your reports at any time. Account data is 
+          retained as long as your account is active.
+        </p>
+
+        <h2 className="text-lg font-semibold text-gray-900">7. Your Rights</h2>
+        <p className="text-gray-600">
+          You have the right to access, update, or delete your personal information through 
+          your account settings. You may also request a complete data export by contacting 
+          our support team.
+        </p>
+
+        <h2 className="text-lg font-semibold text-gray-900">8. Contact</h2>
+        <p className="text-gray-600">
+          For privacy-related inquiries, please contact us at{' '}
+          <a href="mailto:privacy@byaboneka.rw" className="text-primary-500 hover:underline">
+            privacy@byaboneka.rw
+          </a>
+        </p>
+      </Card>
+    </div>
+  );
+};
+
+export default PrivacyPolicyPage;
 
 
 ┌────────────────────────────────────────────────────────────┐
@@ -8777,6 +9702,118 @@ export default SettingsPage;
 
 
 ┌────────────────────────────────────────────────────────────┐
+│ FILE: src/pages/TermsPage.tsx
+│ Language: TSX | Lines: 105 | Size: 5.4 KB
+└────────────────────────────────────────────────────────────┘
+
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowLeft, FileText } from 'lucide-react';
+import { Card } from '../components/ui';
+
+const TermsPage: React.FC = () => {
+  return (
+    <div className="max-w-3xl mx-auto px-4 py-8 sm:py-12">
+      <Link to="/" className="inline-flex items-center text-gray-600 hover:text-gray-900 mb-6">
+        <ArrowLeft className="w-4 h-4 mr-2" />Back to Home
+      </Link>
+
+      <div className="flex items-center gap-3 mb-8">
+        <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
+          <FileText className="w-6 h-6 text-primary-600" />
+        </div>
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Terms of Service</h1>
+          <p className="text-sm text-gray-500">Last updated: February 2026</p>
+        </div>
+      </div>
+
+      <Card className="p-6 sm:p-8 prose prose-gray max-w-none">
+        <h2 className="text-lg font-semibold text-gray-900 mt-0">1. Acceptance of Terms</h2>
+        <p className="text-gray-600">
+          By creating an account or using Byaboneka+, you agree to these Terms of Service. 
+          Byaboneka+ is a lost and found platform designed to facilitate the recovery of lost 
+          items within Rwanda's transport ecosystem.
+        </p>
+
+        <h2 className="text-lg font-semibold text-gray-900">2. User Accounts</h2>
+        <p className="text-gray-600">
+          You must provide accurate information when creating an account. You are responsible 
+          for maintaining the security of your credentials. Each person may only create one 
+          account. Accounts found to be duplicates or fraudulent may be suspended.
+        </p>
+
+        <h2 className="text-lg font-semibold text-gray-900">3. Reporting Items</h2>
+        <p className="text-gray-600">
+          When reporting lost or found items, you must provide truthful and accurate descriptions. 
+          Deliberately filing false reports, claiming items that don't belong to you, or manipulating 
+          item descriptions is prohibited and may result in account suspension and trust score penalties.
+        </p>
+
+        <h2 className="text-lg font-semibold text-gray-900">4. Verification & Claims</h2>
+        <p className="text-gray-600">
+          The verification system is designed to protect rightful owners. You must answer verification 
+          questions honestly when claiming items. Attempting to guess or brute-force verification 
+          answers is prohibited. Failed verification attempts are logged and may affect your trust score.
+        </p>
+
+        <h2 className="text-lg font-semibold text-gray-900">5. Trust Score</h2>
+        <p className="text-gray-600">
+          Your trust score reflects your reputation on the platform. It increases with successful 
+          returns and honest interactions, and decreases with failed verifications, reported scams, 
+          or policy violations. Users with very low trust scores may face restrictions.
+        </p>
+
+        <h2 className="text-lg font-semibold text-gray-900">6. Prohibited Conduct</h2>
+        <ul className="text-gray-600 list-disc pl-5 space-y-1">
+          <li>Filing false lost or found item reports</li>
+          <li>Claiming items that do not belong to you</li>
+          <li>Requesting payment or rewards for returning items</li>
+          <li>Harassing or threatening other users</li>
+          <li>Attempting to bypass verification or security measures</li>
+          <li>Creating multiple accounts to circumvent restrictions</li>
+          <li>Sharing personal information of other users outside the platform</li>
+        </ul>
+
+        <h2 className="text-lg font-semibold text-gray-900">7. Cooperative Partners</h2>
+        <p className="text-gray-600">
+          Transport cooperatives using Byaboneka+ agree to register found items promptly, 
+          facilitate handovers in good faith, and maintain their staff accounts responsibly. 
+          Cooperative accountability scores are publicly visible on the platform leaderboard.
+        </p>
+
+        <h2 className="text-lg font-semibold text-gray-900">8. Disputes</h2>
+        <p className="text-gray-600">
+          If you believe a claim or verification result is incorrect, you may open a dispute. 
+          Disputes are reviewed by platform administrators who may examine evidence, messages, 
+          and platform logs to reach a resolution. Trust score adjustments may be applied based 
+          on dispute outcomes.
+        </p>
+
+        <h2 className="text-lg font-semibold text-gray-900">9. Limitation of Liability</h2>
+        <p className="text-gray-600">
+          Byaboneka+ facilitates connections between item finders and owners but does not 
+          guarantee recovery of any item. We are not responsible for the condition of items, 
+          the conduct of users during physical meetups, or any losses arising from use of the platform. 
+          Always meet at recommended safe handover locations.
+        </p>
+
+        <h2 className="text-lg font-semibold text-gray-900">10. Contact</h2>
+        <p className="text-gray-600">
+          Questions about these terms can be directed to{' '}
+          <a href="mailto:support@byaboneka.rw" className="text-primary-500 hover:underline">
+            support@byaboneka.rw
+          </a>
+        </p>
+      </Card>
+    </div>
+  );
+};
+
+export default TermsPage;
+
+
+┌────────────────────────────────────────────────────────────┐
 │ FILE: src/services/api.ts
 │ Language: TypeScript | Lines: 562 | Size: 18.0 KB
 └────────────────────────────────────────────────────────────┘
@@ -9514,7 +10551,7 @@ export const useAuthStore = create<AuthState>()(
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: src/types/index.ts
-│ Language: TypeScript | Lines: 315 | Size: 7.6 KB
+│ Language: TypeScript | Lines: 320 | Size: 7.8 KB
 └────────────────────────────────────────────────────────────┘
 
 // ============================================
@@ -9616,22 +10653,26 @@ export interface FoundItem {
   claim_count?: number;
 }
 
-// Claim
+// Claim — FIX: Added finder_id which backend returns
 export interface Claim {
   id: number;
   lost_item_id: number;
   found_item_id: number;
   claimant_id: number;
+  finder_id?: number;
   status: ClaimStatus;
   verification_score: number;
   attempts_made: number;
   created_at: string;
+  updated_at?: string;
   lost_item_title?: string;
   found_item_title?: string;
   category?: ItemCategory;
   claimant_name?: string;
   otp_expires_at?: string;
   otp_verified?: boolean;
+  // Dispute info
+  dispute_reason?: string;
 }
 
 // Match
@@ -9672,18 +10713,19 @@ export interface MessageThread {
   unread_count: number;
 }
 
-// Cooperative
+// Cooperative — FIX INT-01: Matches backend schema exactly
 export interface Cooperative {
   id: number;
   name: string;
-  email: string;
-  phone?: string;
+  registration_number: string;
+  status: 'PENDING' | 'VERIFIED' | 'SUSPENDED';
+  contact_info: string;
   address?: string;
-  registration_number?: string;
-  is_verified: boolean;
-  verified_by?: number;
   verified_at?: string;
+  verified_by?: number;
   created_at: string;
+  updated_at?: string;
+  // Computed fields from backend queries
   staff_count?: number;
   items_count?: number;
 }
@@ -9913,7 +10955,7 @@ export * from './dateUtils';
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: src/App.tsx
-│ Language: TSX | Lines: 296 | Size: 7.9 KB
+│ Language: TSX | Lines: 328 | Size: 9.1 KB
 └────────────────────────────────────────────────────────────┘
 
 import React, { useEffect } from 'react';
@@ -9939,6 +10981,14 @@ import ClaimDetailPage from './pages/ClaimDetailPage';
 import MessagesPage from './pages/MessagesPage';
 import MyItemsPage from './pages/MyItemsPage';
 import SettingsPage from './pages/SettingsPage';
+import EditLostItemPage from './pages/EditLostItemPage';
+import EditFoundItemPage from './pages/EditFoundItemPage';
+
+// Static Pages (FIX: Add routes for footer links)
+import AboutPage from './pages/AboutPage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import TermsPage from './pages/TermsPage';
+import ContactPage from './pages/ContactPage';
 
 // Admin Pages
 import AdminDashboardPage from './pages/AdminDashboardPage';
@@ -10036,6 +11086,14 @@ function App() {
           <Route path="/lost-items/:id" element={<LostItemDetailPage />} />
           <Route path="/found-items/:id" element={<FoundItemDetailPage />} />
 
+          {/* Static Pages (FIX: These were dead links in the footer) */}
+          <Route path="/how-it-works" element={<AboutPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/privacy" element={<PrivacyPolicyPage />} />
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/faq" element={<ContactPage />} />
+
           {/* Guest Routes */}
           <Route
             path="/login"
@@ -10124,6 +11182,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <SettingsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/lost-items/:id/edit"
+            element={
+              <ProtectedRoute>
+                <EditLostItemPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/found-items/:id/edit"
+            element={
+              <ProtectedRoute>
+                <EditFoundItemPage />
               </ProtectedRoute>
             }
           />
@@ -10868,5 +11942,5 @@ export default defineConfig({
 
 
 ══════════════════════════════════════════════════════════════
-  END OF DUMP — 52 files | 10,325 lines
+  END OF DUMP — 57 files | 11,353 lines
 ══════════════════════════════════════════════════════════════

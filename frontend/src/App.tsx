@@ -21,6 +21,14 @@ import ClaimDetailPage from './pages/ClaimDetailPage';
 import MessagesPage from './pages/MessagesPage';
 import MyItemsPage from './pages/MyItemsPage';
 import SettingsPage from './pages/SettingsPage';
+import EditLostItemPage from './pages/EditLostItemPage';
+import EditFoundItemPage from './pages/EditFoundItemPage';
+
+// Static Pages (FIX: Add routes for footer links)
+import AboutPage from './pages/AboutPage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import TermsPage from './pages/TermsPage';
+import ContactPage from './pages/ContactPage';
 
 // Admin Pages
 import AdminDashboardPage from './pages/AdminDashboardPage';
@@ -118,6 +126,14 @@ function App() {
           <Route path="/lost-items/:id" element={<LostItemDetailPage />} />
           <Route path="/found-items/:id" element={<FoundItemDetailPage />} />
 
+          {/* Static Pages (FIX: These were dead links in the footer) */}
+          <Route path="/how-it-works" element={<AboutPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/privacy" element={<PrivacyPolicyPage />} />
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/faq" element={<ContactPage />} />
+
           {/* Guest Routes */}
           <Route
             path="/login"
@@ -206,6 +222,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <SettingsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/lost-items/:id/edit"
+            element={
+              <ProtectedRoute>
+                <EditLostItemPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/found-items/:id/edit"
+            element={
+              <ProtectedRoute>
+                <EditFoundItemPage />
               </ProtectedRoute>
             }
           />

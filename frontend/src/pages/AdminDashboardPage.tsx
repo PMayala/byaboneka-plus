@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Users, FileText, Package, Shield, AlertTriangle, 
-  CheckCircle, TrendingUp, Activity, ChevronRight
+  CheckCircle, TrendingUp, Activity, ChevronRight, Eye
 } from 'lucide-react';
 import { Card, LoadingSpinner, Badge } from '../components/ui';
 import { adminApi, AdminStats } from '../services/api';
@@ -12,7 +12,8 @@ import { formatDate, formatDateShort, formatDateTime } from '../utils/dateUtils'
  * AdminDashboardPage - FIXED VERSION
  * 
  * FIX #2: Uses proper AdminStats type that matches backend response
- * FIX #12: Removed links to non-existent /admin/audit-logs and /admin/cooperatives pages
+ * FIX #12: Only links to pages that actually exist
+ * FIX: Added Fraud Dashboard link to Quick Actions
  */
 
 const AdminDashboardPage: React.FC = () => {
@@ -27,7 +28,6 @@ const AdminDashboardPage: React.FC = () => {
 
   const loadDashboard = async () => {
     try {
-      // FIX: Use typed adminApi methods instead of raw api.get
       const [statsRes, usersRes, reportsRes] = await Promise.all([
         adminApi.getStats(),
         adminApi.getUsers({ limit: 5 }),
@@ -147,10 +147,10 @@ const AdminDashboardPage: React.FC = () => {
         </Card>
       </div>
 
-      {/* Quick Actions - FIX #12: Only link to pages that actually exist */}
+      {/* Quick Actions - FIX: Added Fraud Dashboard link */}
       <Card className="p-6 mt-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           <Link to="/admin/users" className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors text-center">
             <Users className="w-6 h-6 text-gray-600 mx-auto mb-2" />
             <p className="text-sm font-medium">Manage Users</p>
@@ -158,6 +158,10 @@ const AdminDashboardPage: React.FC = () => {
           <Link to="/admin/scam-reports" className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors text-center">
             <AlertTriangle className="w-6 h-6 text-gray-600 mx-auto mb-2" />
             <p className="text-sm font-medium">Scam Reports</p>
+          </Link>
+          <Link to="/admin/fraud" className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors text-center">
+            <Eye className="w-6 h-6 text-gray-600 mx-auto mb-2" />
+            <p className="text-sm font-medium">Fraud Detection</p>
           </Link>
         </div>
       </Card>

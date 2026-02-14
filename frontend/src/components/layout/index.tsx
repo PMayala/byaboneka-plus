@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { 
   Menu, X, Search, Bell, User, LogOut, 
   Home, FileText, Package, MessageSquare, Settings,
-  Shield, ChevronDown
+  Shield, ChevronDown, Trophy
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useAuthStore } from '../../store/authStore';
@@ -37,6 +37,7 @@ export const Header: React.FC = () => {
     { href: '/search', label: 'Search', icon: Search },
     { href: '/report-lost', label: 'Report Lost', icon: FileText },
     { href: '/report-found', label: 'Report Found', icon: Package },
+    { href: '/leaderboard', label: 'Leaderboard', icon: Trophy },
   ];
 
   const isActive = (href: string) => location.pathname === href;
@@ -62,7 +63,7 @@ export const Header: React.FC = () => {
                 key={link.href}
                 to={link.href}
                 className={clsx(
-                  'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
+                  'px-3 py-2 rounded-lg text-sm font-medium transition-colors',
                   isActive(link.href)
                     ? 'bg-primary-50 text-primary-600'
                     : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
@@ -83,7 +84,6 @@ export const Header: React.FC = () => {
                   className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg relative"
                 >
                   <Bell className="w-5 h-5" />
-                  {/* Badge for unread */}
                 </Link>
 
                 {/* Profile Dropdown */}
@@ -240,7 +240,7 @@ export const Header: React.FC = () => {
 };
 
 // ============================================
-// FOOTER
+// FOOTER (FIX: All links now point to real pages)
 // ============================================
 
 export const Footer: React.FC = () => {
@@ -262,7 +262,7 @@ export const Footer: React.FC = () => {
             </p>
           </div>
 
-          {/* Quick Links */}
+          {/* Quick Links - FIX: Updated to point to real pages */}
           <div>
             <h4 className="font-semibold text-gray-900 mb-4">Quick Links</h4>
             <ul className="space-y-2">
@@ -270,10 +270,11 @@ export const Footer: React.FC = () => {
               <li><Link to="/report-lost" className="text-sm text-gray-600 hover:text-primary-500">Report Lost</Link></li>
               <li><Link to="/report-found" className="text-sm text-gray-600 hover:text-primary-500">Report Found</Link></li>
               <li><Link to="/how-it-works" className="text-sm text-gray-600 hover:text-primary-500">How It Works</Link></li>
+              <li><Link to="/leaderboard" className="text-sm text-gray-600 hover:text-primary-500">Leaderboard</Link></li>
             </ul>
           </div>
 
-          {/* Support */}
+          {/* Support - FIX: Updated to point to real pages */}
           <div>
             <h4 className="font-semibold text-gray-900 mb-4">Support</h4>
             <ul className="space-y-2">

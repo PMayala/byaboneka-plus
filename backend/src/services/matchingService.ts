@@ -104,8 +104,13 @@ export async function findMatchesForLostItem(
 ): Promise<MatchResult[]> {
   // Check cache first (unless force refresh)
   if (!forceRefresh) {
+    // FIX BUG-01: Explicitly alias columns to avoid id collision between matches and found_items
     const cachedResult = await query(
-      `SELECT m.*, f.*
+      `SELECT m.score, m.explanation,
+              f.id, f.finder_id, f.cooperative_id, f.category,
+              f.title, f.description, f.location_area, f.location_hint,
+              f.found_date, f.status, f.source, f.image_urls, f.keywords,
+              f.expiry_warning_sent, f.expired_at, f.created_at, f.updated_at
        FROM matches m
        JOIN found_items f ON m.found_item_id = f.id
        WHERE m.lost_item_id = $1
@@ -264,33 +269,38 @@ export async function onItemCreated(
   itemType: 'lost' | 'found',
   itemId: number
 ): Promise<void> {
-  if (itemType === 'lost') {
-    // Find matches for the new lost item
-    await findMatchesForLostItem(itemId, true);
-  } else {
-    // For found items, update matches for all potentially matching lost items
-    const foundResult = await query(
-      'SELECT category, found_date FROM found_items WHERE id = $1',
-      [itemId]
-    );
-
-    if (foundResult.rows.length > 0) {
-      const { category, found_date } = foundResult.rows[0];
-
-      // Get all active lost items in same category
-      const lostItems = await query(
-        `SELECT id FROM lost_items
-         WHERE category = $1
-         AND status = 'ACTIVE'
-         AND lost_date <= ($2::date + INTERVAL '7 days')`,
-        [category, found_date]
+  try {
+    if (itemType === 'lost') {
+      // Find matches for the new lost item
+      await findMatchesForLostItem(itemId, true);
+    } else {
+      // For found items, update matches for all potentially matching lost items
+      const foundResult = await query(
+        'SELECT category, found_date FROM found_items WHERE id = $1',
+        [itemId]
       );
 
-      // Refresh matches for each (limited to avoid overload)
-      for (const item of lostItems.rows.slice(0, 20)) {
-        await findMatchesForLostItem(item.id, true);
+      if (foundResult.rows.length > 0) {
+        const { category, found_date } = foundResult.rows[0];
+
+        // Get all active lost items in same category
+        const lostItems = await query(
+          `SELECT id FROM lost_items
+           WHERE category = $1
+           AND status = 'ACTIVE'
+           AND lost_date <= ($2::date + INTERVAL '7 days')`,
+          [category, found_date]
+        );
+
+        // Refresh matches for each (limited to avoid overload)
+        for (const item of lostItems.rows.slice(0, 20)) {
+          await findMatchesForLostItem(item.id, true);
+        }
       }
     }
+  } catch (error) {
+    // Don't let matching errors crash the main flow
+    console.error(`Matching error for ${itemType} item ${itemId}:`, error);
   }
 }
 

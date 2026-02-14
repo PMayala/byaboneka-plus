@@ -1,15 +1,15 @@
 ╔══════════════════════════════════════════════════════════════╗
 ║  Byaboneka+ Backend                                        ║
 ║  Project Code Dump — AI Review Edition                      ║
-║  Generated: 2026-02-14T12:29:54.661Z                       ║
+║  Generated: 2026-02-14T17:57:55.598Z                       ║
 ╚══════════════════════════════════════════════════════════════╝
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   PROJECT SUMMARY
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   Files included:  63
-  Total lines:     16,522
-  Total size:      547.7 KB
+  Total lines:     16,555
+  Total size:      549.2 KB
   Languages:       YAML (2), TypeScript (53), Text (4), JSON (3), JavaScript (1)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -30,13 +30,14 @@
   │   │   └── messagesController.ts (8.9 KB)
   │   ├── middleware/
   │   │   ├── auth.ts (6.1 KB)
-  │   │   ├── emailVerification.ts (1.6 KB)
+  │   │   ├── emailVerification.ts (2.5 KB)
   │   │   ├── errorHandler.ts (2.2 KB)
   │   │   ├── index.ts (85 B)
   │   │   ├── rateLimiter.ts (4.3 KB)
   │   │   └── validation.ts (8.1 KB)
   │   ├── migrations/
   │   │   ├── 001_initial.ts (20.5 KB)
+  │   │   ├── 002_patch.ts (0 B)
   │   │   ├── rollback.ts (398 B)
   │   │   └── run.ts (395 B)
   │   ├── routes/
@@ -53,7 +54,7 @@
   │   │   ├── emailVerificationService.ts (4.6 KB)
   │   │   ├── expiryService.ts (5.9 KB)
   │   │   ├── fraudDetectionService.ts (14.7 KB)
-  │   │   ├── matchingService.ts (9.2 KB)
+  │   │   ├── matchingService.ts (9.8 KB)
   │   │   ├── otpService.ts (10.8 KB)
   │   │   ├── sensitiveRedactionService.ts (8.3 KB)
   │   │   ├── trustService.ts (6.7 KB)
@@ -112,7 +113,7 @@
       8. src/controllers/lostItemsController.ts  [465 lines | TypeScript]
       9. src/controllers/messagesController.ts  [280 lines | TypeScript]
      10. src/middleware/auth.ts  [262 lines | TypeScript]
-     11. src/middleware/emailVerification.ts  [77 lines | TypeScript]
+     11. src/middleware/emailVerification.ts  [101 lines | TypeScript]
      12. src/middleware/errorHandler.ts  [108 lines | TypeScript]
      13. src/middleware/index.ts  [4 lines | TypeScript]
      14. src/middleware/rateLimiter.ts  [151 lines | TypeScript]
@@ -131,7 +132,7 @@
      27. src/services/emailVerificationService.ts  [188 lines | TypeScript]
      28. src/services/expiryService.ts  [210 lines | TypeScript]
      29. src/services/fraudDetectionService.ts  [413 lines | TypeScript]
-     30. src/services/matchingService.ts  [306 lines | TypeScript]
+     30. src/services/matchingService.ts  [315 lines | TypeScript]
      31. src/services/otpService.ts  [371 lines | TypeScript]
      32. src/services/sensitiveRedactionService.ts  [261 lines | TypeScript]
      33. src/services/trustService.ts  [287 lines | TypeScript]
@@ -5050,13 +5051,15 @@ export function ownerOrAdmin(resourceUserIdExtractor: (req: Request) => Promise<
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: src/middleware/emailVerification.ts
-│ Language: TypeScript | Lines: 77 | Size: 1.6 KB
+│ Language: TypeScript | Lines: 101 | Size: 2.5 KB
 └────────────────────────────────────────────────────────────┘
 
 /**
  * Email Verification Middleware for Byaboneka+
  * 
- * Requires verified email for sensitive actions
+ * Requires verified email for sensitive actions.
+ * FIX BUG-02: Bypasses in development/test environments since
+ * email sending isn't implemented for MVP.
  */
 
 import { Request, Response, NextFunction } from 'express';
@@ -5065,12 +5068,21 @@ import { query } from '../config/database';
 /**
  * Middleware to require email verification for sensitive actions
  * Must be used AFTER authenticate middleware
+ * 
+ * In development/test: bypasses the check to allow full flow testing
+ * In production: enforces email verification
  */
 export async function requireVerifiedEmail(
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> {
+  // FIX BUG-02: Skip email verification in non-production environments
+  // This allows the full claim → OTP → handover flow to work during development & testing
+  if (process.env.NODE_ENV !== 'production') {
+    return next();
+  }
+
   if (!req.user?.userId) {
     res.status(401).json({
       success: false,
@@ -5079,29 +5091,37 @@ export async function requireVerifiedEmail(
     return;
   }
   
-  const result = await query(
-    'SELECT email_verified FROM users WHERE id = $1',
-    [req.user.userId]
-  );
-  
-  if (result.rows.length === 0) {
-    res.status(401).json({
+  try {
+    const result = await query(
+      'SELECT email_verified FROM users WHERE id = $1',
+      [req.user.userId]
+    );
+    
+    if (result.rows.length === 0) {
+      res.status(401).json({
+        success: false,
+        message: 'User not found'
+      });
+      return;
+    }
+    
+    if (!result.rows[0].email_verified) {
+      res.status(403).json({
+        success: false,
+        message: 'Email verification required for this action. Please verify your email first.',
+        requiresEmailVerification: true
+      });
+      return;
+    }
+    
+    next();
+  } catch (error) {
+    console.error('Email verification middleware error:', error);
+    res.status(500).json({
       success: false,
-      message: 'User not found'
+      message: 'Failed to check email verification status'
     });
-    return;
   }
-  
-  if (!result.rows[0].email_verified) {
-    res.status(403).json({
-      success: false,
-      message: 'Email verification required for this action. Please verify your email first.',
-      requiresEmailVerification: true
-    });
-    return;
-  }
-  
-  next();
 }
 
 /**
@@ -5117,19 +5137,24 @@ export async function warnUnverifiedEmail(
     return;
   }
   
-  const result = await query(
-    'SELECT email_verified FROM users WHERE id = $1',
-    [req.user.userId]
-  );
-  
-  if (result.rows.length > 0 && !result.rows[0].email_verified) {
-    // Add warning to response
-    res.locals.emailWarning = 'Your email is not verified. Some features may be limited.';
+  try {
+    const result = await query(
+      'SELECT email_verified FROM users WHERE id = $1',
+      [req.user.userId]
+    );
+    
+    if (result.rows.length > 0 && !result.rows[0].email_verified) {
+      // Add warning to response locals
+      res.locals.emailWarning = 'Your email is not verified. Some features may be limited.';
+    }
+    
+    next();
+  } catch (error) {
+    // Don't block the request if check fails
+    console.error('Email verification warning check failed:', error);
+    next();
   }
-  
-  next();
 }
-
 
 
 ┌────────────────────────────────────────────────────────────┐
@@ -10321,7 +10346,7 @@ export async function getFlaggedUsers(): Promise<any[]> {
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: src/services/matchingService.ts
-│ Language: TypeScript | Lines: 306 | Size: 9.2 KB
+│ Language: TypeScript | Lines: 315 | Size: 9.8 KB
 └────────────────────────────────────────────────────────────┘
 
 import { query } from '../config/database';
@@ -10430,8 +10455,13 @@ export async function findMatchesForLostItem(
 ): Promise<MatchResult[]> {
   // Check cache first (unless force refresh)
   if (!forceRefresh) {
+    // FIX BUG-01: Explicitly alias columns to avoid id collision between matches and found_items
     const cachedResult = await query(
-      `SELECT m.*, f.*
+      `SELECT m.score, m.explanation,
+              f.id, f.finder_id, f.cooperative_id, f.category,
+              f.title, f.description, f.location_area, f.location_hint,
+              f.found_date, f.status, f.source, f.image_urls, f.keywords,
+              f.expiry_warning_sent, f.expired_at, f.created_at, f.updated_at
        FROM matches m
        JOIN found_items f ON m.found_item_id = f.id
        WHERE m.lost_item_id = $1
@@ -10590,33 +10620,38 @@ export async function onItemCreated(
   itemType: 'lost' | 'found',
   itemId: number
 ): Promise<void> {
-  if (itemType === 'lost') {
-    // Find matches for the new lost item
-    await findMatchesForLostItem(itemId, true);
-  } else {
-    // For found items, update matches for all potentially matching lost items
-    const foundResult = await query(
-      'SELECT category, found_date FROM found_items WHERE id = $1',
-      [itemId]
-    );
-
-    if (foundResult.rows.length > 0) {
-      const { category, found_date } = foundResult.rows[0];
-
-      // Get all active lost items in same category
-      const lostItems = await query(
-        `SELECT id FROM lost_items
-         WHERE category = $1
-         AND status = 'ACTIVE'
-         AND lost_date <= ($2::date + INTERVAL '7 days')`,
-        [category, found_date]
+  try {
+    if (itemType === 'lost') {
+      // Find matches for the new lost item
+      await findMatchesForLostItem(itemId, true);
+    } else {
+      // For found items, update matches for all potentially matching lost items
+      const foundResult = await query(
+        'SELECT category, found_date FROM found_items WHERE id = $1',
+        [itemId]
       );
 
-      // Refresh matches for each (limited to avoid overload)
-      for (const item of lostItems.rows.slice(0, 20)) {
-        await findMatchesForLostItem(item.id, true);
+      if (foundResult.rows.length > 0) {
+        const { category, found_date } = foundResult.rows[0];
+
+        // Get all active lost items in same category
+        const lostItems = await query(
+          `SELECT id FROM lost_items
+           WHERE category = $1
+           AND status = 'ACTIVE'
+           AND lost_date <= ($2::date + INTERVAL '7 days')`,
+          [category, found_date]
+        );
+
+        // Refresh matches for each (limited to avoid overload)
+        for (const item of lostItems.rows.slice(0, 20)) {
+          await findMatchesForLostItem(item.id, true);
+        }
       }
     }
+  } catch (error) {
+    // Don't let matching errors crash the main flow
+    console.error(`Matching error for ${itemType} item ${itemId}:`, error);
   }
 }
 
@@ -10629,7 +10664,6 @@ export async function clearStaleMatches(): Promise<number> {
   );
   return result.rowCount || 0;
 }
-
 
 
 ┌────────────────────────────────────────────────────────────┐
@@ -17160,5 +17194,5 @@ setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
 
 
 ══════════════════════════════════════════════════════════════
-  END OF DUMP — 63 files | 16,522 lines
+  END OF DUMP — 63 files | 16,555 lines
 ══════════════════════════════════════════════════════════════

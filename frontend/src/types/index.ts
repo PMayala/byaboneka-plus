@@ -97,22 +97,26 @@ export interface FoundItem {
   claim_count?: number;
 }
 
-// Claim
+// Claim — FIX: Added finder_id which backend returns
 export interface Claim {
   id: number;
   lost_item_id: number;
   found_item_id: number;
   claimant_id: number;
+  finder_id?: number;
   status: ClaimStatus;
   verification_score: number;
   attempts_made: number;
   created_at: string;
+  updated_at?: string;
   lost_item_title?: string;
   found_item_title?: string;
   category?: ItemCategory;
   claimant_name?: string;
   otp_expires_at?: string;
   otp_verified?: boolean;
+  // Dispute info
+  dispute_reason?: string;
 }
 
 // Match
@@ -153,18 +157,19 @@ export interface MessageThread {
   unread_count: number;
 }
 
-// Cooperative
+// Cooperative — FIX INT-01: Matches backend schema exactly
 export interface Cooperative {
   id: number;
   name: string;
-  email: string;
-  phone?: string;
+  registration_number: string;
+  status: 'PENDING' | 'VERIFIED' | 'SUSPENDED';
+  contact_info: string;
   address?: string;
-  registration_number?: string;
-  is_verified: boolean;
-  verified_by?: number;
   verified_at?: string;
+  verified_by?: number;
   created_at: string;
+  updated_at?: string;
+  // Computed fields from backend queries
   staff_count?: number;
   items_count?: number;
 }

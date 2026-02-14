@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   Search, Shield, MapPin, CheckCircle, ArrowRight, Users, 
   Package, FileText, Building2, TrendingUp, Clock, Star
@@ -12,9 +12,11 @@ import { formatDateShort } from '../utils/dateUtils';
 
 const HomePage: React.FC = () => {
   const { isAuthenticated } = useAuthStore();
+  const navigate = useNavigate();
   const [recentFound, setRecentFound] = useState<FoundItem[]>([]);
   const [recentLost, setRecentLost] = useState<LostItem[]>([]);
   const [stats, setStats] = useState({ found: 0, lost: 0, returned: 0 });
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     loadData();
@@ -36,6 +38,17 @@ const HomePage: React.FC = () => {
     } catch (error) {
       console.error('Failed to load data:', error);
     }
+  };
+
+  // FIX: Search bar now passes the keyword to /search page
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const params = new URLSearchParams();
+    params.set('type', 'found');
+    if (searchQuery.trim()) {
+      params.set('keyword', searchQuery.trim());
+    }
+    navigate(`/search?${params.toString()}`);
   };
 
   return (
@@ -89,22 +102,22 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* Quick Search Bar */}
+      {/* Quick Search Bar - FIX: Now actually submits search query */}
       <section className="bg-white border-b sticky top-16 z-30 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-4">
-          <form onSubmit={(e) => { e.preventDefault(); }} className="flex gap-2 sm:gap-4">
+          <form onSubmit={handleSearch} className="flex gap-2 sm:gap-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search for lost or found items..."
                 className="w-full pl-10 pr-4 py-2.5 sm:py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm sm:text-base"
               />
             </div>
-            <Link to="/search">
-              <Button size="md" className="hidden sm:flex">Search</Button>
-              <Button size="md" className="sm:hidden px-3"><Search className="w-5 h-5" /></Button>
-            </Link>
+            <Button type="submit" size="md" className="hidden sm:flex">Search</Button>
+            <Button type="submit" size="md" className="sm:hidden px-3"><Search className="w-5 h-5" /></Button>
           </form>
         </div>
       </section>
@@ -165,6 +178,13 @@ const HomePage: React.FC = () => {
                 )}
               </div>
             ))}
+          </div>
+          <div className="text-center mt-8">
+            <Link to="/how-it-works">
+              <Button variant="outline" rightIcon={<ArrowRight className="w-4 h-4" />}>
+                Learn More
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
