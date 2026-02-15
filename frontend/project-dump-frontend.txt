@@ -1,16 +1,16 @@
 ╔══════════════════════════════════════════════════════════════╗
 ║  Byaboneka+ Frontend                                       ║
 ║  Project Code Dump — AI Review Edition                      ║
-║  Generated: 2026-02-14T17:57:19.879Z                       ║
+║  Generated: 2026-02-15T10:22:34.636Z                       ║
 ╚══════════════════════════════════════════════════════════════╝
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   PROJECT SUMMARY
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  Files included:  57
-  Total lines:     11,353
-  Total size:      407.7 KB
-  Languages:       SVG (1), TSX (37), TypeScript (8), CSS (1), Text (3), HTML (1), JSON (4), JavaScript (2)
+  Files included:  58
+  Total lines:     11,548
+  Total size:      418.6 KB
+  Languages:       SVG (1), TSX (38), TypeScript (8), CSS (1), Text (3), HTML (1), JSON (4), JavaScript (2)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   DIRECTORY STRUCTURE
@@ -48,7 +48,7 @@
   │   │   ├── ScamReportButton.tsx (8.1 KB)
   │   │   └── VerificationStrengthIndicator.tsx (9.4 KB)
   │   ├── pages/
-  │   │   ├── AboutPage.tsx (0 B)
+  │   │   ├── AboutPage.tsx (10.8 KB)
   │   │   ├── AdminDashboardPage.tsx (7.4 KB)
   │   │   ├── AdminFraudDashboard.tsx (7.6 KB)
   │   │   ├── AdminScamReportsPage.tsx (11.9 KB)
@@ -62,7 +62,7 @@
   │   │   ├── ForgotPasswordPage.tsx (3.4 KB)
   │   │   ├── FoundItemDetailPage.tsx (16.1 KB)
   │   │   ├── HomePage.tsx (13.5 KB)
-  │   │   ├── LoginPage.tsx (5.3 KB)
+  │   │   ├── LoginPage.tsx (5.4 KB)
   │   │   ├── LostItemDetailPage.tsx (13.5 KB)
   │   │   ├── MessagesPage.tsx (4.2 KB)
   │   │   ├── MyItemsPage.tsx (14.0 KB)
@@ -97,7 +97,7 @@
   ├── tailwind.config.js (1.2 KB)
   ├── tsconfig.json (640 B)
   ├── tsconfig.node.json (212 B)
-  ├── vercel.json (345 B)
+  ├── vercel.json (351 B)
   └── vite.config.ts (319 B)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -118,41 +118,42 @@
       8. src/components/SafetyWarningBanner.tsx  [128 lines | TSX]
       9. src/components/ScamReportButton.tsx  [204 lines | TSX]
      10. src/components/VerificationStrengthIndicator.tsx  [255 lines | TSX]
-     11. src/pages/AdminDashboardPage.tsx  [172 lines | TSX]
-     12. src/pages/AdminFraudDashboard.tsx  [234 lines | TSX]
-     13. src/pages/AdminScamReportsPage.tsx  [320 lines | TSX]
-     14. src/pages/AdminUsersPage.tsx  [326 lines | TSX]
-     15. src/pages/ClaimDetailPage.tsx  [350 lines | TSX]
-     16. src/pages/ContactPage.tsx  [178 lines | TSX]
-     17. src/pages/CoopDashboardPage.tsx  [177 lines | TSX]
-     18. src/pages/DashboardPage.tsx  [319 lines | TSX]
-     19. src/pages/EditFoundItemPage.tsx  [273 lines | TSX]
-     20. src/pages/EditLostItemPage.tsx  [249 lines | TSX]
-     21. src/pages/ForgotPasswordPage.tsx  [101 lines | TSX]
-     22. src/pages/FoundItemDetailPage.tsx  [406 lines | TSX]
-     23. src/pages/HomePage.tsx  [263 lines | TSX]
-     24. src/pages/LoginPage.tsx  [141 lines | TSX]
-     25. src/pages/LostItemDetailPage.tsx  [365 lines | TSX]
-     26. src/pages/MessagesPage.tsx  [113 lines | TSX]
-     27. src/pages/MyItemsPage.tsx  [306 lines | TSX]
-     28. src/pages/PrivacyPolicyPage.tsx  [91 lines | TSX]
-     29. src/pages/RegisterPage.tsx  [257 lines | TSX]
-     30. src/pages/ReportFoundPage.tsx  [382 lines | TSX]
-     31. src/pages/ReportLostPage.tsx  [432 lines | TSX]
-     32. src/pages/ResetPasswordPage.tsx  [170 lines | TSX]
-     33. src/pages/SearchPage.tsx  [428 lines | TSX]
-     34. src/pages/SettingsPage.tsx  [312 lines | TSX]
-     35. src/pages/TermsPage.tsx  [105 lines | TSX]
-     36. src/services/api.ts  [562 lines | TypeScript]
-     37. src/services/novelFeatureApi.ts  [83 lines | TypeScript]
-     38. src/store/authStore.ts  [70 lines | TypeScript]
-     39. src/types/index.ts  [320 lines | TypeScript]
-     40. src/utils/dateUtils.ts  [61 lines | TypeScript]
-     41. src/utils/index.ts  [2 lines | TypeScript]
-     42. src/App.tsx  [328 lines | TSX]
-     43. src/index.css  [208 lines | CSS]
-     44. src/main.tsx  [11 lines | TSX]
-     45. src/vite-env.d.ts  [10 lines | TypeScript]
+     11. src/pages/AboutPage.tsx  [200 lines | TSX]
+     12. src/pages/AdminDashboardPage.tsx  [172 lines | TSX]
+     13. src/pages/AdminFraudDashboard.tsx  [234 lines | TSX]
+     14. src/pages/AdminScamReportsPage.tsx  [320 lines | TSX]
+     15. src/pages/AdminUsersPage.tsx  [326 lines | TSX]
+     16. src/pages/ClaimDetailPage.tsx  [350 lines | TSX]
+     17. src/pages/ContactPage.tsx  [178 lines | TSX]
+     18. src/pages/CoopDashboardPage.tsx  [177 lines | TSX]
+     19. src/pages/DashboardPage.tsx  [319 lines | TSX]
+     20. src/pages/EditFoundItemPage.tsx  [273 lines | TSX]
+     21. src/pages/EditLostItemPage.tsx  [249 lines | TSX]
+     22. src/pages/ForgotPasswordPage.tsx  [101 lines | TSX]
+     23. src/pages/FoundItemDetailPage.tsx  [406 lines | TSX]
+     24. src/pages/HomePage.tsx  [263 lines | TSX]
+     25. src/pages/LoginPage.tsx  [142 lines | TSX]
+     26. src/pages/LostItemDetailPage.tsx  [365 lines | TSX]
+     27. src/pages/MessagesPage.tsx  [113 lines | TSX]
+     28. src/pages/MyItemsPage.tsx  [306 lines | TSX]
+     29. src/pages/PrivacyPolicyPage.tsx  [91 lines | TSX]
+     30. src/pages/RegisterPage.tsx  [257 lines | TSX]
+     31. src/pages/ReportFoundPage.tsx  [382 lines | TSX]
+     32. src/pages/ReportLostPage.tsx  [432 lines | TSX]
+     33. src/pages/ResetPasswordPage.tsx  [170 lines | TSX]
+     34. src/pages/SearchPage.tsx  [428 lines | TSX]
+     35. src/pages/SettingsPage.tsx  [312 lines | TSX]
+     36. src/pages/TermsPage.tsx  [105 lines | TSX]
+     37. src/services/api.ts  [562 lines | TypeScript]
+     38. src/services/novelFeatureApi.ts  [83 lines | TypeScript]
+     39. src/store/authStore.ts  [70 lines | TypeScript]
+     40. src/types/index.ts  [320 lines | TypeScript]
+     41. src/utils/dateUtils.ts  [61 lines | TypeScript]
+     42. src/utils/index.ts  [2 lines | TypeScript]
+     43. src/App.tsx  [328 lines | TSX]
+     44. src/index.css  [208 lines | CSS]
+     45. src/main.tsx  [11 lines | TSX]
+     46. src/vite-env.d.ts  [10 lines | TypeScript]
 
   📁 (root)/
       1. .env.example  [6 lines | Text]
@@ -164,7 +165,7 @@
       7. tailwind.config.js  [54 lines | JavaScript]
       8. tsconfig.json  [25 lines | JSON]
       9. tsconfig.node.json  [10 lines | JSON]
-     10. vercel.json  [23 lines | JSON]
+     10. vercel.json  [17 lines | JSON]
      11. vite.config.ts  [16 lines | TypeScript]
 
 
@@ -3169,6 +3170,213 @@ export default VerificationStrengthIndicator;
 
 
 ┌────────────────────────────────────────────────────────────┐
+│ FILE: src/pages/AboutPage.tsx
+│ Language: TSX | Lines: 200 | Size: 10.8 KB
+└────────────────────────────────────────────────────────────┘
+
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { 
+  FileText, Search, Shield, CheckCircle, Building2, 
+  TrendingUp, Users, Lock, Eye, Zap, ArrowRight,
+  Smartphone, MapPin, MessageSquare, Key
+} from 'lucide-react';
+import { Button, Card, Badge } from '../components/ui';
+import { useAuthStore } from '../store/authStore';
+
+const AboutPage: React.FC = () => {
+  const { isAuthenticated } = useAuthStore();
+
+  return (
+    <div className="min-h-screen">
+      {/* Hero */}
+      <section className="bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 py-16 sm:py-20">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <Badge variant="verified" size="lg" className="mb-4">
+            <Zap className="w-4 h-4 mr-1" /> ALU Capstone Project
+          </Badge>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
+            How Byaboneka+ Works
+          </h1>
+          <p className="text-lg text-primary-100 max-w-2xl mx-auto">
+            A trust-aware lost and found infrastructure designed specifically for 
+            Rwanda's transport ecosystem — reuniting people with their belongings safely.
+          </p>
+        </div>
+      </section>
+
+      {/* The Problem */}
+      <section className="py-12 sm:py-16 bg-white">
+        <div className="max-w-4xl mx-auto px-4">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6 text-center">The Problem We Solve</h2>
+          <div className="prose prose-lg mx-auto text-gray-600">
+            <p className="text-center max-w-3xl mx-auto">
+              Every day, thousands of Rwandans lose personal belongings on public transport — phones, 
+              wallets, IDs, bags, and keys. Without a centralized system, recovering these items relies 
+              on informal channels, word of mouth, and luck. Fraud risks make the situation worse, as 
+              there's no way to verify rightful ownership.
+            </p>
+          </div>
+          <div className="grid sm:grid-cols-3 gap-6 mt-10">
+            {[
+              { icon: <Search className="w-6 h-6" />, title: 'No Central System', desc: 'Items reported informally across disconnected channels' },
+              { icon: <Shield className="w-6 h-6" />, title: 'Fraud Risk', desc: 'No verification means anyone can claim to own an item' },
+              { icon: <Users className="w-6 h-6" />, title: 'Trust Gap', desc: 'No accountability for cooperatives or individuals' },
+            ].map((item, i) => (
+              <Card key={i} className="p-6 text-center border-red-100 bg-red-50">
+                <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center text-red-500 mx-auto mb-3">
+                  {item.icon}
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-1">{item.title}</h3>
+                <p className="text-sm text-gray-600">{item.desc}</p>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Step-by-Step Process */}
+      <section className="py-12 sm:py-16 bg-gray-50">
+        <div className="max-w-5xl mx-auto px-4">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 text-center">Step-by-Step Process</h2>
+          <p className="text-gray-600 text-center mb-12 max-w-2xl mx-auto">
+            From reporting to recovery, Byaboneka+ guides every step with security and trust built in.
+          </p>
+
+          <div className="space-y-8">
+            {[
+              {
+                step: '01',
+                title: 'Report Lost or Found Item',
+                desc: 'Describe the item with details — category, location, date, and distinctive features. For lost items, you also set verification questions that only the true owner would know.',
+                icon: FileText,
+                color: 'bg-blue-500',
+              },
+              {
+                step: '02',
+                title: 'Smart Matching Engine',
+                desc: 'Our algorithm automatically compares lost and found reports using multiple factors: category match, location proximity, time correlation, and keyword overlap. Matches are scored and ranked.',
+                icon: Search,
+                color: 'bg-purple-500',
+              },
+              {
+                step: '03',
+                title: 'Ownership Verification',
+                desc: 'To claim a found item, the owner must answer verification questions they set when reporting. A multi-question challenge with limited attempts prevents fraud while protecting legitimate owners.',
+                icon: Shield,
+                color: 'bg-green-500',
+              },
+              {
+                step: '04',
+                title: 'Secure Messaging',
+                desc: 'Once verified, owners and finders can communicate through the platform. Messages are monitored for scam indicators, and either party can report suspicious behavior.',
+                icon: MessageSquare,
+                color: 'bg-yellow-500',
+              },
+              {
+                step: '05',
+                title: 'OTP-Secured Handover',
+                desc: 'The platform generates a one-time code that the owner shares with the finder at the meeting point. This ensures both parties confirm the physical handover, completing the process securely.',
+                icon: Key,
+                color: 'bg-orange-500',
+              },
+              {
+                step: '06',
+                title: 'Trust Score Update',
+                desc: 'After successful returns, both parties earn trust score points. Over time, this builds a reputation system that rewards honest behavior and flags suspicious accounts.',
+                icon: TrendingUp,
+                color: 'bg-trust-500',
+              },
+            ].map((item, i) => (
+              <div key={i} className="flex gap-4 sm:gap-6">
+                <div className="flex-shrink-0">
+                  <div className={`w-12 h-12 sm:w-14 sm:h-14 ${item.color} rounded-2xl flex items-center justify-center text-white`}>
+                    <item.icon className="w-6 h-6 sm:w-7 sm:h-7" />
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-sm font-mono text-gray-400">{item.step}</span>
+                    <h3 className="text-lg font-semibold text-gray-900">{item.title}</h3>
+                  </div>
+                  <p className="text-gray-600">{item.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Key Features */}
+      <section className="py-12 sm:py-16 bg-white">
+        <div className="max-w-5xl mx-auto px-4">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 text-center">Key Features</h2>
+          <p className="text-gray-600 text-center mb-10">What makes Byaboneka+ unique</p>
+          
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              { icon: <Shield className="w-6 h-6" />, title: 'Multi-Question Verification', desc: 'Category-specific ownership proof with strength analysis', color: 'text-green-500', bg: 'bg-green-100' },
+              { icon: <Eye className="w-6 h-6" />, title: 'Behavioral Fraud Detection', desc: 'Real-time analysis of user patterns to flag suspicious activity', color: 'text-red-500', bg: 'bg-red-100' },
+              { icon: <Lock className="w-6 h-6" />, title: 'Privacy Redaction', desc: 'Automatic detection and masking of sensitive info in descriptions', color: 'text-purple-500', bg: 'bg-purple-100' },
+              { icon: <Building2 className="w-6 h-6" />, title: 'Cooperative Accountability', desc: 'Scoring and leaderboard for transport cooperatives', color: 'text-blue-500', bg: 'bg-blue-100' },
+              { icon: <MapPin className="w-6 h-6" />, title: 'Safe Handover Locations', desc: 'Recommended meeting points at police stations and cooperative offices', color: 'text-orange-500', bg: 'bg-orange-100' },
+              { icon: <Smartphone className="w-6 h-6" />, title: 'Duplicate Detection', desc: 'Prevents double-reporting with similarity scoring before submission', color: 'text-yellow-600', bg: 'bg-yellow-100' },
+            ].map((feature, i) => (
+              <Card key={i} className="p-6">
+                <div className={`w-12 h-12 ${feature.bg} rounded-xl flex items-center justify-center ${feature.color} mb-4`}>
+                  {feature.icon}
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-2">{feature.title}</h3>
+                <p className="text-sm text-gray-600">{feature.desc}</p>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Tech Stack */}
+      <section className="py-12 sm:py-16 bg-gray-50">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">Built With</h2>
+          <p className="text-gray-600 mb-8">Modern, production-grade technology stack</p>
+          <div className="flex flex-wrap justify-center gap-3">
+            {['React', 'TypeScript', 'Tailwind CSS', 'Node.js', 'Express', 'PostgreSQL', 'JWT Auth', 'Zustand', 'Zod', 'Docker', 'Swagger'].map((tech) => (
+              <span key={tech} className="px-4 py-2 bg-white rounded-full text-sm font-medium text-gray-700 border border-gray-200">
+                {tech}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="py-12 sm:py-16 bg-gradient-to-r from-primary-600 to-primary-700">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">Ready to Try It?</h2>
+          <p className="text-primary-100 mb-8">Start using Byaboneka+ to find your lost belongings</p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            {isAuthenticated ? (
+              <>
+                <Link to="/dashboard"><Button size="lg" variant="accent">Go to Dashboard</Button></Link>
+                <Link to="/search"><Button size="lg" variant="secondary" className="bg-white/10 border-white/30 text-white hover:bg-white/20">Search Items</Button></Link>
+              </>
+            ) : (
+              <>
+                <Link to="/register"><Button size="lg" variant="accent">Create Free Account</Button></Link>
+                <Link to="/login"><Button size="lg" variant="secondary" className="bg-white/10 border-white/30 text-white hover:bg-white/20">Sign In</Button></Link>
+              </>
+            )}
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default AboutPage;
+
+
+┌────────────────────────────────────────────────────────────┐
 │ FILE: src/pages/AdminDashboardPage.tsx
 │ Language: TSX | Lines: 172 | Size: 7.4 KB
 └────────────────────────────────────────────────────────────┘
@@ -5352,8 +5560,8 @@ const EditFoundItemPage: React.FC = () => {
       const response = await foundItemsApi.getById(parseInt(id!));
       const data = response.data.data;
 
-      // Only allow owner to edit
-      if (data.user_id !== user?.id) {
+      // Only allow finder to edit
+      if (data.finder_id !== user?.id) {
         toast.error('You can only edit your own items');
         navigate(`/found-items/${id}`);
         return;
@@ -5399,7 +5607,7 @@ const EditFoundItemPage: React.FC = () => {
         title: formData.title,
         description: formData.description,
         location_area: formData.location_area,
-        location_hint: formData.location_hint || undefined,
+        location_hint: formData.location_hint,
       });
       toast.success('Item updated successfully');
       navigate(`/found-items/${id}`);
@@ -5445,7 +5653,7 @@ const EditFoundItemPage: React.FC = () => {
         <p className="text-gray-600">Update the details of your found item report</p>
       </div>
 
-      {item.status !== 'AVAILABLE' && (
+      {item.status !== 'UNCLAIMED' && (
         <Alert type="warning" className="mb-6">
           This item is currently <strong>{item.status.toLowerCase()}</strong>. Some fields may not be editable.
         </Alert>
@@ -6629,7 +6837,7 @@ export default HomePage;
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: src/pages/LoginPage.tsx
-│ Language: TSX | Lines: 141 | Size: 5.3 KB
+│ Language: TSX | Lines: 142 | Size: 5.4 KB
 └────────────────────────────────────────────────────────────┘
 
 import React, { useState } from 'react';
@@ -6763,6 +6971,7 @@ const LoginPage: React.FC = () => {
           <p className="text-sm font-medium text-blue-800 mb-2">Demo Accounts:</p>
           <div className="text-xs text-blue-700 space-y-1">
             <p>Admin: admin@byaboneka.rw / Admin@123</p>
+            <p>Cooperative: jbmugisha@kigalimoto.rw / User@123</p>
             <p>Citizen: emmanuel.k@gmail.com / User@123</p>
           </div>
         </div>
@@ -11890,7 +12099,7 @@ export default {
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: vercel.json
-│ Language: JSON | Lines: 23 | Size: 345 B
+│ Language: JSON | Lines: 17 | Size: 351 B
 └────────────────────────────────────────────────────────────┘
 
 {
@@ -11900,22 +12109,16 @@ export default {
     {
       "src": "package.json",
       "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
+      "config": { "distDir": "dist" }
     }
   ],
   "routes": [
-    {
-      "src": "/assets/(.*)",
-      "dest": "/assets/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
+    { "src": "/assets/(.*)", "dest": "/assets/$1" },
+    { "src": "/fonts/(.*)", "dest": "/fonts/$1" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
+
 
 
 ┌────────────────────────────────────────────────────────────┐
@@ -11942,5 +12145,5 @@ export default defineConfig({
 
 
 ══════════════════════════════════════════════════════════════
-  END OF DUMP — 57 files | 11,353 lines
+  END OF DUMP — 58 files | 11,548 lines
 ══════════════════════════════════════════════════════════════

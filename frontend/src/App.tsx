@@ -4,6 +4,7 @@ import { Toaster } from 'react-hot-toast';
 import { Layout } from './components/layout';
 import { useAuthStore } from './store/authStore';
 import { LoadingSpinner } from './components/ui';
+import ScrollToTop from './components/ScrollToTop';
 
 // Pages
 import HomePage from './pages/HomePage';
@@ -117,6 +118,7 @@ function App() {
 
   return (
     <BrowserRouter>
+    <ScrollToTop />
       <Layout>
         <Routes>
           {/* Public Routes */}
