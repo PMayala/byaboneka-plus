@@ -129,6 +129,7 @@ const LoginPage: React.FC = () => {
           <p className="text-sm font-medium text-blue-800 mb-2">Demo Accounts:</p>
           <div className="text-xs text-blue-700 space-y-1">
             <p>Admin: admin@byaboneka.rw / Admin@123</p>
+            <p>Cooperative: jbmugisha@kigalimoto.rw / User@123</p>
             <p>Citizen: emmanuel.k@gmail.com / User@123</p>
           </div>
         </div>
