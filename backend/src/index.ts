@@ -13,6 +13,13 @@ import { checkConnection, closePool, query } from './config/database';
 import { apiLimiter } from './middleware/rateLimiter';
 import { notFoundHandler, errorHandler } from './middleware/errorHandler';
 import { runMigrations } from './migrations/001_initial';
+import { runPatchMigrations } from './migrations/002_patch';
+import { sendPendingExpiryWarnings, checkEmailHealth } from './services/emailService';
+import { swaggerSpec } from './config/swagger';
+
+// swagger-ui-express is CJS — use require for reliable loading
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const swaggerUi = require('swagger-ui-express');
 
 // Load environment variables
 dotenv.config();
@@ -26,13 +33,14 @@ const PORT = process.env.PORT || 4000;
 
 // Security headers
 app.use(helmet({
-  crossOriginResourcePolicy: { policy: 'cross-origin' }
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+  contentSecurityPolicy: false, // Swagger UI needs inline scripts/styles
 }));
 
 // CORS — support multiple origins for Vercel + localhost
 const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:3000')
   .split(',')
-  .map(o => o.trim());
+  .map(o => o.trim().replace(/\/+$/, '')); // Strip trailing slashes
 
 app.use(cors({
   origin: (origin, callback) => {
@@ -58,11 +66,22 @@ app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
 // Rate limiting
-app.use('/api', apiLimiter);
+app.use('/api/v1', apiLimiter);
 
 // Static files for uploads
 const uploadPath = process.env.UPLOAD_PATH || './uploads';
 app.use('/uploads', express.static(path.resolve(uploadPath)));
+
+// ============================================
+// SWAGGER API DOCS
+// ============================================
+const swaggerSetup = swaggerUi.setup(swaggerSpec, {
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'Byaboneka+ API Documentation'
+});
+app.use('/api-docs', swaggerUi.serve);
+app.get('/api-docs', swaggerSetup);
+console.log('📖 API docs available at /api-docs');
 
 // ============================================
 // ROUTES
@@ -128,27 +147,12 @@ cron.schedule('0 2 * * *', async () => {
   }
 });
 
-// Send expiry warnings (daily at 1 AM)
+// Send expiry warnings (daily at 1 AM) — now sends real emails via Brevo
 cron.schedule('0 1 * * *', async () => {
   console.log('🕐 Sending expiry warnings...');
   try {
-    await query(`
-      UPDATE lost_items 
-      SET expiry_warning_sent = true
-      WHERE status = 'ACTIVE' 
-      AND updated_at < NOW() - INTERVAL '23 days'
-      AND expiry_warning_sent = false
-    `);
-
-    await query(`
-      UPDATE found_items 
-      SET expiry_warning_sent = true
-      WHERE status = 'UNCLAIMED' 
-      AND updated_at < NOW() - INTERVAL '23 days'
-      AND expiry_warning_sent = false
-    `);
-
-    console.log('✅ Expiry warnings sent');
+    const sent = await sendPendingExpiryWarnings();
+    console.log(`✅ Expiry warnings sent: ${sent} emails`);
   } catch (error) {
     console.error('❌ Expiry warning job failed:', error);
   }
@@ -169,6 +173,7 @@ async function startServer() {
 
     // Run migrations
     await runMigrations();
+    await runPatchMigrations();
 
     // Create uploads directory if it doesn't exist
     const fs = await import('fs');
@@ -177,7 +182,10 @@ async function startServer() {
     }
 
     // Start server
-    const server = app.listen(PORT, () => {
+    const server = app.listen(PORT, async () => {
+      // Check email service status
+      const emailStatus = await checkEmailHealth();
+      
       console.log(`
 ╔════════════════════════════════════════════════════════════╗
 ║                                                            ║
@@ -186,6 +194,8 @@ async function startServer() {
 ║   Port: ${PORT}                                              ║
 ║   Environment: ${process.env.NODE_ENV || 'development'}                            ║
 ║   API: http://localhost:${PORT}/api/v1                        ║
+║   Docs: http://localhost:${PORT}/api-docs                     ║
+║   Email: ${emailStatus.connected ? '✅ Brevo SMTP connected' : emailStatus.configured ? '⚠️  Configured but not connected' : '❌ Not configured (set BREVO_SMTP_USER)'}
 ║                                                            ║
 ╚════════════════════════════════════════════════════════════╝
       `);

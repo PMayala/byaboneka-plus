@@ -41,10 +41,12 @@ const CooperativeLeaderboard: React.FC = () => {
   const loadLeaderboard = async () => {
     try {
       setLoading(true);
+      setError('');
       const res = await cooperativeLeaderboardApi.getLeaderboard();
       setCooperatives(res.data?.data || []);
-    } catch (err) {
-      setError('Failed to load leaderboard');
+    } catch (err: any) {
+      console.error('Leaderboard load error:', err?.response?.data || err?.message);
+      setError('Failed to load leaderboard. Please try again.');
     } finally {
       setLoading(false);
     }

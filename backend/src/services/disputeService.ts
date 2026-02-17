@@ -8,6 +8,7 @@
 
 import { query, transaction } from '../config/database';
 import { logAudit, extractRequestMeta } from './auditService';
+import { sendDisputeOpenedEmail } from './emailService';
 import { updateTrustScore } from './trustService';
 import { Request } from 'express';
 
@@ -126,6 +127,38 @@ export async function openDispute(
     ipAddress,
     userAgent
   });
+  
+  // Send dispute notification emails to both parties
+  try {
+    const claimInfo = await query(
+      `SELECT c.claimant_id, li.user_id as owner_id, li.title as item_title, fi.finder_id
+       FROM claims c
+       JOIN lost_items li ON c.lost_item_id = li.id
+       JOIN found_items fi ON c.found_item_id = fi.id
+       WHERE c.id = $1`,
+      [claimId]
+    );
+    if (claimInfo.rows[0]) {
+      const ci = claimInfo.rows[0];
+      const otherPartyId = userId === ci.owner_id ? ci.finder_id : ci.owner_id;
+      
+      // Email initiator
+      const initiatorInfo = await query('SELECT email, name FROM users WHERE id = $1', [userId]);
+      if (initiatorInfo.rows[0]) {
+        sendDisputeOpenedEmail(initiatorInfo.rows[0].email, initiatorInfo.rows[0].name, ci.item_title, claimId, true)
+          .catch(err => console.error('Dispute initiator email failed:', err.message));
+      }
+      
+      // Email other party
+      const otherInfo = await query('SELECT email, name FROM users WHERE id = $1', [otherPartyId]);
+      if (otherInfo.rows[0]) {
+        sendDisputeOpenedEmail(otherInfo.rows[0].email, otherInfo.rows[0].name, ci.item_title, claimId, false)
+          .catch(err => console.error('Dispute other party email failed:', err.message));
+      }
+    }
+  } catch (emailErr) {
+    console.error('Failed to send dispute emails:', emailErr);
+  }
   
   return {
     success: true,

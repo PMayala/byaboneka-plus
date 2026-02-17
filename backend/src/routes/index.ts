@@ -22,6 +22,9 @@ import { authLimiter, reportLimiter, claimLimiter, verificationLimiter, otpLimit
 import { UserRole } from '../types';
 import { checkConnection } from '../config/database';
 import { fraudCheck } from '../services/fraudDetectionService';
+import { requireRecaptcha, softRecaptcha } from '../middleware/recaptcha';
+
+import { checkEmailHealth, sendContactFormEmail } from '../services/emailService';
 
 const router = Router();
 
@@ -60,12 +63,14 @@ const upload = multer({
 
 router.post('/auth/register',
   authLimiter,
+  requireRecaptcha('register'),
   validate(registerSchema),
   authController.register
 );
 
 router.post('/auth/login',
   authLimiter,
+  softRecaptcha('login'),
   validate(loginSchema),
   authController.login
 );
@@ -82,6 +87,7 @@ router.post('/auth/logout',
 
 router.post('/auth/forgot-password',
   passwordResetLimiter,
+  requireRecaptcha('forgot_password'),
   validate(forgotPasswordSchema),
   authController.forgotPassword
 );
@@ -113,6 +119,7 @@ router.post('/auth/change-password',
 router.post('/lost-items',
   authenticate,
   reportLimiter,
+  requireRecaptcha('report_lost'),
   fraudCheck('REPORT_CREATE'),
   validate(createLostItemSchema),
   lostItemsController.createLostItem
@@ -157,6 +164,7 @@ router.get('/users/me/lost-items',
 router.post('/found-items',
   authenticate,
   reportLimiter,
+  requireRecaptcha('report_found'),
   fraudCheck('REPORT_CREATE'),
   validate(createFoundItemSchema),
   foundItemsController.createFoundItem
@@ -390,15 +398,87 @@ router.post('/admin/cleanup',
 // HEALTH CHECK (with DB connectivity)
 // ============================================
 
+// ============================================
+// CONTACT FORM
+// ============================================
+router.post('/contact',
+  authLimiter,
+  requireRecaptcha('contact'),
+  async (req, res) => {
+    try {
+      const { name, email, message } = req.body;
+
+      if (!name || !email || !message) {
+        res.status(400).json({ success: false, message: 'Name, email, and message are required' });
+        return;
+      }
+
+      // Basic email format check
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        res.status(400).json({ success: false, message: 'Invalid email address' });
+        return;
+      }
+
+      if (message.length > 5000) {
+        res.status(400).json({ success: false, message: 'Message too long (max 5000 characters)' });
+        return;
+      }
+
+      const sent = await sendContactFormEmail(name.trim(), email.trim(), message.trim());
+
+      if (sent) {
+        res.json({ success: true, message: 'Message sent successfully. We\'ll get back to you soon!' });
+      } else {
+        // Email service not configured but don't expose that
+        console.log(`[CONTACT FORM] From: ${name} <${email}> | Message: ${message}`);
+        res.json({ success: true, message: 'Message received. We\'ll get back to you soon!' });
+      }
+    } catch (error) {
+      console.error('Contact form error:', error);
+      res.status(500).json({ success: false, message: 'Failed to send message. Please try again.' });
+    }
+  }
+);
+
+// ============================================
+// HEALTH CHECK
+// ============================================
+// ============================================
+// ROOT & HEALTH
+// ============================================
+router.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Byaboneka+ API v1',
+    version: '1.0.0',
+    docs: '/api-docs',
+    health: '/api/v1/health',
+    endpoints: {
+      auth: '/api/v1/auth',
+      lost_items: '/api/v1/lost-items',
+      found_items: '/api/v1/found-items',
+      claims: '/api/v1/claims',
+      messages: '/api/v1/messages',
+      admin: '/api/v1/admin',
+    }
+  });
+});
+
 router.get('/health', async (req, res) => {
   const dbOk = await checkConnection();
+  const emailHealth = await checkEmailHealth();
   const status = dbOk ? 'ok' : 'degraded';
   const httpCode = dbOk ? 200 : 503;
 
   res.status(httpCode).json({
     status,
     timestamp: new Date().toISOString(),
-    database: dbOk ? 'connected' : 'unreachable'
+    database: dbOk ? 'connected' : 'unreachable',
+    email: {
+      configured: emailHealth.configured,
+      connected: emailHealth.connected,
+      provider: emailHealth.configured ? 'brevo' : 'none'
+    }
   });
 });
 

@@ -9,6 +9,21 @@ export async function runMigrations(): Promise<void> {
   console.log('🚀 Running database migrations...');
 
   // ==========================================
+  // CLEANUP: Fix orphaned composite types from prior DROP TABLE
+  // PostgreSQL keeps composite types in pg_type even after DROP TABLE CASCADE.
+  // If the type exists but the table doesn't, drop the orphaned type.
+  // ==========================================
+  await query(`
+    DO $$ BEGIN
+      IF EXISTS (SELECT 1 FROM pg_type WHERE typname = 'verification_attempts' AND typtype = 'c')
+         AND NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'verification_attempts')
+      THEN
+        DROP TYPE IF EXISTS verification_attempts CASCADE;
+      END IF;
+    END $$;
+  `);
+
+  // ==========================================
   // EXTENSIONS
   // ==========================================
   await query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`);
@@ -197,11 +212,9 @@ export async function runMigrations(): Promise<void> {
 
   // ==========================================
   // VERIFICATION ATTEMPTS TABLE
-  // Drop and recreate to guarantee correct schema
   // ==========================================
-  await query(`DROP TABLE IF EXISTS verification_attempts CASCADE`);
   await query(`
-    CREATE TABLE verification_attempts (
+    CREATE TABLE IF NOT EXISTS verification_attempts (
       id SERIAL PRIMARY KEY,
       claim_id INTEGER NOT NULL REFERENCES claims(id) ON DELETE CASCADE,
       user_id INTEGER REFERENCES users(id),
@@ -211,14 +224,6 @@ export async function runMigrations(): Promise<void> {
       ip_address INET
     )
   `);
-
-  // Debug: verify the table was created correctly
-  const colCheck = await query(`
-    SELECT column_name FROM information_schema.columns 
-    WHERE table_name = 'verification_attempts' 
-    ORDER BY ordinal_position
-  `);
-  console.log('  verification_attempts columns:', colCheck.rows.map((r: any) => r.column_name).join(', '));
 
   await query(`CREATE INDEX IF NOT EXISTS idx_verification_attempts_claim ON verification_attempts(claim_id)`);
   await query(`CREATE INDEX IF NOT EXISTS idx_verification_attempts_date ON verification_attempts(attempt_at)`);

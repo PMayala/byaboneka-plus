@@ -4,6 +4,7 @@ import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { Button, Input, Alert } from '../components/ui';
 import { authApi } from '../services/api';
 import { useAuthStore } from '../store/authStore';
+import { useRecaptcha } from '../hooks/useRecaptcha';
 import toast from 'react-hot-toast';
 
 const LoginPage: React.FC = () => {
@@ -12,6 +13,7 @@ const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const { executeRecaptcha } = useRecaptcha();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -25,7 +27,8 @@ const LoginPage: React.FC = () => {
     setLoading(true);
 
     try {
-      const response = await authApi.login({ email, password });
+      const recaptchaToken = await executeRecaptcha('login');
+      const response = await authApi.login({ email, password, ...(recaptchaToken && { recaptchaToken }) } as any);
       const { user, tokens } = response.data.data;
       
       login(user, tokens.accessToken, tokens.refreshToken);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { 
   Menu, X, Search, Bell, User, LogOut, 
@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useAuthStore } from '../../store/authStore';
-import { authApi } from '../../services/api';
+import { authApi, messagesApi } from '../../services/api';
 import toast from 'react-hot-toast';
 
 // ============================================
@@ -17,9 +17,28 @@ import toast from 'react-hot-toast';
 export const Header: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const { user, isAuthenticated, logout } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Poll for unread message count
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    
+    const fetchUnread = async () => {
+      try {
+        const res = await messagesApi.getUnreadCount();
+        setUnreadCount(res.data?.data?.unread_count || 0);
+      } catch {
+        // Silently fail — not critical
+      }
+    };
+
+    fetchUnread();
+    const interval = setInterval(fetchUnread, 30000); // every 30s
+    return () => clearInterval(interval);
+  }, [isAuthenticated]);
 
   const handleLogout = async () => {
     try {
@@ -84,6 +103,11 @@ export const Header: React.FC = () => {
                   className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg relative"
                 >
                   <Bell className="w-5 h-5" />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </span>
+                  )}
                 </Link>
 
                 {/* Profile Dropdown */}

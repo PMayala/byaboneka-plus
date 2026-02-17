@@ -4,6 +4,7 @@ import { verifySecretAnswer, parsePaginationParams, generateOTP, hashOTP, verify
 import { logClaimAttempt, logOtpAction, logAudit, extractRequestMeta } from '../services/auditService';
 import { onFailedVerification, onSuccessfulReturn, onMultipleFailedClaims } from '../services/trustService';
 import { ClaimStatus, UserRole } from '../types';
+import { sendClaimNotificationEmail, sendClaimResultEmail } from '../services/emailService';
 
 // ============================================
 // CLAIMS CONTROLLER
@@ -77,6 +78,26 @@ export async function createClaim(req: Request, res: Response): Promise<void> {
        RETURNING *`,
       [lost_item_id, found_item_id, userId]
     );
+
+    // Notify the lost item owner about the new claim
+    try {
+      const ownerInfo = await query(
+        `SELECT u.email, u.name, li.title 
+         FROM lost_items li JOIN users u ON li.user_id = u.id 
+         WHERE li.id = $1`,
+        [lost_item_id]
+      );
+      if (ownerInfo.rows[0]) {
+        sendClaimNotificationEmail(
+          ownerInfo.rows[0].email,
+          ownerInfo.rows[0].name,
+          ownerInfo.rows[0].title,
+          result.rows[0].id
+        ).catch(err => console.error('Claim notification email failed:', err.message));
+      }
+    } catch (emailErr) {
+      console.error('Failed to send claim notification:', emailErr);
+    }
 
     res.status(201).json({
       success: true,
@@ -307,6 +328,24 @@ export async function verifyClaim(req: Request, res: Response): Promise<void> {
         `UPDATE lost_items SET status = 'CLAIMED' WHERE id = $1`,
         [claim.lost_item_id]
       );
+    }
+
+    // Send verification result email to claimant
+    try {
+      const claimantInfo = await query('SELECT email, name FROM users WHERE id = $1', [userId]);
+      const itemInfo = await query('SELECT title FROM lost_items WHERE id = $1', [claim.lost_item_id]);
+      if (claimantInfo.rows[0] && itemInfo.rows[0]) {
+        sendClaimResultEmail(
+          claimantInfo.rows[0].email,
+          claimantInfo.rows[0].name,
+          itemInfo.rows[0].title,
+          parseInt(claimId),
+          passed,
+          verificationScore
+        ).catch(err => console.error('Claim result email failed:', err.message));
+      }
+    } catch (emailErr) {
+      console.error('Failed to send claim result email:', emailErr);
     }
 
     const attemptsRemaining = 3 - parseInt(attemptsToday.rows[0].count) - 1;

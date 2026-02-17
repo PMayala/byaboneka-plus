@@ -9,6 +9,7 @@ import { Button, Card, Input, Textarea, Select, Alert } from '../components/ui';
 import { lostItemsApi, duplicateApi } from '../services/api';
 import { DuplicateWarning } from '../components/DuplicateWarning';
 import { ItemCategory, CATEGORY_INFO, RWANDA_LOCATIONS, QUESTION_TEMPLATES, VerificationQuestion } from '../types';
+import { useRecaptcha } from '../hooks/useRecaptcha';
 import toast from 'react-hot-toast';
 import VerificationStrengthIndicator from '../components/VerificationStrengthIndicator';
 
@@ -40,6 +41,7 @@ interface FormData {
 
 const ReportLostPage: React.FC = () => {
   const navigate = useNavigate();
+  const { executeRecaptcha } = useRecaptcha();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -133,13 +135,15 @@ const ReportLostPage: React.FC = () => {
     setShowDuplicateWarning(false);
     setLoading(true);
     try {
+      const recaptchaToken = await executeRecaptcha('report_lost');
       const response = await lostItemsApi.create({
         ...formData,
         verification_questions: formData.verification_questions.map((q) => ({
           question: q.question,
           answer: q.answer,
         })),
-      });
+        ...(recaptchaToken && { recaptchaToken }),
+      } as any);
 
       toast.success('Lost item reported successfully!');
       navigate(`/lost-items/${response.data.data.id}`);

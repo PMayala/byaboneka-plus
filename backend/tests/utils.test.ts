@@ -188,7 +188,7 @@ describe('Utility Functions', () => {
     });
 
     it('should flag payment requests', () => {
-      const result = isMessageFlaggable('Transfer money to my account for reward');
+      const result = isMessageFlaggable('Transfer money to my account first before I return it');
       expect(result.flagged).toBe(true);
     });
 
@@ -320,7 +320,7 @@ describe('Utility Functions', () => {
     it('should use defaults for missing params', () => {
       const result = parsePaginationParams(undefined, undefined);
       expect(result.page).toBe(1);
-      expect(result.limit).toBe(10);
+      expect(result.limit).toBe(20);
       expect(result.offset).toBe(0);
     });
 

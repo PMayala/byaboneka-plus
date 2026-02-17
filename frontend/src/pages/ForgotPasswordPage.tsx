@@ -3,9 +3,11 @@ import { Link } from 'react-router-dom';
 import { Mail, ArrowLeft, CheckCircle } from 'lucide-react';
 import { Button, Card, Input, Alert } from '../components/ui';
 import { authApi } from '../services/api';
+import { useRecaptcha } from '../hooks/useRecaptcha';
 import toast from 'react-hot-toast';
 
 const ForgotPasswordPage: React.FC = () => {
+  const { executeRecaptcha } = useRecaptcha();
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
@@ -19,7 +21,8 @@ const ForgotPasswordPage: React.FC = () => {
 
     setLoading(true);
     try {
-      await authApi.forgotPassword(email);
+      const recaptchaToken = await executeRecaptcha('forgot_password');
+      await (authApi as any).forgotPassword(email, recaptchaToken);
       setSent(true);
     } catch (error: any) {
       // Don't reveal if email exists or not for security

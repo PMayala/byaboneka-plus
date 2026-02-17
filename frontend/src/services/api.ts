@@ -179,8 +179,8 @@ export const authApi = {
   refreshToken: (refreshToken: string) =>
     api.post<ApiResponse<AuthTokens>>('/auth/refresh', { refreshToken }),
 
-  forgotPassword: (email: string) =>
-    api.post<ApiResponse>('/auth/forgot-password', { email }),
+  forgotPassword: (email: string, recaptchaToken?: string | null) =>
+    api.post<ApiResponse>('/auth/forgot-password', { email, ...(recaptchaToken && { recaptchaToken }) }),
 
   resetPassword: (token: string, password: string) =>
     api.post<ApiResponse>('/auth/reset-password', { token, password }),

@@ -41,6 +41,9 @@ import AdminFraudDashboard from './pages/AdminFraudDashboard';
 import CoopDashboardPage from './pages/CoopDashboardPage';
 import CooperativeLeaderboard from './components/CooperativeLeaderboard';
 
+// 404 Page
+import NotFoundPage from './pages/NotFoundPage';
+
 // Protected Route Component
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuthStore();
@@ -289,18 +292,7 @@ function App() {
           />
 
           {/* 404 */}
-          <Route
-            path="*"
-            element={
-              <div className="flex flex-col items-center justify-center min-h-[50vh]">
-                <h1 className="text-4xl font-bold text-gray-900 mb-4">404</h1>
-                <p className="text-gray-600 mb-8">Page not found</p>
-                <a href="/" className="px-6 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600">
-                  Go Home
-                </a>
-              </div>
-            }
-          />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Layout>
 

@@ -5,6 +5,8 @@ import {
   ChevronDown, ChevronUp, HelpCircle, Send
 } from 'lucide-react';
 import { Button, Card, Input } from '../components/ui';
+import { useRecaptcha } from '../hooks/useRecaptcha';
+import api from '../services/api';
 import toast from 'react-hot-toast';
 
 interface FaqItem {
@@ -58,15 +60,31 @@ const faqs: FaqItem[] = [
 const ContactPage: React.FC = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
+  const [loading, setLoading] = useState(false);
+  const { executeRecaptcha } = useRecaptcha();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!contactForm.name || !contactForm.email || !contactForm.message) {
       toast.error('Please fill in all fields');
       return;
     }
-    toast.success('Message sent! We\'ll get back to you soon.');
-    setContactForm({ name: '', email: '', message: '' });
+
+    setLoading(true);
+    try {
+      const recaptchaToken = await executeRecaptcha('contact');
+      await api.post('/contact', {
+        ...contactForm,
+        ...(recaptchaToken && { recaptchaToken }),
+      });
+      toast.success('Message sent! We\'ll get back to you soon.');
+      setContactForm({ name: '', email: '', message: '' });
+    } catch (err: any) {
+      const message = err.response?.data?.message || 'Failed to send message. Please try again.';
+      toast.error(message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -163,9 +181,12 @@ const ContactPage: React.FC = () => {
                   className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm resize-none"
                 />
               </div>
-              <Button type="submit" className="w-full">
-                <Send className="w-4 h-4 mr-2" />
-                Send Message
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? (
+                  <>Sending...</>
+                ) : (
+                  <><Send className="w-4 h-4 mr-2" />Send Message</>
+                )}
               </Button>
             </form>
           </Card>

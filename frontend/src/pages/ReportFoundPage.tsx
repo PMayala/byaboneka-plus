@@ -10,6 +10,7 @@ import { foundItemsApi, duplicateApi } from '../services/api';
 import { DuplicateWarning } from '../components/DuplicateWarning';
 import { ItemCategory, CATEGORY_INFO, RWANDA_LOCATIONS } from '../types';
 import { useAuthStore } from '../store/authStore';
+import { useRecaptcha } from '../hooks/useRecaptcha';
 import toast from 'react-hot-toast';
 
 const CATEGORY_ICONS: Record<ItemCategory, React.ReactNode> = {
@@ -33,6 +34,7 @@ interface FormData {
 const ReportFoundPage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuthStore();
+  const { executeRecaptcha } = useRecaptcha();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [loading, setLoading] = useState(false);
@@ -133,6 +135,7 @@ const ReportFoundPage: React.FC = () => {
     setShowDuplicateWarning(false);
     setLoading(true);
     try {
+      const recaptchaToken = await executeRecaptcha('report_found');
       // Create the found item first
       const createData = {
         category: formData.category,
@@ -142,9 +145,10 @@ const ReportFoundPage: React.FC = () => {
         location_hint: formData.location_hint || undefined,
         found_date: formData.found_date,
         cooperative_id: isCoopStaff && user?.cooperative_id ? user.cooperative_id : undefined,
+        ...(recaptchaToken && { recaptchaToken }),
       };
 
-      const response = await foundItemsApi.create(createData);
+      const response = await foundItemsApi.create(createData as any);
       const itemId = response.data.data.id;
 
       // Upload images

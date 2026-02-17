@@ -8,6 +8,7 @@ import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import { query } from '../config/database';
 import { logAudit, extractRequestMeta } from './auditService';
+import { sendVerificationEmail } from './emailService';
 import { Request } from 'express';
 
 const TOKEN_LENGTH = 32;
@@ -77,6 +78,11 @@ export async function generateEmailVerificationToken(
   });
   
   console.log(`[EMAIL] Verification token for user ${userId}: ${token}`);
+  
+  // Send verification email via Brevo
+  sendVerificationEmail(user.email, user.name || 'User', token).catch(err =>
+    console.error('Verification email failed:', err.message)
+  );
   
   return {
     success: true,

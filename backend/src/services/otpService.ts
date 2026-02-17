@@ -16,6 +16,7 @@ import crypto from 'crypto';
 import { query, transaction } from '../config/database';
 import { logAudit, extractRequestMeta } from './auditService';
 import { onSuccessfulReturn } from './trustService';
+import { sendHandoverConfirmationEmail } from './emailService';
 import { Request } from 'express';
 
 const OTP_LENGTH = 6;
@@ -283,6 +284,25 @@ export async function verifyHandoverOTP(
   // Update trust scores for successful return
   if (req) {
     await onSuccessfulReturn(req, handover.finder_id, handover.owner_id);
+  }
+  
+  // Send handover confirmation emails to both parties
+  try {
+    const ownerResult = await query('SELECT email, name FROM users WHERE id = $1', [handover.owner_id]);
+    const finderResult = await query('SELECT email, name FROM users WHERE id = $1', [handover.finder_id]);
+    const itemResult = await query('SELECT title FROM lost_items WHERE id = $1', [handover.lost_item_id]);
+    
+    if (ownerResult.rows[0] && finderResult.rows[0] && itemResult.rows[0]) {
+      sendHandoverConfirmationEmail(
+        ownerResult.rows[0].email,
+        ownerResult.rows[0].name,
+        finderResult.rows[0].email,
+        finderResult.rows[0].name,
+        itemResult.rows[0].title
+      ).catch(err => console.error('Handover confirmation email failed:', err.message));
+    }
+  } catch (emailErr) {
+    console.error('Failed to send handover emails:', emailErr);
   }
   
   return {

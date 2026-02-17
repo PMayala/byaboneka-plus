@@ -4,9 +4,11 @@ import { Mail, Lock, User, Phone, Eye, EyeOff } from 'lucide-react';
 import { Button, Alert } from '../components/ui';
 import { authApi } from '../services/api';
 import { useAuthStore } from '../store/authStore';
+import { useRecaptcha } from '../hooks/useRecaptcha';
 import toast from 'react-hot-toast';
 
 const RegisterPage: React.FC = () => {
+  const { executeRecaptcha } = useRecaptcha();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -69,12 +71,14 @@ const RegisterPage: React.FC = () => {
     setLoading(true);
 
     try {
+      const recaptchaToken = await executeRecaptcha('register');
       const response = await authApi.register({
         name: formData.name,
         email: formData.email,
         password: formData.password,
-        phone: formData.phone || undefined
-      });
+        phone: formData.phone || undefined,
+        ...(recaptchaToken && { recaptchaToken })
+      } as any);
       
       const { user, tokens } = response.data.data;
       login(user, tokens.accessToken, tokens.refreshToken);

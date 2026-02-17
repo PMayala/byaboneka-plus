@@ -11,6 +11,7 @@ import {
 } from '../utils';
 import { UserRole, TokenPayload } from '../types';
 import { logLogin, logAudit, extractRequestMeta } from '../services/auditService';
+import { sendWelcomeEmail, sendPasswordResetEmail } from '../services/emailService';
 
 // ============================================
 // AUTHENTICATION CONTROLLER
@@ -92,6 +93,11 @@ export async function register(req: Request, res: Response): Promise<void> {
       ipAddress,
       userAgent
     });
+
+    // Send welcome email (async, don't block registration)
+    sendWelcomeEmail(user.email, user.name).catch(err => 
+      console.error('Welcome email failed:', err.message)
+    );
 
     // FIX #5: Include email_verified and phone_verified in response
     res.status(201).json({
@@ -383,9 +389,13 @@ export async function forgotPassword(req: Request, res: Response): Promise<void>
       [user.id, tokenHash]
     );
 
-    // TODO: Send email with reset link
-    // For MVP, we'll just log it
+    // Send reset email via Brevo (log token for dev fallback)
     console.log(`Password reset token for ${user.email}: ${resetToken}`);
+
+    // Send reset email via Brevo
+    sendPasswordResetEmail(user.email, user.name, resetToken).catch(err =>
+      console.error('Password reset email failed:', err.message)
+    );
 
     res.json({
       success: true,
