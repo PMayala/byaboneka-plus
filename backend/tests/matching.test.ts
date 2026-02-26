@@ -1,4 +1,5 @@
 import { computeMatchScore } from '../src/services/matchingService';
+import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 import { LostItem, FoundItem, ItemCategory, LostItemStatus, FoundItemStatus, ItemSource } from '../src/types';
 
 describe('Matching Engine', () => {

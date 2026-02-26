@@ -9,8 +9,9 @@ import { useAuthStore } from '../store/authStore';
 import { lostItemsApi, foundItemsApi, claimsApi, messagesApi } from '../services/api';
 import { LostItem, FoundItem, Claim, CATEGORY_INFO, STATUS_INFO, ItemCategory } from '../types';
 import { formatDate, formatDateShort } from '../utils/dateUtils';
-
+import { useTranslation } from 'react-i18next';
 const DashboardPage: React.FC = () => {
+  const { t } = useTranslation();
   const { user } = useAuthStore();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
@@ -22,11 +23,9 @@ const DashboardPage: React.FC = () => {
   const [recentLostItems, setRecentLostItems] = useState<LostItem[]>([]);
   const [recentFoundItems, setRecentFoundItems] = useState<FoundItem[]>([]);
   const [recentClaims, setRecentClaims] = useState<Claim[]>([]);
-
   useEffect(() => {
     loadDashboardData();
   }, []);
-
   const loadDashboardData = async () => {
     try {
       const [lostRes, foundRes, claimsRes, unreadRes] = await Promise.all([
@@ -35,15 +34,12 @@ const DashboardPage: React.FC = () => {
         claimsApi.getMine({ limit: 5 }).catch(() => ({ data: { data: [] } })),
         messagesApi.getUnreadCount().catch(() => ({ data: { data: { count: 0 } } }))
       ]);
-
       setRecentLostItems(lostRes.data.data || []);
       setRecentFoundItems(foundRes.data.data || []);
       setRecentClaims(claimsRes.data.data || []);
-
       // Handle both API response formats
       const unreadData = unreadRes.data.data as any;
       const unreadCount = unreadData?.count ?? unreadData?.unread_count ?? 0;
-
       setStats({
         lostItems: lostRes.data.pagination?.total || 0,
         foundItems: foundRes.data.pagination?.total || 0,
@@ -56,7 +52,6 @@ const DashboardPage: React.FC = () => {
       setLoading(false);
     }
   };
-
   const getStatusBadge = (status: string) => {
     const info = STATUS_INFO[status] || { label: status, color: 'gray' };
     const variantMap: Record<string, 'active' | 'verified' | 'pending' | 'expired' | 'danger'> = {
@@ -68,14 +63,12 @@ const DashboardPage: React.FC = () => {
     };
     return <Badge variant={variantMap[info.color] || 'default'}>{info.label}</Badge>;
   };
-
   const getTrustLevel = (score: number) => {
     if (score >= 10) return { level: 'High', color: 'text-trust-600', bg: 'bg-trust-50' };
     if (score >= 5) return { level: 'Medium', color: 'text-blue-600', bg: 'bg-blue-50' };
     if (score >= 0) return { level: 'New', color: 'text-gray-600', bg: 'bg-gray-50' };
     return { level: 'Low', color: 'text-red-600', bg: 'bg-red-50' };
   };
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -83,9 +76,7 @@ const DashboardPage: React.FC = () => {
       </div>
     );
   }
-
   const trustInfo = getTrustLevel(user?.trust_score || 0);
-
   return (
     <div className="max-w-7xl mx-auto px-4 py-6 sm:py-8">
       {/* Welcome Header */}
@@ -95,7 +86,6 @@ const DashboardPage: React.FC = () => {
         </h1>
         <p className="text-gray-600">Here's what's happening with your items</p>
       </div>
-
       {/* Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
         <Card className="p-4 sm:p-6">
@@ -109,7 +99,6 @@ const DashboardPage: React.FC = () => {
             </div>
           </div>
         </Card>
-
         <Card className="p-4 sm:p-6">
           <div className="flex items-center gap-3 sm:gap-4">
             <div className="w-10 h-10 sm:w-12 sm:h-12 bg-trust-100 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -121,7 +110,6 @@ const DashboardPage: React.FC = () => {
             </div>
           </div>
         </Card>
-
         <Card className="p-4 sm:p-6">
           <div className="flex items-center gap-3 sm:gap-4">
             <div className="w-10 h-10 sm:w-12 sm:h-12 bg-yellow-100 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -133,7 +121,6 @@ const DashboardPage: React.FC = () => {
             </div>
           </div>
         </Card>
-
         <Card className="p-4 sm:p-6">
           <div className="flex items-center gap-3 sm:gap-4">
             <div className="w-10 h-10 sm:w-12 sm:h-12 bg-purple-100 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -141,12 +128,11 @@ const DashboardPage: React.FC = () => {
             </div>
             <div className="min-w-0">
               <p className="text-xl sm:text-2xl font-bold text-gray-900">{stats.unreadMessages}</p>
-              <p className="text-xs sm:text-sm text-gray-500 truncate">Unread Messages</p>
+              <p className="text-xs sm:text-sm text-gray-500 truncate">{t('dashboard.unreadMessages')}</p>
             </div>
           </div>
         </Card>
       </div>
-
       {/* Trust Score Card */}
       <Card className={`p-4 sm:p-6 mb-6 sm:mb-8 ${trustInfo.bg} border-0`}>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -179,7 +165,6 @@ const DashboardPage: React.FC = () => {
           </div>
         </div>
       </Card>
-
       {/* Quick Actions */}
       <div className="grid sm:grid-cols-2 gap-4 mb-6 sm:mb-8">
         <Link to="/report-lost">
@@ -189,14 +174,13 @@ const DashboardPage: React.FC = () => {
                 <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-accent-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">Report Lost Item</h3>
+                <h3 className="font-semibold text-gray-900">{t('dashboard.reportLost')}</h3>
                 <p className="text-sm text-gray-500 hidden sm:block">Lost something? Report it now</p>
               </div>
             </div>
             <ArrowRight className="w-5 h-5 text-gray-400" />
           </Card>
         </Link>
-
         <Link to="/report-found">
           <Card hover className="p-4 sm:p-6 flex items-center justify-between h-full">
             <div className="flex items-center gap-3 sm:gap-4">
@@ -204,7 +188,7 @@ const DashboardPage: React.FC = () => {
                 <Package className="w-5 h-5 sm:w-6 sm:h-6 text-trust-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">Report Found Item</h3>
+                <h3 className="font-semibold text-gray-900">{t('dashboard.reportFound')}</h3>
                 <p className="text-sm text-gray-500 hidden sm:block">Found something? Help return it</p>
               </div>
             </div>
@@ -212,7 +196,6 @@ const DashboardPage: React.FC = () => {
           </Card>
         </Link>
       </div>
-
       {/* Recent Activity */}
       <div className="grid lg:grid-cols-2 gap-6 sm:gap-8">
         {/* Recent Lost Items */}
@@ -254,14 +237,13 @@ const DashboardPage: React.FC = () => {
                 description="Report a lost item to get started"
                 action={
                   <Link to="/report-lost">
-                    <Button size="sm">Report Lost Item</Button>
+                    <Button size="sm">{t('dashboard.reportLost')}</Button>
                   </Link>
                 }
               />
             </Card>
           )}
         </div>
-
         {/* Recent Claims */}
         <div>
           <div className="flex items-center justify-between mb-4">
@@ -303,7 +285,7 @@ const DashboardPage: React.FC = () => {
                 description="Find a matching item to make a claim"
                 action={
                   <Link to="/search">
-                    <Button size="sm">Search Items</Button>
+                    <Button size="sm">{t('dashboard.searchItems')}</Button>
                   </Link>
                 }
               />

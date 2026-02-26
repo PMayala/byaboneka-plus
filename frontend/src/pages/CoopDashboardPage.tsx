@@ -8,7 +8,7 @@ import { Button, Card, Badge, LoadingSpinner, EmptyState } from '../components/u
 import api from '../services/api';
 import { CATEGORY_INFO, STATUS_INFO } from '../types';
 import { formatDateShort } from '../utils/dateUtils';
-
+import { useTranslation } from 'react-i18next';
 interface CoopDashboardData {
   cooperative: {
     id: number;
@@ -25,15 +25,13 @@ interface CoopDashboardData {
   };
   recent_items: any[];
 }
-
 const CoopDashboardPage: React.FC = () => {
+  const { t } = useTranslation();
   const [data, setData] = useState<CoopDashboardData | null>(null);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     loadDashboard();
   }, []);
-
   const loadDashboard = async () => {
     try {
       const response = await api.get('/cooperative/dashboard');
@@ -44,7 +42,6 @@ const CoopDashboardPage: React.FC = () => {
       setLoading(false);
     }
   };
-
   if (loading) {
     return (
       <div className="flex justify-center py-12">
@@ -52,7 +49,6 @@ const CoopDashboardPage: React.FC = () => {
       </div>
     );
   }
-
   if (!data) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-8">
@@ -66,14 +62,12 @@ const CoopDashboardPage: React.FC = () => {
       </div>
     );
   }
-
   const statCards = [
-    { label: 'Total Items', value: data.stats.total, icon: Package, color: 'text-blue-500', bg: 'bg-blue-100' },
-    { label: 'Unclaimed', value: data.stats.unclaimed, icon: Clock, color: 'text-orange-500', bg: 'bg-orange-100' },
-    { label: 'Matched', value: data.stats.matched, icon: TrendingUp, color: 'text-purple-500', bg: 'bg-purple-100' },
+    { label: t('cooperative.totalItems'), value: data.stats.total, icon: Package, color: 'text-blue-500', bg: 'bg-blue-100' },
+    { label: t('cooperative.unclaimed'), value: data.stats.unclaimed, icon: Clock, color: 'text-orange-500', bg: 'bg-orange-100' },
+    { label: t('cooperative.matched'), value: data.stats.matched, icon: TrendingUp, color: 'text-purple-500', bg: 'bg-purple-100' },
     { label: 'Returned', value: data.stats.returned, icon: CheckCircle, color: 'text-trust-500', bg: 'bg-trust-100' },
   ];
-
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       {/* Header */}
@@ -88,7 +82,6 @@ const CoopDashboardPage: React.FC = () => {
           </div>
         </div>
       </div>
-
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         {statCards.map((stat) => (
@@ -101,7 +94,6 @@ const CoopDashboardPage: React.FC = () => {
           </Card>
         ))}
       </div>
-
       {/* Quick Actions */}
       <Card className="p-6 mb-8">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
@@ -120,7 +112,6 @@ const CoopDashboardPage: React.FC = () => {
           </Link>
         </div>
       </Card>
-
       {/* Recent Items */}
       <Card className="p-6">
         <div className="flex items-center justify-between mb-4">
@@ -129,7 +120,6 @@ const CoopDashboardPage: React.FC = () => {
             View All <ChevronRight className="w-4 h-4" />
           </Link>
         </div>
-
         {data.recent_items.length === 0 ? (
           <EmptyState
             icon={<Package className="w-12 h-12" />}
@@ -137,7 +127,7 @@ const CoopDashboardPage: React.FC = () => {
             description="Register found items from drivers to start"
             action={
               <Link to="/report-found">
-                <Button size="sm">Register Item</Button>
+                <Button size="sm">{t('cooperative.registerItem')}</Button>
               </Link>
             }
           />

@@ -5,15 +5,14 @@ import { Card, Badge, LoadingSpinner, EmptyState } from '../components/ui';
 import { messagesApi } from '../services/api';
 import { MessageThread, STATUS_INFO } from '../types';
 import { formatRelative } from '../utils/dateUtils';
-
+import { useTranslation } from 'react-i18next';
 const MessagesPage: React.FC = () => {
+  const { t } = useTranslation();
   const [threads, setThreads] = useState<MessageThread[]>([]);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     loadThreads();
   }, []);
-
   const loadThreads = async () => {
     try {
       const response = await messagesApi.getThreads();
@@ -24,7 +23,6 @@ const MessagesPage: React.FC = () => {
       setLoading(false);
     }
   };
-
   if (loading) {
     return (
       <div className="flex justify-center py-12">
@@ -32,19 +30,17 @@ const MessagesPage: React.FC = () => {
       </div>
     );
   }
-
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Messages</h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">{t('messages.title')}</h1>
         <p className="text-gray-600">Communicate with finders and owners about claims</p>
       </div>
-
       {threads.length === 0 ? (
         <Card className="p-12">
           <EmptyState
             icon={<Inbox className="w-16 h-16" />}
-            title="No messages yet"
+            title="{t('messages.noMessages')}"
             description="When you create or receive claims, you can message the other party here"
           />
         </Card>
@@ -82,7 +78,6 @@ const MessagesPage: React.FC = () => {
                           {thread.my_role === 'owner' ? 'You are the owner' : 'You found this'}
                         </span>
                       </div>
-
                       {thread.last_message && (
                         <p className="text-sm text-gray-600 truncate mt-2">
                           {thread.last_message}
@@ -90,7 +85,6 @@ const MessagesPage: React.FC = () => {
                       )}
                     </div>
                   </div>
-
                   <div className="flex items-center gap-3 ml-4 flex-shrink-0">
                     {thread.last_message_at && (
                       <span className="text-xs text-gray-500">

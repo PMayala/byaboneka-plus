@@ -165,8 +165,8 @@ export const getErrorMessage = (error: any): string => {
 // ============================================
 
 export const authApi = {
-  register: (data: { email: string; password: string; name: string; phone?: string }) =>
-    api.post<ApiResponse<LoginResponse>>('/auth/register', data),
+  register: (data: { email: string; password: string; name: string; phone?: string; acceptedTerms?: boolean }) =>
+      api.post<ApiResponse<LoginResponse>>('/auth/register', data),
 
   login: (data: { email: string; password: string }) =>
     api.post<ApiResponse<LoginResponse>>('/auth/login', data),
@@ -193,6 +193,14 @@ export const authApi = {
 
   changePassword: (data: { currentPassword: string; newPassword: string }) =>
     api.post<ApiResponse>('/auth/change-password', data),
+
+  // Account deletion (Right to Erasure — Rwanda Law N°058/2021)
+  deleteAccount: (data: { password: string; confirmation: string }) =>
+    api.delete<ApiResponse>('/users/me', { data }),
+
+  // Data export (Right to Portability)
+  exportData: () =>
+    api.get<ApiResponse>('/users/me/export'),
 };
 
 // ============================================
@@ -560,3 +568,4 @@ export const healthApi = {
 };
 
 export default api;
+

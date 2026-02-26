@@ -9,8 +9,6 @@ import {
 } from '../services/verificationStrengthService';
 import { redactSensitiveContent } from '../services/sensitiveRedactionService';
 import {
-  computeCooperativeAccountability,
-  getCooperativeAccountability,
   recommendHandoverLocations,
   SAFE_HANDOVER_POINTS
 } from '../services/cooperativeAccountabilityService';
@@ -134,67 +132,9 @@ router.post('/privacy/preview-redaction',
 // ============================================
 // COOPERATIVE ACCOUNTABILITY ROUTES
 // ============================================
-
-/**
- * GET /api/v1/cooperatives/leaderboard
- * Public endpoint: cooperative accountability rankings
- */
-router.get('/cooperatives/leaderboard',
-  async (req: Request, res: Response) => {
-    try {
-      const rankings = await computeCooperativeAccountability();
-      res.json({
-        success: true,
-        data: rankings,
-        meta: {
-          total: rankings.length,
-          computed_at: new Date().toISOString(),
-          scoring_weights: {
-            return_rate: '35%',
-            speed: '25%',
-            reliability: '20%',
-            staff_quality: '20%'
-          }
-        }
-      });
-    } catch (error: any) {
-      console.error('Leaderboard computation error:', error?.message || error);
-      // Return empty leaderboard instead of 500 if it's a query issue
-      res.json({
-        success: true,
-        data: [],
-        meta: {
-          total: 0,
-          computed_at: new Date().toISOString(),
-          note: 'No cooperative data available yet. Run npm run seed to populate demo data.'
-        }
-      });
-    }
-  }
-);
-
-/**
- * GET /api/v1/cooperatives/:id/accountability
- * Detailed accountability report for a single cooperative
- */
-router.get('/cooperatives/:id/accountability',
-  async (req: Request, res: Response) => {
-    try {
-      const cooperativeId = parseInt(req.params.id);
-      const report = await getCooperativeAccountability(cooperativeId);
-
-      if (!report) {
-        res.status(404).json({ success: false, message: 'Cooperative not found' });
-        return;
-      }
-
-      res.json({ success: true, data: report });
-    } catch (error) {
-      console.error('Accountability report error:', error);
-      res.status(500).json({ success: false, message: 'Failed to generate report' });
-    }
-  }
-);
+// NOTE: /cooperatives/leaderboard and /cooperatives/:id/accountability
+// are now defined in routes/index.ts to avoid route ordering conflicts
+// with /cooperatives/:id.
 
 // ============================================
 // SAFE HANDOVER LOCATION ROUTES

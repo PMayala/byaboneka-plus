@@ -9,8 +9,9 @@ import { lostItemsApi, foundItemsApi, claimsApi } from '../services/api';
 import { LostItem, FoundItem, Claim, CATEGORY_INFO, STATUS_INFO, ItemCategory } from '../types';
 import { formatDate, formatDateShort } from '../utils/dateUtils';
 import toast from 'react-hot-toast';
-
+import { useTranslation } from 'react-i18next';
 const MyItemsPage: React.FC = () => {
+  const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'lost');
   const [lostItems, setLostItems] = useState<LostItem[]>([]);
@@ -21,11 +22,9 @@ const MyItemsPage: React.FC = () => {
     isOpen: false, type: 'lost', id: null
   });
   const [deleting, setDeleting] = useState(false);
-
   useEffect(() => {
     loadData();
   }, []);
-
   const loadData = async () => {
     setLoading(true);
     try {
@@ -39,17 +38,15 @@ const MyItemsPage: React.FC = () => {
       setClaims(claimsRes.data.data || []);
     } catch (error) {
       console.error('Failed to load items:', error);
-      toast.error('Failed to load your items');
+      toast.error(t('myItems.loadError'));
     } finally {
       setLoading(false);
     }
   };
-
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
     setSearchParams({ tab });
   };
-
   const handleDelete = async () => {
     if (!deleteModal.id) return;
     setDeleting(true);
@@ -57,20 +54,19 @@ const MyItemsPage: React.FC = () => {
       if (deleteModal.type === 'lost') {
         await lostItemsApi.delete(deleteModal.id);
         setLostItems(prev => prev.filter(item => item.id !== deleteModal.id));
-        toast.success('Lost item deleted successfully');
+        toast.success(t('myItems.deleteLostSuccess'));
       } else {
         await foundItemsApi.delete(deleteModal.id);
         setFoundItems(prev => prev.filter(item => item.id !== deleteModal.id));
-        toast.success('Found item deleted successfully');
+        toast.success(t('myItems.deleteFoundSuccess'));
       }
       setDeleteModal({ isOpen: false, type: 'lost', id: null });
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to delete item');
+      toast.error(error.response?.data?.message || t('myItems.deleteFailed'));
     } finally {
       setDeleting(false);
     }
   };
-
   const getStatusBadge = (status: string) => {
     const info = STATUS_INFO[status] || { label: status, color: 'gray' };
     const variantMap: Record<string, 'active' | 'verified' | 'pending' | 'expired' | 'danger'> = {
@@ -78,13 +74,11 @@ const MyItemsPage: React.FC = () => {
     };
     return <Badge variant={variantMap[info.color] || 'default'} dot>{info.label}</Badge>;
   };
-
   const tabs = [
-    { id: 'lost', label: 'Lost Items', icon: <FileText className="w-4 h-4" />, count: lostItems.length },
-    { id: 'found', label: 'Found Items', icon: <Package className="w-4 h-4" />, count: foundItems.length },
-    { id: 'claims', label: 'My Claims', icon: <CheckCircle className="w-4 h-4" />, count: claims.length },
+    { id: 'lost', label: t('myItems.lostItems'), icon: <FileText className="w-4 h-4" />, count: lostItems.length },
+    { id: 'found', label: t('myItems.foundItems'), icon: <Package className="w-4 h-4" />, count: foundItems.length },
+    { id: 'claims', label: t('myItems.claims'), icon: <CheckCircle className="w-4 h-4" />, count: claims.length },
   ];
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -92,12 +86,11 @@ const MyItemsPage: React.FC = () => {
       </div>
     );
   }
-
   return (
     <div className="max-w-7xl mx-auto px-4 py-6 sm:py-8">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">My Items</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">{t('myItems.title')}</h1>
           <p className="text-gray-600">Manage your lost and found reports</p>
         </div>
         <div className="flex gap-2">
@@ -109,9 +102,7 @@ const MyItemsPage: React.FC = () => {
           </Link>
         </div>
       </div>
-
       <Tabs tabs={tabs} activeTab={activeTab} onChange={handleTabChange} className="mb-6" />
-
       {/* Lost Items Tab */}
       {activeTab === 'lost' && (
         <div>
@@ -121,7 +112,7 @@ const MyItemsPage: React.FC = () => {
                 icon={<FileText className="w-16 h-16" />}
                 title="No lost items"
                 description="Haven't lost anything? Great! If you do, report it here."
-                action={<Link to="/report-lost"><Button>Report Lost Item</Button></Link>}
+                action={<Link to="/report-lost"><Button>{t('dashboard.reportLost')}</Button></Link>}
               />
             </Card>
           ) : (
@@ -172,7 +163,6 @@ const MyItemsPage: React.FC = () => {
           )}
         </div>
       )}
-
       {/* Found Items Tab */}
       {activeTab === 'found' && (
         <div>
@@ -182,7 +172,7 @@ const MyItemsPage: React.FC = () => {
                 icon={<Package className="w-16 h-16" />}
                 title="No found items"
                 description="Found something? Help return it to its owner!"
-                action={<Link to="/report-found"><Button>Report Found Item</Button></Link>}
+                action={<Link to="/report-found"><Button>{t('dashboard.reportFound')}</Button></Link>}
               />
             </Card>
           ) : (
@@ -202,7 +192,7 @@ const MyItemsPage: React.FC = () => {
                         <div className="flex flex-wrap items-center gap-2 mb-1">
                           <h3 className="font-semibold text-gray-900">{item.title}</h3>
                           {getStatusBadge(item.status)}
-                          {item.source === 'COOPERATIVE' && <Badge variant="info">Cooperative</Badge>}
+                          {item.source === 'COOPERATIVE' && <Badge variant="info">{t('myItems.cooperativeBadge')}</Badge>}
                         </div>
                         <p className="text-sm text-gray-600 line-clamp-2 mb-2">{item.description}</p>
                         <div className="flex flex-wrap items-center gap-3 text-sm text-gray-500">
@@ -235,7 +225,6 @@ const MyItemsPage: React.FC = () => {
           )}
         </div>
       )}
-
       {/* Claims Tab */}
       {activeTab === 'claims' && (
         <div>
@@ -245,7 +234,7 @@ const MyItemsPage: React.FC = () => {
                 icon={<CheckCircle className="w-16 h-16" />}
                 title="No claims yet"
                 description="When you find a potential match, create a claim to verify ownership"
-                action={<Link to="/search"><Button>Search Items</Button></Link>}
+                action={<Link to="/search"><Button>{t('myItems.searchItems')}</Button></Link>}
               />
             </Card>
           ) : (
@@ -266,7 +255,7 @@ const MyItemsPage: React.FC = () => {
                       <div className="flex items-center gap-3">
                         {getStatusBadge(claim.status)}
                         {claim.status === 'VERIFIED' && !claim.otp_verified && (
-                          <Badge variant="pending">Awaiting Handover</Badge>
+                          <Badge variant="pending">{t('myItems.awaitingHandover')}</Badge>
                         )}
                       </div>
                     </div>
@@ -285,7 +274,6 @@ const MyItemsPage: React.FC = () => {
           )}
         </div>
       )}
-
       {/* Delete Confirmation Modal */}
       <ConfirmModal
         isOpen={deleteModal.isOpen}

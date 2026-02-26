@@ -5,6 +5,7 @@ import { Layout } from './components/layout';
 import { useAuthStore } from './store/authStore';
 import { LoadingSpinner } from './components/ui';
 import ScrollToTop from './components/ScrollToTop';
+import { useAccessibleRouting } from './hooks/useAccessibleRouting';
 
 // Pages
 import HomePage from './pages/HomePage';
@@ -112,6 +113,12 @@ const GuestRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return <>{children}</>;
 };
 
+// Accessible routing: updates document title + manages focus on route change
+function AccessibleRoutingProvider() {
+  useAccessibleRouting();
+  return null;
+}
+
 function App() {
   const { setLoading, accessToken } = useAuthStore();
 
@@ -122,6 +129,7 @@ function App() {
   return (
     <BrowserRouter>
     <ScrollToTop />
+    <AccessibleRoutingProvider />
       <Layout>
         <Routes>
           {/* Public Routes */}
@@ -320,3 +328,4 @@ function App() {
 }
 
 export default App;
+

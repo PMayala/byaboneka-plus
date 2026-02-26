@@ -12,6 +12,7 @@ import {
 import { UserRole, TokenPayload } from '../types';
 import { logLogin, logAudit, extractRequestMeta } from '../services/auditService';
 import { sendWelcomeEmail, sendPasswordResetEmail } from '../services/emailService';
+import { checkAccountLockout, recordFailedLogin, resetFailedLogins } from '../services/accountLockoutService';
 
 // ============================================
 // AUTHENTICATION CONTROLLER
@@ -57,9 +58,9 @@ export async function register(req: Request, res: Response): Promise<void> {
 
     // Create user
     const result = await query(
-      `INSERT INTO users (email, password_hash, name, phone, role, trust_score)
-       VALUES ($1, $2, $3, $4, $5, $6)
-       RETURNING id, email, name, phone, role, trust_score, email_verified, phone_verified, created_at`,
+      `INSERT INTO users (email, password_hash, name, phone, role, trust_score, accepted_terms_at)
+      VALUES ($1, $2, $3, $4, $5, $6, NOW())
+      RETURNING id, email, name, phone, role, trust_score, email_verified, phone_verified, created_at`,
       [email.toLowerCase(), passwordHash, name, phone || null, UserRole.CITIZEN, 0]
     );
 
@@ -135,6 +136,16 @@ export async function login(req: Request, res: Response): Promise<void> {
   try {
     const { email, password } = req.body;
 
+    // Check account lockout (brute-force protection)
+    const lockout = await checkAccountLockout(email);
+    if (lockout.locked) {
+      res.status(423).json({
+        success: false,
+        message: `Account temporarily locked due to too many failed attempts. Try again in ${lockout.minutesRemaining} minutes.`
+      });
+      return;
+    }
+
     // FIX #5 & #17: Include email_verified, phone_verified, cooperative fields in login query
     const result = await query(
       `SELECT u.id, u.email, u.password_hash, u.name, u.phone, u.role, u.trust_score,
@@ -170,12 +181,16 @@ export async function login(req: Request, res: Response): Promise<void> {
     const isValidPassword = await verifyPassword(password, user.password_hash);
 
     if (!isValidPassword) {
+      await recordFailedLogin(email);
       res.status(401).json({
         success: false,
         message: 'Invalid email or password'
       });
       return;
     }
+
+    // Reset failed login counter on successful auth
+    await resetFailedLogins(email);
 
     // Generate tokens
     const tokenPayload: TokenPayload = {
@@ -255,9 +270,12 @@ export async function refreshToken(req: Request, res: Response): Promise<void> {
     );
 
     if (result.rows.length === 0) {
+      // Token not found — possible theft (reuse of already-rotated token)
+      // Security: Revoke ALL tokens for this user as a precaution
+      await query('UPDATE refresh_tokens SET revoked_at = NOW() WHERE user_id = $1 AND revoked_at IS NULL', [payload.userId]);
       res.status(401).json({
         success: false,
-        message: 'Refresh token has been revoked or expired'
+        message: 'Refresh token has been revoked. Please log in again.'
       });
       return;
     }
@@ -647,3 +665,4 @@ export async function changePassword(req: Request, res: Response): Promise<void>
     });
   }
 }
+

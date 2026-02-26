@@ -1,12 +1,11 @@
 import React from 'react';
-
+import { useTranslation } from 'react-i18next';
 /**
  * DuplicateWarning Component for Byaboneka+
  * 
  * Implements SYS-05: Duplicate detection warning
  * Shows users potential duplicate items before they create a new report
  */
-
 interface DuplicateCandidate {
   id: number;
   type: 'lost' | 'found';
@@ -18,7 +17,6 @@ interface DuplicateCandidate {
   similarity_score: number;
   similarity_reasons: string[];
 }
-
 interface DuplicateWarningProps {
   candidates: DuplicateCandidate[];
   itemType: 'lost' | 'found';
@@ -26,7 +24,6 @@ interface DuplicateWarningProps {
   onViewDuplicate: (id: number, type: 'lost' | 'found') => void;
   onCancel: () => void;
 }
-
 export const DuplicateWarning: React.FC<DuplicateWarningProps> = ({
   candidates,
   itemType,
@@ -34,11 +31,10 @@ export const DuplicateWarning: React.FC<DuplicateWarningProps> = ({
   onViewDuplicate,
   onCancel
 }) => {
+  const { t } = useTranslation();
   if (candidates.length === 0) return null;
-
   const highestScore = Math.max(...candidates.map(c => c.similarity_score));
   const isHighProbability = highestScore >= 12;
-
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col">
@@ -74,13 +70,11 @@ export const DuplicateWarning: React.FC<DuplicateWarningProps> = ({
             </div>
           </div>
         </div>
-
         {/* Candidate List */}
         <div className="flex-1 overflow-y-auto p-6">
           <p className="text-sm text-gray-600 mb-4">
             Found {candidates.length} similar {itemType === 'lost' ? 'report(s)' : 'item(s)'}:
           </p>
-
           <div className="space-y-4">
             {candidates.map((candidate) => (
               <div 
@@ -122,7 +116,6 @@ export const DuplicateWarning: React.FC<DuplicateWarningProps> = ({
                     {candidate.category}
                   </span>
                 </div>
-
                 {/* Match Reasons */}
                 <div className="flex flex-wrap gap-1 mb-3">
                   {candidate.similarity_reasons.slice(0, 3).map((reason, idx) => (
@@ -134,7 +127,6 @@ export const DuplicateWarning: React.FC<DuplicateWarningProps> = ({
                     </span>
                   ))}
                 </div>
-
                 <button
                   onClick={() => onViewDuplicate(candidate.id, candidate.type)}
                   className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
@@ -148,7 +140,6 @@ export const DuplicateWarning: React.FC<DuplicateWarningProps> = ({
             ))}
           </div>
         </div>
-
         {/* Footer */}
         <div className="px-6 py-4 bg-gray-50 border-t flex justify-between items-center">
           <p className="text-xs text-gray-500">

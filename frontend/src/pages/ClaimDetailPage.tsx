@@ -15,7 +15,7 @@ import { Claim, Message, CATEGORY_INFO, STATUS_INFO } from '../types';
 import { useAuthStore } from '../store/authStore';
 import { formatDate } from '../utils/dateUtils';
 import toast from 'react-hot-toast';
-
+import { useTranslation } from 'react-i18next';
 /**
  * ClaimDetailPage - FIXED VERSION
  * 
@@ -24,12 +24,11 @@ import toast from 'react-hot-toast';
  * FIX #15: Now includes SafetyWarningBanner
  * FIX #16: Now includes ScamReportButton on messages
  */
-
 const ClaimDetailPage: React.FC = () => {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuthStore();
-
   const [claim, setClaim] = useState<Claim | null>(null);
   const [loading, setLoading] = useState(true);
   const [questions, setQuestions] = useState<string[]>([]);
@@ -40,7 +39,6 @@ const ClaimDetailPage: React.FC = () => {
     correct_count: number;
     attempts_remaining: number;
   } | null>(null);
-
   // Dispute state
   const [existingDispute, setExistingDispute] = useState<{
     id: number;
@@ -48,17 +46,13 @@ const ClaimDetailPage: React.FC = () => {
     reason: string;
     created_at: string;
   } | null>(null);
-
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [sendingMessage, setSendingMessage] = useState(false);
-
   const isOwner = user?.id === claim?.claimant_id;
-
   useEffect(() => {
     loadClaim();
   }, [id]);
-
   useEffect(() => {
     if (claim?.status === 'PENDING' && isOwner) {
       loadQuestions();
@@ -71,30 +65,27 @@ const ClaimDetailPage: React.FC = () => {
       loadDispute();
     }
   }, [claim, isOwner]);
-
   const loadClaim = async () => {
     try {
       const response = await claimsApi.getById(parseInt(id!));
       setClaim(response.data.data);
     } catch (error) {
-      toast.error('Failed to load claim');
+      toast.error(t('claims.loadError'));
       navigate('/dashboard');
     } finally {
       setLoading(false);
     }
   };
-
   const loadQuestions = async () => {
     try {
       const response = await claimsApi.getQuestions(parseInt(id!));
       setQuestions(response.data.data.questions || []);
     } catch (error: any) {
       if (error.response?.status === 429) {
-        toast.error('Too many verification attempts. Please try again tomorrow.');
+        toast.error(t('claims.tooManyAttempts'));
       }
     }
   };
-
   const loadMessages = async () => {
     try {
       const response = await messagesApi.getMessages(parseInt(id!));
@@ -104,7 +95,6 @@ const ClaimDetailPage: React.FC = () => {
       console.error('Failed to load messages:', error);
     }
   };
-
   const loadDispute = async () => {
     try {
       const response = await disputeApi.get(parseInt(id!));
@@ -118,10 +108,9 @@ const ClaimDetailPage: React.FC = () => {
       }
     }
   };
-
   const handleVerify = async () => {
     if (answers.some((a) => !a.trim())) {
-      toast.error('Please answer all questions');
+      toast.error(t('claims.answerAll'));
       return;
     }
     setVerifying(true);
@@ -130,7 +119,7 @@ const ClaimDetailPage: React.FC = () => {
       const result = response.data.data;
       setVerificationResult(result);
       if (result.verified) {
-        toast.success('Verification successful! You can now proceed to handover.');
+        toast.success(t('claims.verificationSuccess'));
         loadClaim();
       } else {
         toast.error(`Verification failed. ${result.correct_count}/3 correct. ${result.attempts_remaining} attempts remaining.`);
@@ -141,7 +130,6 @@ const ClaimDetailPage: React.FC = () => {
       setVerifying(false);
     }
   };
-
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
@@ -156,19 +144,15 @@ const ClaimDetailPage: React.FC = () => {
       setSendingMessage(false);
     }
   };
-
   if (loading) return <div className="flex justify-center py-12"><LoadingSpinner size="lg" /></div>;
   if (!claim) return null;
-
   const statusInfo = STATUS_INFO[claim.status];
-
   // Determine the user's role in this claim for the handover panel
   const getUserRole = (): 'owner' | 'finder' | 'coop_staff' => {
     if (user?.role === 'coop_staff') return 'coop_staff';
     if (isOwner) return 'owner';
     return 'finder';
   };
-
   // Get the other party info for scam reporting
   const getOtherPartyFromMessage = (msg: Message) => {
     return {
@@ -176,13 +160,11 @@ const ClaimDetailPage: React.FC = () => {
       name: msg.sender_name || 'Unknown user',
     };
   };
-
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <Link to="/dashboard" className="inline-flex items-center text-gray-600 hover:text-gray-900 mb-6">
         <ArrowLeft className="w-4 h-4 mr-2" />Back to Dashboard
       </Link>
-
       <Card className="p-6 mb-6">
         <div className="flex items-start justify-between mb-4">
           <Badge variant={claim.status === 'VERIFIED' || claim.status === 'RETURNED' ? 'verified' : claim.status === 'PENDING' ? 'pending' : 'expired'}>
@@ -193,7 +175,6 @@ const ClaimDetailPage: React.FC = () => {
         <h1 className="text-2xl font-bold text-gray-900 mb-2">{claim.lost_item_title}</h1>
         <p className="text-gray-600">Claiming: {claim.found_item_title}</p>
       </Card>
-
       <div className="grid md:grid-cols-3 gap-6">
         <div className="md:col-span-2">
           {/* Verification Challenge */}
@@ -208,7 +189,7 @@ const ClaimDetailPage: React.FC = () => {
                   {questions.map((q, i) => (
                     <div key={i}>
                       <label className="block text-sm font-medium mb-1">Q{i + 1}: {q}</label>
-                      <Input value={answers[i]} onChange={(e) => { const a = [...answers]; a[i] = e.target.value; setAnswers(a); }} placeholder="Your answer" />
+                      <Input value={answers[i]} onChange={(e) => { const a = [...answers]; a[i] = e.target.value; setAnswers(a); }} placeholder={t('claims.yourAnswer')} />
                     </div>
                   ))}
                   {verificationResult && (
@@ -226,7 +207,6 @@ const ClaimDetailPage: React.FC = () => {
               )}
             </Card>
           )}
-
           {/* FIX #13: Use the dedicated HandoverOTPPanel component */}
           {claim.status === 'VERIFIED' && (
             <div className="mb-6">
@@ -245,7 +225,6 @@ const ClaimDetailPage: React.FC = () => {
               />
             </div>
           )}
-
           {/* Item Returned */}
           {claim.status === 'RETURNED' && (
             <Card className="p-6 mb-6 bg-trust-50 border-trust-200 text-center">
@@ -253,12 +232,10 @@ const ClaimDetailPage: React.FC = () => {
               <h2 className="text-xl font-bold text-trust-800">Item Returned! 🎉</h2>
             </Card>
           )}
-
           {/* FIX #15: Safety Warning Banner */}
           {['PENDING', 'VERIFIED'].includes(claim.status) && (
             <SafetyWarningBanner variant="full" />
           )}
-
           {/* Messages Section */}
           {['PENDING', 'VERIFIED'].includes(claim.status) && (
             <Card className="p-6 mt-6">
@@ -290,7 +267,7 @@ const ClaimDetailPage: React.FC = () => {
                             messageId={m.id}
                             reportedUserId={m.sender_id}
                             reportedUserName={m.sender_name || 'Unknown'}
-                            onReportSubmitted={() => toast.success('Report submitted')}
+                            onReportSubmitted={() => toast.success(t('scamReport.reportSuccess'))}
                           />
                         </div>
                       )}
@@ -299,12 +276,11 @@ const ClaimDetailPage: React.FC = () => {
                 ))}
               </div>
               <form onSubmit={sendMessage} className="flex gap-2">
-                <Input value={newMessage} onChange={(e) => setNewMessage(e.target.value)} placeholder="Type message..." className="flex-1" />
-                <Button type="submit" loading={sendingMessage}>Send</Button>
+                <Input value={newMessage} onChange={(e) => setNewMessage(e.target.value)} placeholder={t('claims.typeMessage')} className="flex-1" />
+                <Button type="submit" loading={sendingMessage}>{t('claims.sendMessage')}</Button>
               </form>
             </Card>
           )}
-
           {/* FIX #13: DisputeForm component integration */}
           {isOwner && ['PENDING', 'VERIFIED', 'REJECTED'].includes(claim.status) && (
             <div className="mt-6">
@@ -317,7 +293,6 @@ const ClaimDetailPage: React.FC = () => {
             </div>
           )}
         </div>
-
         {/* Sidebar */}
         <div>
           <Card className="p-6 mb-6">

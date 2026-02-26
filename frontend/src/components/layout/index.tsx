@@ -9,19 +9,21 @@ import { clsx } from 'clsx';
 import { useAuthStore } from '../../store/authStore';
 import { authApi, messagesApi } from '../../services/api';
 import toast from 'react-hot-toast';
-
+import LanguageSwitcher from '../LanguageSwitcher';
+import { SkipLink } from '../SkipLink';
+import { CookieConsentBanner } from '../CookieConsentBanner';
+import { useTranslation } from 'react-i18next';
 // ============================================
 // HEADER
 // ============================================
-
 export const Header: React.FC = () => {
+  const { t } = useTranslation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const { user, isAuthenticated, logout } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
-
   // Poll for unread message count
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -34,12 +36,10 @@ export const Header: React.FC = () => {
         // Silently fail — not critical
       }
     };
-
     fetchUnread();
     const interval = setInterval(fetchUnread, 30000); // every 30s
     return () => clearInterval(interval);
   }, [isAuthenticated]);
-
   const handleLogout = async () => {
     try {
       await authApi.logout();
@@ -47,20 +47,17 @@ export const Header: React.FC = () => {
       // Continue with logout even if API call fails
     }
     logout();
-    toast.success('Logged out successfully');
+    toast.success(t('nav.logoutSuccess'));
     navigate('/');
   };
-
   const navLinks = [
-    { href: '/', label: 'Home', icon: Home },
-    { href: '/search', label: 'Search', icon: Search },
-    { href: '/report-lost', label: 'Report Lost', icon: FileText },
-    { href: '/report-found', label: 'Report Found', icon: Package },
-    { href: '/leaderboard', label: 'Leaderboard', icon: Trophy },
+    { href: '/', label: t('nav.home'), icon: Home },
+    { href: '/search', label: t('nav.search'), icon: Search },
+    { href: '/report-lost', label: t('nav.reportLost'), icon: FileText },
+    { href: '/report-found', label: t('nav.reportFound'), icon: Package },
+    { href: '/leaderboard', label: t('nav.leaderboard'), icon: Trophy },
   ];
-
   const isActive = (href: string) => location.pathname === href;
-
   return (
     <header className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -74,7 +71,6 @@ export const Header: React.FC = () => {
               Byaboneka+
             </span>
           </Link>
-
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-1">
             {navLinks.map((link) => (
@@ -92,7 +88,6 @@ export const Header: React.FC = () => {
               </Link>
             ))}
           </nav>
-
           {/* Right side */}
           <div className="flex items-center space-x-4">
             {isAuthenticated ? (
@@ -109,7 +104,6 @@ export const Header: React.FC = () => {
                     </span>
                   )}
                 </Link>
-
                 {/* Profile Dropdown */}
                 <div className="relative">
                   <button
@@ -124,7 +118,6 @@ export const Header: React.FC = () => {
                     </span>
                     <ChevronDown className="w-4 h-4 text-gray-500" />
                   </button>
-
                   {profileMenuOpen && (
                     <>
                       <div 
@@ -138,7 +131,7 @@ export const Header: React.FC = () => {
                           <div className="flex items-center mt-1">
                             <Shield className="w-3 h-3 text-trust-500 mr-1" />
                             <span className="text-xs text-trust-600">
-                              Trust Score: {user?.trust_score}
+                              {t('nav.trustScore', { score: user?.trust_score })}
                             </span>
                           </div>
                         </div>
@@ -210,6 +203,7 @@ export const Header: React.FC = () => {
               </>
             ) : (
               <div className="flex items-center space-x-2">
+                <LanguageSwitcher compact />
                 <Link
                   to="/login"
                   className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
@@ -224,7 +218,6 @@ export const Header: React.FC = () => {
                 </Link>
               </div>
             )}
-
             {/* Mobile menu button */}
             <button
               className="md:hidden p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg"
@@ -234,7 +227,6 @@ export const Header: React.FC = () => {
             </button>
           </div>
         </div>
-
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
           <div className="md:hidden py-4 border-t border-gray-100 animate-fade-in">
@@ -262,12 +254,11 @@ export const Header: React.FC = () => {
     </header>
   );
 };
-
 // ============================================
 // FOOTER (FIX: All links now point to real pages)
 // ============================================
-
 export const Footer: React.FC = () => {
+  const { t } = useTranslation();
   return (
     <footer className="bg-white border-t border-gray-100 mt-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -281,59 +272,56 @@ export const Footer: React.FC = () => {
               <span className="font-bold text-xl text-primary-500">Byaboneka+</span>
             </div>
             <p className="text-gray-600 text-sm max-w-md">
-              Trust-Aware Lost & Found Infrastructure for Rwanda's Transport Ecosystem. 
-              Helping reunite people with their belongings securely.
+              {t('footer.description')}
             </p>
           </div>
-
           {/* Quick Links - FIX: Updated to point to real pages */}
           <div>
-            <h4 className="font-semibold text-gray-900 mb-4">Quick Links</h4>
+            <h4 className="font-semibold text-gray-900 mb-4">{t('footer.quickLinks')}</h4>
             <ul className="space-y-2">
-              <li><Link to="/search" className="text-sm text-gray-600 hover:text-primary-500">Search Items</Link></li>
-              <li><Link to="/report-lost" className="text-sm text-gray-600 hover:text-primary-500">Report Lost</Link></li>
-              <li><Link to="/report-found" className="text-sm text-gray-600 hover:text-primary-500">Report Found</Link></li>
-              <li><Link to="/how-it-works" className="text-sm text-gray-600 hover:text-primary-500">How It Works</Link></li>
-              <li><Link to="/leaderboard" className="text-sm text-gray-600 hover:text-primary-500">Leaderboard</Link></li>
+              <li><Link to="/search" className="text-sm text-gray-600 hover:text-primary-500">{t('footer.searchItems')}</Link></li>
+              <li><Link to="/report-lost" className="text-sm text-gray-600 hover:text-primary-500">{t('nav.reportLost')}</Link></li>
+              <li><Link to="/report-found" className="text-sm text-gray-600 hover:text-primary-500">{t('nav.reportFound')}</Link></li>
+              <li><Link to="/how-it-works" className="text-sm text-gray-600 hover:text-primary-500">{t('footer.howItWorks')}</Link></li>
+              <li><Link to="/leaderboard" className="text-sm text-gray-600 hover:text-primary-500">{t('nav.leaderboard')}</Link></li>
             </ul>
           </div>
-
           {/* Support - FIX: Updated to point to real pages */}
           <div>
-            <h4 className="font-semibold text-gray-900 mb-4">Support</h4>
+            <h4 className="font-semibold text-gray-900 mb-4">{t('footer.support')}</h4>
             <ul className="space-y-2">
-              <li><Link to="/faq" className="text-sm text-gray-600 hover:text-primary-500">FAQ</Link></li>
-              <li><Link to="/contact" className="text-sm text-gray-600 hover:text-primary-500">Contact Us</Link></li>
-              <li><Link to="/privacy" className="text-sm text-gray-600 hover:text-primary-500">Privacy Policy</Link></li>
-              <li><Link to="/terms" className="text-sm text-gray-600 hover:text-primary-500">Terms of Service</Link></li>
+              <li><Link to="/faq" className="text-sm text-gray-600 hover:text-primary-500">{t('footer.faq')}</Link></li>
+              <li><Link to="/contact" className="text-sm text-gray-600 hover:text-primary-500">{t('footer.contactUs')}</Link></li>
+              <li><Link to="/privacy" className="text-sm text-gray-600 hover:text-primary-500">{t('footer.privacyPolicy')}</Link></li>
+              <li><Link to="/terms" className="text-sm text-gray-600 hover:text-primary-500">{t('footer.termsOfService')}</Link></li>
             </ul>
           </div>
         </div>
-
         <div className="mt-8 pt-8 border-t border-gray-100 text-center">
           <p className="text-sm text-gray-500">
-            © {new Date().getFullYear()} Byaboneka+. ALU Mission Capstone Project.
+            {t('common.copyrightYear', { year: new Date().getFullYear() })}
           </p>
         </div>
       </div>
     </footer>
   );
 };
-
 // ============================================
 // LAYOUT
 // ============================================
-
 interface LayoutProps {
   children: React.ReactNode;
 }
-
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <div className="min-h-screen flex flex-col">
+      <SkipLink />
       <Header />
-      <main className="flex-1">{children}</main>
+      <main id="main-content" className="flex-1" tabIndex={-1}>{children}</main>
       <Footer />
+      <CookieConsentBanner />
     </div>
   );
 };
+
+

@@ -1,8 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Home, ArrowLeft } from 'lucide-react';
-
+import { useTranslation } from 'react-i18next';
 const NotFoundPage: React.FC = () => {
+  const { t } = useTranslation();
   return (
     <div className="min-h-[60vh] flex items-center justify-center px-4">
       <div className="max-w-md w-full text-center">
@@ -12,10 +13,9 @@ const NotFoundPage: React.FC = () => {
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-3">Page not found</h1>
           <p className="text-gray-600">
-            The page you're looking for doesn't exist or has been moved.
+            {t('notFound.subtitle')}
           </p>
         </div>
-
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link
             to="/"

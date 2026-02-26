@@ -12,7 +12,7 @@ import { ItemCategory, CATEGORY_INFO, RWANDA_LOCATIONS } from '../types';
 import { useAuthStore } from '../store/authStore';
 import { useRecaptcha } from '../hooks/useRecaptcha';
 import toast from 'react-hot-toast';
-
+import { useTranslation } from 'react-i18next';
 const CATEGORY_ICONS: Record<ItemCategory, React.ReactNode> = {
   [ItemCategory.PHONE]: <Smartphone className="w-8 h-8" />,
   [ItemCategory.ID]: <CreditCard className="w-8 h-8" />,
@@ -21,7 +21,6 @@ const CATEGORY_ICONS: Record<ItemCategory, React.ReactNode> = {
   [ItemCategory.KEYS]: <Key className="w-8 h-8" />,
   [ItemCategory.OTHER]: <Package className="w-8 h-8" />,
 };
-
 interface FormData {
   category: ItemCategory | '';
   title: string;
@@ -30,13 +29,12 @@ interface FormData {
   location_hint: string;
   found_date: string;
 }
-
 const ReportFoundPage: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const { executeRecaptcha } = useRecaptcha();
   const fileInputRef = useRef<HTMLInputElement>(null);
-
   const [loading, setLoading] = useState(false);
   const [uploadingImages, setUploadingImages] = useState(false);
   const [images, setImages] = useState<File[]>([]);
@@ -44,7 +42,6 @@ const ReportFoundPage: React.FC = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [duplicateCandidates, setDuplicateCandidates] = useState<any[]>([]);
   const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
-
   const [formData, setFormData] = useState<FormData>({
     category: '',
     title: '',
@@ -53,43 +50,36 @@ const ReportFoundPage: React.FC = () => {
     location_hint: '',
     found_date: new Date().toISOString().split('T')[0],
   });
-
   const isCoopStaff = user?.role === 'coop_staff';
-
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
-
     const newFiles = Array.from(files).slice(0, 5 - images.length);
     
     // Validate file types and sizes
     for (const file of newFiles) {
       if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
-        toast.error('Only JPEG, PNG, and WebP images are allowed');
+        toast.error(t('reportFound.imageTypeError'));
         return;
       }
       if (file.size > 5 * 1024 * 1024) {
-        toast.error('Image size must be less than 5MB');
+        toast.error(t('reportFound.imageSizeError'));
         return;
       }
     }
-
     // Create previews
     const previews = newFiles.map((file) => URL.createObjectURL(file));
     
     setImages([...images, ...newFiles]);
     setImagesPreviews([...imagesPreviews, ...previews]);
   };
-
   const removeImage = (index: number) => {
     URL.revokeObjectURL(imagesPreviews[index]);
     setImages(images.filter((_, i) => i !== index));
     setImagesPreviews(imagesPreviews.filter((_, i) => i !== index));
   };
-
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
-
     if (!formData.category) newErrors.category = 'Please select a category';
     if (!formData.title || formData.title.length < 3) newErrors.title = 'Title must be at least 3 characters';
     if (!formData.description || formData.description.length < 10) {
@@ -98,15 +88,12 @@ const ReportFoundPage: React.FC = () => {
     if (!formData.location_area) newErrors.location_area = 'Please select a location';
     if (!formData.found_date) newErrors.found_date = 'Please enter the date you found the item';
     if (images.length === 0) newErrors.images = 'Please upload at least one image';
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
-
     // Check for duplicates first (if not already confirmed)
     if (!showDuplicateWarning && duplicateCandidates.length === 0) {
       try {
@@ -127,10 +114,8 @@ const ReportFoundPage: React.FC = () => {
         console.warn('Duplicate check failed:', error);
       }
     }
-
     await submitFoundItem();
   };
-
   const submitFoundItem = async () => {
     setShowDuplicateWarning(false);
     setLoading(true);
@@ -147,10 +132,8 @@ const ReportFoundPage: React.FC = () => {
         cooperative_id: isCoopStaff && user?.cooperative_id ? user.cooperative_id : undefined,
         ...(recaptchaToken && { recaptchaToken }),
       };
-
       const response = await foundItemsApi.create(createData as any);
       const itemId = response.data.data.id;
-
       // Upload images
       if (images.length > 0) {
         setUploadingImages(true);
@@ -158,8 +141,7 @@ const ReportFoundPage: React.FC = () => {
         images.forEach((file) => fileList.items.add(file));
         await foundItemsApi.uploadImages(itemId, fileList.files);
       }
-
-      toast.success('Found item reported successfully!');
+      toast.success(t('reportFound.reportSuccess'));
       navigate(`/found-items/${itemId}`);
     } catch (error: any) {
       const message = error.response?.data?.message || 'Failed to submit report';
@@ -169,7 +151,6 @@ const ReportFoundPage: React.FC = () => {
       setUploadingImages(false);
     }
   };
-
   return (
     <>
       {showDuplicateWarning && (
@@ -184,12 +165,11 @@ const ReportFoundPage: React.FC = () => {
     <div className="max-w-2xl mx-auto px-4 py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Report Found Item</h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">{t('reportFound.title')}</h1>
         <p className="text-gray-600">
           Thank you for helping reunite someone with their belongings!
         </p>
       </div>
-
       {isCoopStaff && (
         <Alert type="info" className="mb-6">
           <Building className="w-4 h-4 inline mr-2" />
@@ -197,11 +177,9 @@ const ReportFoundPage: React.FC = () => {
           with your cooperative and held for secure pickup.
         </Alert>
       )}
-
       <form onSubmit={handleSubmit}>
         <Card className="p-6 mb-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-6">Item Details</h2>
-
           {/* Category Selection */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-3">Category *</label>
@@ -228,25 +206,23 @@ const ReportFoundPage: React.FC = () => {
             </div>
             {errors.category && <p className="mt-2 text-sm text-red-500">{errors.category}</p>}
           </div>
-
           {/* Title */}
           <div className="mb-6">
             <Input
               label="Title *"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              placeholder="e.g., Black phone found at bus station"
+              placeholder={t('items.titlePlaceholderFound')}
               error={errors.title}
             />
           </div>
-
           {/* Description */}
           <div className="mb-6">
             <Textarea
               label="Description *"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="Describe what you found. Include visible details but NOT sensitive information like ID numbers..."
+              placeholder={t('items.descPlaceholderFound')}
               rows={4}
               error={errors.description}
             />
@@ -258,10 +234,8 @@ const ReportFoundPage: React.FC = () => {
             )}
           </div>
         </Card>
-
         <Card className="p-6 mb-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-6">Location & Date</h2>
-
           {/* Location */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -273,25 +247,23 @@ const ReportFoundPage: React.FC = () => {
               onChange={(e) => setFormData({ ...formData, location_area: e.target.value })}
               className={`input ${errors.location_area ? 'border-red-500' : ''}`}
             >
-              <option value="">Select location</option>
+              <option value="">{t('items.selectLocation')}</option>
               {RWANDA_LOCATIONS.map((loc) => (
                 <option key={loc} value={loc}>{loc}</option>
               ))}
             </select>
             {errors.location_area && <p className="mt-1 text-sm text-red-500">{errors.location_area}</p>}
           </div>
-
           {/* Location Hint */}
           <div className="mb-6">
             <Textarea
               label="Specific Location (Optional)"
               value={formData.location_hint}
               onChange={(e) => setFormData({ ...formData, location_hint: e.target.value })}
-              placeholder="e.g., Under seat 23 on bus KM-456-A, near the market entrance..."
+              placeholder={t('items.locationHintPlaceholderFound')}
               rows={2}
             />
           </div>
-
           {/* Date */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -308,7 +280,6 @@ const ReportFoundPage: React.FC = () => {
             {errors.found_date && <p className="mt-1 text-sm text-red-500">{errors.found_date}</p>}
           </div>
         </Card>
-
         <Card className="p-6 mb-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
             <Camera className="w-5 h-5 inline mr-2" />
@@ -317,7 +288,6 @@ const ReportFoundPage: React.FC = () => {
           <p className="text-sm text-gray-600 mb-4">
             Upload clear photos of the item. This helps owners identify their belongings.
           </p>
-
           {/* Image Upload Area */}
           <div className="grid grid-cols-3 gap-4 mb-4">
             {imagesPreviews.map((preview, index) => (
@@ -332,7 +302,6 @@ const ReportFoundPage: React.FC = () => {
                 </button>
               </div>
             ))}
-
             {images.length < 5 && (
               <button
                 type="button"
@@ -344,7 +313,6 @@ const ReportFoundPage: React.FC = () => {
               </button>
             )}
           </div>
-
           <input
             ref={fileInputRef}
             type="file"
@@ -353,20 +321,17 @@ const ReportFoundPage: React.FC = () => {
             onChange={handleImageSelect}
             className="hidden"
           />
-
           {errors.images && <p className="text-sm text-red-500">{errors.images}</p>}
           <p className="text-xs text-gray-500 mt-2">
             Max 5 images, 5MB each. JPEG, PNG, or WebP format.
           </p>
         </Card>
-
         {/* Important Notice */}
         <Alert type="warning" className="mb-6">
           <strong>Important:</strong> Never demand payment before verification. Byaboneka+ uses 
           secure verification to confirm ownership. Attempting to extort money is against our 
           policies and may result in account suspension.
         </Alert>
-
         {/* Submit Button */}
         <div className="flex justify-end gap-4">
           <Button type="button" variant="secondary" onClick={() => navigate(-1)}>

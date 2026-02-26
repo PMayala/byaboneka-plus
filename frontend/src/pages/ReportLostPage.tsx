@@ -12,14 +12,12 @@ import { ItemCategory, CATEGORY_INFO, RWANDA_LOCATIONS, QUESTION_TEMPLATES, Veri
 import { useRecaptcha } from '../hooks/useRecaptcha';
 import toast from 'react-hot-toast';
 import VerificationStrengthIndicator from '../components/VerificationStrengthIndicator';
-
+import { useTranslation } from 'react-i18next';
 const CATEGORY_OPTIONS = Object.entries(CATEGORY_INFO).map(([value, info]) => ({
   value,
   label: info.label,
 }));
-
 const LOCATION_OPTIONS = RWANDA_LOCATIONS.map((loc) => ({ value: loc, label: loc }));
-
 const CATEGORY_ICONS: Record<ItemCategory, React.ReactNode> = {
   [ItemCategory.PHONE]: <Smartphone className="w-8 h-8" />,
   [ItemCategory.ID]: <CreditCard className="w-8 h-8" />,
@@ -28,7 +26,6 @@ const CATEGORY_ICONS: Record<ItemCategory, React.ReactNode> = {
   [ItemCategory.KEYS]: <Key className="w-8 h-8" />,
   [ItemCategory.OTHER]: <Package className="w-8 h-8" />,
 };
-
 interface FormData {
   category: ItemCategory | '';
   title: string;
@@ -38,8 +35,8 @@ interface FormData {
   lost_date: string;
   verification_questions: VerificationQuestion[];
 }
-
 const ReportLostPage: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { executeRecaptcha } = useRecaptcha();
   const [step, setStep] = useState(1);
@@ -47,7 +44,6 @@ const ReportLostPage: React.FC = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [duplicateCandidates, setDuplicateCandidates] = useState<any[]>([]);
   const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
-
   const [formData, setFormData] = useState<FormData>({
     category: '',
     title: '',
@@ -61,10 +57,8 @@ const ReportLostPage: React.FC = () => {
       { question: '', answer: '' },
     ],
   });
-
   const validateStep = (currentStep: number): boolean => {
     const newErrors: Record<string, string> = {};
-
     if (currentStep === 1) {
       if (!formData.category) newErrors.category = 'Please select a category';
       if (!formData.title || formData.title.length < 3) newErrors.title = 'Title must be at least 3 characters';
@@ -72,12 +66,10 @@ const ReportLostPage: React.FC = () => {
         newErrors.description = 'Description must be at least 10 characters';
       }
     }
-
     if (currentStep === 2) {
       if (!formData.location_area) newErrors.location_area = 'Please select a location';
       if (!formData.lost_date) newErrors.lost_date = 'Please enter the date you lost the item';
     }
-
     if (currentStep === 3) {
       formData.verification_questions.forEach((q, i) => {
         if (!q.question || q.question.length < 5) {
@@ -88,26 +80,21 @@ const ReportLostPage: React.FC = () => {
         }
       });
     }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
   const handleNext = () => {
     if (validateStep(step)) {
       setStep(step + 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
-
   const handleBack = () => {
     setStep(step - 1);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
-
   const handleSubmit = async () => {
     if (!validateStep(3)) return;
-
     // Check for duplicates first
     if (!showDuplicateWarning && duplicateCandidates.length === 0) {
       try {
@@ -127,10 +114,8 @@ const ReportLostPage: React.FC = () => {
         console.warn('Duplicate check failed:', error);
       }
     }
-
     await submitLostItem();
   };
-
   const submitLostItem = async () => {
     setShowDuplicateWarning(false);
     setLoading(true);
@@ -144,8 +129,7 @@ const ReportLostPage: React.FC = () => {
         })),
         ...(recaptchaToken && { recaptchaToken }),
       } as any);
-
-      toast.success('Lost item reported successfully!');
+      toast.success(t('reportLost.reportSuccess'));
       navigate(`/lost-items/${response.data.data.id}`);
     } catch (error: any) {
       const message = error.response?.data?.message || 'Failed to submit report';
@@ -154,17 +138,14 @@ const ReportLostPage: React.FC = () => {
       setLoading(false);
     }
   };
-
   const updateQuestion = (index: number, field: 'question' | 'answer', value: string) => {
     const updated = [...formData.verification_questions];
     updated[index] = { ...updated[index], [field]: value };
     setFormData({ ...formData, verification_questions: updated });
   };
-
   const suggestedQuestions = formData.category 
     ? QUESTION_TEMPLATES[formData.category as ItemCategory] || []
     : [];
-
   return (
     <>
       {showDuplicateWarning && (
@@ -179,12 +160,11 @@ const ReportLostPage: React.FC = () => {
     <div className="max-w-2xl mx-auto px-4 py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Report Lost Item</h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">{t('reportLost.title')}</h1>
         <p className="text-gray-600">
           Provide details about your lost item to help us match it with found items
         </p>
       </div>
-
       {/* Progress Steps */}
       <div className="flex items-center justify-between mb-8">
         {[1, 2, 3].map((s) => (
@@ -209,12 +189,10 @@ const ReportLostPage: React.FC = () => {
           </React.Fragment>
         ))}
       </div>
-
       {/* Step 1: Item Details */}
       {step === 1 && (
         <Card className="p-6 animate-fade-in">
           <h2 className="text-lg font-semibold text-gray-900 mb-6">What did you lose?</h2>
-
           {/* Category Selection */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-3">Category *</label>
@@ -241,31 +219,28 @@ const ReportLostPage: React.FC = () => {
             </div>
             {errors.category && <p className="mt-2 text-sm text-red-500">{errors.category}</p>}
           </div>
-
           {/* Title */}
           <div className="mb-6">
             <Input
               label="Title *"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              placeholder="e.g., Black iPhone 13 Pro with blue case"
+              placeholder={t('items.titlePlaceholderLost')}
               error={errors.title}
               helperText="Be specific - include color, brand, model"
             />
           </div>
-
           {/* Description */}
           <div className="mb-6">
             <Textarea
               label="Description *"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="Describe your item in detail. Include any unique marks, scratches, stickers, or identifiers..."
+              placeholder={t('items.descPlaceholderLost')}
               rows={4}
               error={errors.description}
             />
           </div>
-
           <div className="flex justify-end">
             <Button onClick={handleNext}>
               Next: Location & Date
@@ -274,12 +249,10 @@ const ReportLostPage: React.FC = () => {
           </div>
         </Card>
       )}
-
       {/* Step 2: Location & Date */}
       {step === 2 && (
         <Card className="p-6 animate-fade-in">
           <h2 className="text-lg font-semibold text-gray-900 mb-6">Where and when did you lose it?</h2>
-
           {/* Location */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -291,25 +264,23 @@ const ReportLostPage: React.FC = () => {
               onChange={(e) => setFormData({ ...formData, location_area: e.target.value })}
               className={`input ${errors.location_area ? 'border-red-500' : ''}`}
             >
-              <option value="">Select location</option>
+              <option value="">{t('items.selectLocation')}</option>
               {RWANDA_LOCATIONS.map((loc) => (
                 <option key={loc} value={loc}>{loc}</option>
               ))}
             </select>
             {errors.location_area && <p className="mt-1 text-sm text-red-500">{errors.location_area}</p>}
           </div>
-
           {/* Location Hint */}
           <div className="mb-6">
             <Textarea
               label="Location Details (Optional)"
               value={formData.location_hint}
               onChange={(e) => setFormData({ ...formData, location_hint: e.target.value })}
-              placeholder="e.g., Near the main bus station, inside a moto taxi..."
+              placeholder={t('items.locationHintPlaceholderLost')}
               rows={2}
             />
           </div>
-
           {/* Date */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -325,7 +296,6 @@ const ReportLostPage: React.FC = () => {
             />
             {errors.lost_date && <p className="mt-1 text-sm text-red-500">{errors.lost_date}</p>}
           </div>
-
           <div className="flex justify-between">
             <Button variant="secondary" onClick={handleBack}>
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -338,7 +308,6 @@ const ReportLostPage: React.FC = () => {
           </div>
         </Card>
       )}
-
       {/* Step 3: Verification Questions */}
       {step === 3 && (
         <Card className="p-6 animate-fade-in">
@@ -351,12 +320,10 @@ const ReportLostPage: React.FC = () => {
               </p>
             </div>
           </div>
-
           <Alert type="info" className="mb-6">
             <strong>Tips:</strong> Ask about unique details like scratches, personal photos, app layouts, 
             or things that wouldn't be visible to someone who found your item.
           </Alert>
-
           {formData.verification_questions.map((q, index) => (
             <div key={index} className="mb-6 p-4 bg-gray-50 rounded-xl">
               <div className="flex items-center gap-2 mb-3">
@@ -365,12 +332,11 @@ const ReportLostPage: React.FC = () => {
                 </span>
                 <span className="font-medium text-gray-700">Question {index + 1}</span>
               </div>
-
               <div className="mb-3">
                 <Input
                   value={q.question}
                   onChange={(e) => updateQuestion(index, 'question', e.target.value)}
-                  placeholder="Enter your verification question..."
+                  placeholder={t('reportLost.questionPlaceholder')}
                   error={errors[`question_${index}`]}
                 />
                 {suggestedQuestions.length > 0 && !q.question && (
@@ -391,16 +357,14 @@ const ReportLostPage: React.FC = () => {
                   </div>
                 )}
               </div>
-
               <Input
                 value={q.answer}
                 onChange={(e) => updateQuestion(index, 'answer', e.target.value)}
-                placeholder="Your answer (only you should know this)"
+                placeholder={t('reportLost.answerPlaceholder')}
                 error={errors[`answer_${index}`]}
               />
             </div>
           ))}
-
           {/* NOVEL: Verification Strength Analyzer */}
           <VerificationStrengthIndicator
             questions={formData.verification_questions.map(q => q.question)}
@@ -409,13 +373,11 @@ const ReportLostPage: React.FC = () => {
             description={formData.description}
             onSelectTemplate={(index, question) => updateQuestion(index, 'question', question)}
           />
-
           <Alert type="warning" className="mb-6">
             <AlertCircle className="w-4 h-4 inline mr-2" />
             <strong>Remember your answers!</strong> You'll need them to verify ownership if someone 
             claims to have found your item. Answers are not case-sensitive.
           </Alert>
-
           <div className="flex justify-between">
             <Button variant="secondary" onClick={handleBack}>
               <ArrowLeft className="w-4 h-4 mr-2" />

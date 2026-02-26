@@ -7,7 +7,7 @@ import {
 import { Card, LoadingSpinner, Badge } from '../components/ui';
 import { adminApi, AdminStats } from '../services/api';
 import { formatDate, formatDateShort, formatDateTime } from '../utils/dateUtils';
-
+import { useTranslation } from 'react-i18next';
 /**
  * AdminDashboardPage - FIXED VERSION
  * 
@@ -15,17 +15,15 @@ import { formatDate, formatDateShort, formatDateTime } from '../utils/dateUtils'
  * FIX #12: Only links to pages that actually exist
  * FIX: Added Fraud Dashboard link to Quick Actions
  */
-
 const AdminDashboardPage: React.FC = () => {
+  const { t } = useTranslation();
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [recentUsers, setRecentUsers] = useState<any[]>([]);
   const [pendingReports, setPendingReports] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     loadDashboard();
   }, []);
-
   const loadDashboard = async () => {
     try {
       const [statsRes, usersRes, reportsRes] = await Promise.all([
@@ -42,7 +40,6 @@ const AdminDashboardPage: React.FC = () => {
       setLoading(false);
     }
   };
-
   if (loading) {
     return (
       <div className="flex justify-center py-12">
@@ -50,23 +47,20 @@ const AdminDashboardPage: React.FC = () => {
       </div>
     );
   }
-
   const statCards = [
-    { label: 'Total Users', value: stats?.total_users || 0, icon: Users, color: 'text-blue-500', bg: 'bg-blue-100' },
-    { label: 'Lost Items', value: stats?.total_lost_items || 0, icon: FileText, color: 'text-orange-500', bg: 'bg-orange-100' },
-    { label: 'Found Items', value: stats?.total_found_items || 0, icon: Package, color: 'text-green-500', bg: 'bg-green-100' },
+    { label: t('admin.totalUsers'), value: stats?.total_users || 0, icon: Users, color: 'text-blue-500', bg: 'bg-blue-100' },
+    { label: t('admin.lostItems'), value: stats?.total_lost_items || 0, icon: FileText, color: 'text-orange-500', bg: 'bg-orange-100' },
+    { label: t('admin.foundItems'), value: stats?.total_found_items || 0, icon: Package, color: 'text-green-500', bg: 'bg-green-100' },
     { label: 'Total Claims', value: stats?.total_claims || 0, icon: Shield, color: 'text-purple-500', bg: 'bg-purple-100' },
     { label: 'Successful Returns', value: stats?.successful_returns || 0, icon: CheckCircle, color: 'text-trust-500', bg: 'bg-trust-100' },
     { label: 'Pending Reports', value: stats?.pending_scam_reports || 0, icon: AlertTriangle, color: 'text-red-500', bg: 'bg-red-100' },
   ];
-
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">{t('admin.dashboard')}</h1>
         <p className="text-gray-600">Platform overview and management</p>
       </div>
-
       {/* Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
         {statCards.map((stat) => (
@@ -79,7 +73,6 @@ const AdminDashboardPage: React.FC = () => {
           </Card>
         ))}
       </div>
-
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Recent Users */}
         <Card className="p-6">
@@ -112,7 +105,6 @@ const AdminDashboardPage: React.FC = () => {
             )}
           </div>
         </Card>
-
         {/* Pending Scam Reports */}
         <Card className="p-6">
           <div className="flex items-center justify-between mb-4">
@@ -135,7 +127,7 @@ const AdminDashboardPage: React.FC = () => {
                       <p className="font-medium text-gray-900">Report #{report.id}</p>
                       <p className="text-sm text-gray-600 mt-1 line-clamp-2">{report.reason}</p>
                     </div>
-                    <Badge variant="danger">Open</Badge>
+                    <Badge variant="danger">{t('admin.open')}</Badge>
                   </div>
                   <p className="text-xs text-gray-400 mt-2">
                     By {report.reporter_name} • {formatDateTime(report.created_at)}
@@ -146,7 +138,6 @@ const AdminDashboardPage: React.FC = () => {
           </div>
         </Card>
       </div>
-
       {/* Quick Actions - FIX: Added Fraud Dashboard link */}
       <Card className="p-6 mt-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>

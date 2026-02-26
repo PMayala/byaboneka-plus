@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { disputeApi, getErrorMessage } from '../services/api';
-
+import { useTranslation } from 'react-i18next';
 /**
  * DisputeForm Component for Byaboneka+
  * 
@@ -9,7 +9,6 @@ import { disputeApi, getErrorMessage } from '../services/api';
  * 
  * FIX #4 & #8: Now uses centralized axios `disputeApi` instead of raw fetch().
  */
-
 interface DisputeFormProps {
   claimId: number;
   claimStatus: string;
@@ -21,34 +20,30 @@ interface DisputeFormProps {
     created_at: string;
   } | null;
 }
-
 export const DisputeForm: React.FC<DisputeFormProps> = ({
   claimId,
   claimStatus,
   onDisputeOpened,
   existingDispute
 }) => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [reason, setReason] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
-
   // Check if dispute can be opened
   const canDispute = ['PENDING', 'VERIFIED', 'REJECTED'].includes(claimStatus);
   const hasActiveDispute = existingDispute && ['OPEN', 'UNDER_REVIEW'].includes(existingDispute.status);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (reason.trim().length < 20) {
-      setError('Please provide a detailed explanation (at least 20 characters)');
+      setError(t('disputes.reasonMinLength'));
       return;
     }
-
     setIsSubmitting(true);
     setError('');
-
     try {
       await disputeApi.open(claimId, { reason: reason.trim() });
       setSuccess(true);
@@ -59,7 +54,6 @@ export const DisputeForm: React.FC<DisputeFormProps> = ({
       setIsSubmitting(false);
     }
   };
-
   if (hasActiveDispute) {
     return (
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -83,11 +77,9 @@ export const DisputeForm: React.FC<DisputeFormProps> = ({
       </div>
     );
   }
-
   if (!canDispute) {
     return null;
   }
-
   if (success) {
     return (
       <div className="bg-green-50 border border-green-200 rounded-lg p-4">
@@ -105,7 +97,6 @@ export const DisputeForm: React.FC<DisputeFormProps> = ({
       </div>
     );
   }
-
   return (
     <div className="border border-gray-200 rounded-lg overflow-hidden">
       {/* Header */}
@@ -138,7 +129,6 @@ export const DisputeForm: React.FC<DisputeFormProps> = ({
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </button>
-
       {/* Form */}
       {isOpen && (
         <div className="p-4 border-t border-gray-200">
@@ -146,7 +136,6 @@ export const DisputeForm: React.FC<DisputeFormProps> = ({
             If you believe you are the true owner but verification failed, or if there's an issue 
             with the handover process, you can open a dispute. An administrator will review your case.
           </p>
-
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -155,7 +144,7 @@ export const DisputeForm: React.FC<DisputeFormProps> = ({
               <textarea
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
-                placeholder="Please explain why you believe you are the rightful owner and why verification may have failed..."
+                placeholder={t('disputes.reasonPlaceholder')}
                 className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
                 rows={4}
                 maxLength={2000}
@@ -164,7 +153,6 @@ export const DisputeForm: React.FC<DisputeFormProps> = ({
                 {reason.length}/2000 characters (minimum 20)
               </p>
             </div>
-
             {/* Tips */}
             <div className="bg-gray-50 rounded-lg p-3 mb-4">
               <p className="text-sm text-gray-700 font-medium mb-2">Tips for a successful dispute:</p>
@@ -175,13 +163,11 @@ export const DisputeForm: React.FC<DisputeFormProps> = ({
                 <li>• Be specific about dates and locations</li>
               </ul>
             </div>
-
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4 text-sm">
                 {error}
               </div>
             )}
-
             <div className="flex justify-end gap-3">
               <button
                 type="button"

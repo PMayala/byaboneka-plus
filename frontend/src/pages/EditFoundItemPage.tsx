@@ -9,7 +9,7 @@ import { foundItemsApi } from '../services/api';
 import { FoundItem, ItemCategory, CATEGORY_INFO, RWANDA_LOCATIONS } from '../types';
 import { useAuthStore } from '../store/authStore';
 import toast from 'react-hot-toast';
-
+import { useTranslation } from 'react-i18next';
 const CATEGORY_ICONS: Record<ItemCategory, React.ReactNode> = {
   [ItemCategory.PHONE]: <Smartphone className="w-6 h-6" />,
   [ItemCategory.ID]: <CreditCard className="w-6 h-6" />,
@@ -18,40 +18,34 @@ const CATEGORY_ICONS: Record<ItemCategory, React.ReactNode> = {
   [ItemCategory.KEYS]: <Key className="w-6 h-6" />,
   [ItemCategory.OTHER]: <Package className="w-6 h-6" />,
 };
-
 const EditFoundItemPage: React.FC = () => {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuthStore();
-
   const [item, setItem] = useState<FoundItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     location_area: '',
     location_hint: '',
   });
-
   useEffect(() => {
     loadItem();
   }, [id]);
-
   const loadItem = async () => {
     try {
       const response = await foundItemsApi.getById(parseInt(id!));
       const data = response.data.data;
-
       // Only allow finder to edit
       if (data.finder_id !== user?.id) {
-        toast.error('You can only edit your own items');
+        toast.error(t('items.canOnlyEditOwn'));
         navigate(`/found-items/${id}`);
         return;
       }
-
       setItem(data);
       setFormData({
         title: data.title || '',
@@ -60,13 +54,12 @@ const EditFoundItemPage: React.FC = () => {
         location_hint: data.location_hint || '',
       });
     } catch (error) {
-      toast.error('Failed to load item');
+      toast.error(t('items.loadError'));
       navigate('/my-items?tab=found');
     } finally {
       setLoading(false);
     }
   };
-
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
     if (!formData.title || formData.title.length < 3) {
@@ -81,11 +74,9 @@ const EditFoundItemPage: React.FC = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
-
     setSaving(true);
     try {
       await foundItemsApi.update(parseInt(id!), {
@@ -94,15 +85,14 @@ const EditFoundItemPage: React.FC = () => {
         location_area: formData.location_area,
         location_hint: formData.location_hint,
       });
-      toast.success('Item updated successfully');
+      toast.success(t('items.updateSuccess'));
       navigate(`/found-items/${id}`);
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to update item');
+      toast.error(error.response?.data?.message || t('items.updateFailed'));
     } finally {
       setSaving(false);
     }
   };
-
   if (loading) {
     return (
       <div className="flex justify-center py-12">
@@ -110,18 +100,15 @@ const EditFoundItemPage: React.FC = () => {
       </div>
     );
   }
-
   if (!item) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-12 text-center">
         <h1 className="text-2xl font-bold text-gray-900 mb-4">Item Not Found</h1>
-        <Button onClick={() => navigate('/my-items?tab=found')}>Back to My Items</Button>
+        <Button onClick={() => navigate('/my-items?tab=found')}>{t('items.backToMyItems')}</Button>
       </div>
     );
   }
-
   const categoryInfo = CATEGORY_INFO[item.category as ItemCategory];
-
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
       {/* Back Link */}
@@ -132,18 +119,15 @@ const EditFoundItemPage: React.FC = () => {
         <ArrowLeft className="w-4 h-4 mr-2" />
         Back to Item
       </button>
-
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">Edit Found Item</h1>
         <p className="text-gray-600">Update the details of your found item report</p>
       </div>
-
       {item.status !== 'UNCLAIMED' && (
         <Alert type="warning" className="mb-6">
           This item is currently <strong>{item.status.toLowerCase()}</strong>. Some fields may not be editable.
         </Alert>
       )}
-
       <form onSubmit={handleSubmit}>
         <Card className="p-6 mb-6">
           {/* Category (read-only) */}
@@ -157,30 +141,27 @@ const EditFoundItemPage: React.FC = () => {
               <span className="text-xs text-gray-400 ml-auto">Cannot be changed</span>
             </div>
           </div>
-
           {/* Title */}
           <div className="mb-6">
             <Input
               label="Title *"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              placeholder="e.g., Black phone found at bus station"
+              placeholder={t('items.titlePlaceholderFound')}
               error={errors.title}
             />
           </div>
-
           {/* Description */}
           <div className="mb-6">
             <Textarea
               label="Description *"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="Describe the found item in detail..."
+              placeholder={t('items.descPlaceholderFound')}
               rows={4}
               error={errors.description}
             />
           </div>
-
           {/* Location */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -194,7 +175,7 @@ const EditFoundItemPage: React.FC = () => {
                 errors.location_area ? 'border-red-500' : 'border-gray-300'
               }`}
             >
-              <option value="">Select location</option>
+              <option value="">{t('items.selectLocation')}</option>
               {RWANDA_LOCATIONS.map((loc) => (
                 <option key={loc} value={loc}>{loc}</option>
               ))}
@@ -203,18 +184,16 @@ const EditFoundItemPage: React.FC = () => {
               <p className="mt-1 text-sm text-red-500">{errors.location_area}</p>
             )}
           </div>
-
           {/* Location Hint */}
           <div className="mb-6">
             <Textarea
               label="Specific Location (Optional)"
               value={formData.location_hint}
               onChange={(e) => setFormData({ ...formData, location_hint: e.target.value })}
-              placeholder="e.g., Under seat 23 on bus KM-456-A, near the market entrance..."
+              placeholder={t('items.locationHintPlaceholderFound')}
               rows={2}
             />
           </div>
-
           {/* Date (read-only) */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -229,7 +208,6 @@ const EditFoundItemPage: React.FC = () => {
             />
             <p className="text-xs text-gray-400 mt-1">Date cannot be changed after submission</p>
           </div>
-
           {/* Images (read-only info) */}
           {item.image_urls && item.image_urls.length > 0 && (
             <div className="mb-6">
@@ -254,7 +232,6 @@ const EditFoundItemPage: React.FC = () => {
             </div>
           )}
         </Card>
-
         {/* Actions */}
         <div className="flex justify-between">
           <Button type="button" variant="secondary" onClick={() => navigate(`/found-items/${id}`)}>

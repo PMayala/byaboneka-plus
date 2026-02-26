@@ -12,6 +12,7 @@
  */
 
 import supertest from 'supertest';
+import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 
 // Skip integration tests if no DATABASE_URL
 const DATABASE_URL = process.env.DATABASE_URL;

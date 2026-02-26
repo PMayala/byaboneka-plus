@@ -5,6 +5,7 @@
 
 import { getTrustLevel, getClaimAttemptLimit, getReportDailyLimit, TRUST_CHANGES } from '../src/utils';
 import { TrustLevel } from '../src/types';
+import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 
 describe('Trust Score Utilities', () => {
   describe('getTrustLevel', () => {

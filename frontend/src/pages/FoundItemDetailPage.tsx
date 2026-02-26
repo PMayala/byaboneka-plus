@@ -10,53 +10,46 @@ import { FoundItem, LostItem, CATEGORY_INFO, STATUS_INFO } from '../types';
 import { useAuthStore } from '../store/authStore';
 import { formatDate, formatDateShort, formatDateLong, formatDateTime } from '../utils/dateUtils';
 import toast from 'react-hot-toast';
-
+import { useTranslation } from 'react-i18next';
 interface MatchResult {
   lost_item: LostItem;
   score: number;
   explanation: string[];
 }
-
 // Helper function to map match scores to valid badge variants
 const getMatchScoreBadgeVariant = (score: number): "verified" | "pending" | "default" => {
   if (score >= 8) return "verified"; // High confidence
   if (score >= 5) return "pending"; // Medium confidence
   return "default"; // Low confidence
 };
-
 const FoundItemDetailPage: React.FC = () => {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuthStore();
-
   const [item, setItem] = useState<FoundItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
-
   // Matches state
   const [matches, setMatches] = useState<MatchResult[]>([]);
   const [matchesLoading, setMatchesLoading] = useState(false);
-
   const isFinder = user?.id === item?.finder_id;
-
   useEffect(() => {
     loadItem();
   }, [id]);
-
   const loadItem = async () => {
     try {
       const response = await foundItemsApi.getById(parseInt(id!));
       setItem(response.data.data);
     } catch (error) {
-      toast.error('Failed to load item');
+      toast.error(t('items.loadError'));
       navigate('/search?type=found');
     } finally {
       setLoading(false);
     }
   };
-
   const loadMatches = async () => {
     if (!id) return;
     setMatchesLoading(true);
@@ -69,33 +62,29 @@ const FoundItemDetailPage: React.FC = () => {
       setMatchesLoading(false);
     }
   };
-
   const handleDelete = async () => {
     setDeleting(true);
     try {
       await foundItemsApi.delete(parseInt(id!));
-      toast.success('Item deleted successfully');
+      toast.success(t('items.deleteSuccess'));
       navigate('/my-items');
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to delete item');
+      toast.error(error.response?.data?.message || t('items.deleteFailed'));
     } finally {
       setDeleting(false);
       setShowDeleteModal(false);
     }
   };
-
   const nextImage = () => {
     if (item?.image_urls) {
       setCurrentImageIndex((prev) => (prev + 1) % item.image_urls.length);
     }
   };
-
   const prevImage = () => {
     if (item?.image_urls) {
       setCurrentImageIndex((prev) => (prev - 1 + item.image_urls.length) % item.image_urls.length);
     }
   };
-
   if (loading) {
     return (
       <div className="flex justify-center py-12">
@@ -103,22 +92,19 @@ const FoundItemDetailPage: React.FC = () => {
       </div>
     );
   }
-
   if (!item) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-12 text-center">
         <h1 className="text-2xl font-bold text-gray-900 mb-4">Item Not Found</h1>
         <Link to="/search">
-          <Button>Back to Search</Button>
+          <Button>{t('items.backToSearch')}</Button>
         </Link>
       </div>
     );
   }
-
   const statusInfo = STATUS_INFO[item.status];
   const categoryInfo = CATEGORY_INFO[item.category];
   const apiBase = import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'http://localhost:4000';
-
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       {/* Back Link */}
@@ -129,7 +115,6 @@ const FoundItemDetailPage: React.FC = () => {
         <ArrowLeft className="w-4 h-4 mr-2" />
         Back to Search
       </Link>
-
       <div className="grid md:grid-cols-3 gap-8">
         {/* Main Content */}
         <div className="md:col-span-2">
@@ -175,7 +160,6 @@ const FoundItemDetailPage: React.FC = () => {
                   </>
                 )}
               </div>
-
               {/* Thumbnails */}
               {item.image_urls.length > 1 && (
                 <div className="p-4 flex gap-2 overflow-x-auto">
@@ -198,7 +182,6 @@ const FoundItemDetailPage: React.FC = () => {
               )}
             </Card>
           )}
-
           <Card className="p-6">
             {/* Header */}
             <div className="flex items-start justify-between mb-4">
@@ -220,10 +203,8 @@ const FoundItemDetailPage: React.FC = () => {
                 </div>
               )}
             </div>
-
             {/* Title */}
             <h1 className="text-2xl font-bold text-gray-900 mb-4">{item.title}</h1>
-
             {/* Details */}
             <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-6">
               <span className="flex items-center gap-1">
@@ -239,7 +220,6 @@ const FoundItemDetailPage: React.FC = () => {
                 {item.finder_name || 'Anonymous'}
               </span>
             </div>
-
             {/* Cooperative Badge */}
             {item.source === 'COOPERATIVE' && item.cooperative_name && (
               <Alert type="info" className="mb-6">
@@ -247,29 +227,25 @@ const FoundItemDetailPage: React.FC = () => {
                 This item is held at <strong>{item.cooperative_name}</strong>
               </Alert>
             )}
-
             {/* Description */}
             <div className="mb-6">
               <h3 className="font-semibold text-gray-900 mb-2">Description</h3>
               <p className="text-gray-600 whitespace-pre-wrap">{item.description}</p>
             </div>
-
             {item.location_hint && (
               <div className="mb-6">
                 <h3 className="font-semibold text-gray-900 mb-2">Where it was found</h3>
                 <p className="text-gray-600">{item.location_hint}</p>
               </div>
             )}
-
             {/* Privacy Notice for Sensitive Items */}
             {(item.category === 'ID' || item.category === 'WALLET') && (
               <Alert type="warning" className="mt-6">
                 <Shield className="w-4 h-4 inline mr-2" />
-                <strong>Privacy Protected:</strong> Full details and images are only shown to 
+                <strong>{t('items.privacyNote')}</strong> 
                 verified owners. Claim this item and complete verification to access all information.
               </Alert>
             )}
-
             {/* Potential Matching Lost Items - visible to the finder */}
             {isFinder && (
               <div className="mt-6">
@@ -314,7 +290,6 @@ const FoundItemDetailPage: React.FC = () => {
             )}
           </Card>
         </div>
-
         {/* Sidebar */}
         <div>
           {/* Claim Instructions */}
@@ -324,7 +299,6 @@ const FoundItemDetailPage: React.FC = () => {
             <p className="text-sm text-gray-600 mb-4">
               If this looks like your lost item, you'll need to:
             </p>
-
             <ol className="text-sm text-gray-600 space-y-2 mb-6">
               <li className="flex items-start gap-2">
                 <span className="w-5 h-5 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0">1</span>
@@ -343,14 +317,12 @@ const FoundItemDetailPage: React.FC = () => {
                 Coordinate pickup with OTP code
               </li>
             </ol>
-
             <Link to="/report-lost">
               <Button className="w-full">
                 Report Lost Item
               </Button>
             </Link>
           </Card>
-
           {/* Status */}
           <Card className="p-6 mb-6">
             <h3 className="font-semibold text-gray-900 mb-4">Status</h3>
@@ -370,7 +342,6 @@ const FoundItemDetailPage: React.FC = () => {
               </div>
             </div>
           </Card>
-
           {/* Posted Date */}
           <Card className="p-6">
             <p className="text-sm text-gray-500">
@@ -380,7 +351,6 @@ const FoundItemDetailPage: React.FC = () => {
           </Card>
         </div>
       </div>
-
       {/* Delete Confirmation Modal */}
       <Modal
         isOpen={showDeleteModal}

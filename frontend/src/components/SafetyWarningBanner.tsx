@@ -1,23 +1,22 @@
 import React from 'react';
-
+import { useTranslation } from 'react-i18next';
 /**
  * SafetyWarningBanner Component for Byaboneka+
  * 
  * Implements COMM-04: Auto-warning banner "Never pay..."
  * Displayed on every message thread to remind users about safe practices
  */
-
 interface SafetyWarningBannerProps {
   variant?: 'compact' | 'full';
   onDismiss?: () => void;
   dismissible?: boolean;
 }
-
 export const SafetyWarningBanner: React.FC<SafetyWarningBannerProps> = ({
   variant = 'compact',
   onDismiss,
   dismissible = false
 }) => {
+  const { t } = useTranslation();
   if (variant === 'compact') {
     return (
       <div className="bg-amber-50 border-b border-amber-200 px-4 py-2">
@@ -37,7 +36,7 @@ export const SafetyWarningBanner: React.FC<SafetyWarningBannerProps> = ({
               />
             </svg>
             <span className="text-amber-800">
-              <strong>Safety reminder:</strong> Never pay money before verification. 
+              <strong>{t('safety.reminderBold')}</strong> {t('safety.reminderText')} 
               <span className="hidden sm:inline"> Report suspicious behavior using the button below.</span>
             </span>
           </div>
@@ -56,7 +55,6 @@ export const SafetyWarningBanner: React.FC<SafetyWarningBannerProps> = ({
       </div>
     );
   }
-
   return (
     <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
       <div className="flex gap-3">
@@ -86,25 +84,25 @@ export const SafetyWarningBanner: React.FC<SafetyWarningBannerProps> = ({
               <svg className="w-4 h-4 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
-              <span><strong>Never pay money</strong> before meeting in person and verifying the item</span>
+              <span><strong>{t('safety.neverPay')}</strong> {t('safety.neverPayDetail')}</span>
             </li>
             <li className="flex items-start gap-2">
               <svg className="w-4 h-4 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
-              <span><strong>Meet in public places</strong> like cooperative offices or bus stations</span>
+              <span><strong>{t('safety.meetPublic')}</strong> {t('safety.meetPublicDetail')}</span>
             </li>
             <li className="flex items-start gap-2">
               <svg className="w-4 h-4 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
-              <span><strong>Use the official OTP</strong> handover process to confirm return</span>
+              <span><strong>{t('safety.useOfficialOTP')}</strong> {t('safety.useOfficialOTPDetail')}</span>
             </li>
             <li className="flex items-start gap-2">
               <svg className="w-4 h-4 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
-              <span><strong>Report suspicious behavior</strong> immediately using the report button</span>
+              <span><strong>{t('safety.reportSuspiciousBold')}</strong> {t('safety.reportSuspiciousDetail')}</span>
             </li>
           </ul>
         </div>

@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { cooperativeLeaderboardApi } from '../services/novelFeatureApi';
-
+import { useTranslation } from 'react-i18next';
 // ============================================
 // TYPES
 // ============================================
-
 interface CooperativeAccountability {
   cooperative_id: number;
   cooperative_name: string;
@@ -23,21 +22,18 @@ interface CooperativeAccountability {
   accountability_grade: 'A' | 'B' | 'C' | 'D' | 'F';
   rank: number;
 }
-
 // ============================================
 // COMPONENT
 // ============================================
-
 const CooperativeLeaderboard: React.FC = () => {
+  const { t } = useTranslation();
   const [cooperatives, setCooperatives] = useState<CooperativeAccountability[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [expandedId, setExpandedId] = useState<number | null>(null);
-
   useEffect(() => {
     loadLeaderboard();
   }, []);
-
   const loadLeaderboard = async () => {
     try {
       setLoading(true);
@@ -46,12 +42,11 @@ const CooperativeLeaderboard: React.FC = () => {
       setCooperatives(res.data?.data || []);
     } catch (err: any) {
       console.error('Leaderboard load error:', err?.response?.data || err?.message);
-      setError('Failed to load leaderboard. Please try again.');
+      setError(t('leaderboard.loadError'));
     } finally {
       setLoading(false);
     }
   };
-
   const gradeColors: Record<string, { bg: string; text: string }> = {
     A: { bg: '#D1FAE5', text: '#065F46' },
     B: { bg: '#DBEAFE', text: '#1E40AF' },
@@ -59,34 +54,29 @@ const CooperativeLeaderboard: React.FC = () => {
     D: { bg: '#FFE4E6', text: '#9F1239' },
     F: { bg: '#FEE2E2', text: '#991B1B' },
   };
-
   const getRankEmoji = (rank: number) => {
     if (rank === 1) return '🥇';
     if (rank === 2) return '🥈';
     if (rank === 3) return '🥉';
     return `#${rank}`;
   };
-
   const getReturnRate = (c: CooperativeAccountability) => {
     if (c.total_items_received === 0) return 'N/A';
     return `${Math.round((c.total_items_returned / c.total_items_received) * 100)}%`;
   };
-
   const getAvgTime = (hours: number | null) => {
     if (hours === null) return 'N/A';
     if (hours < 24) return `${Math.round(hours)}h`;
     return `${Math.round(hours / 24)}d`;
   };
-
   if (loading) {
     return (
       <div style={{ padding: 40, textAlign: 'center' }}>
         <div style={{ fontSize: 32, marginBottom: 8 }}>📊</div>
-        <p style={{ color: '#6B7280' }}>Loading cooperative rankings...</p>
+        <p style={{ color: '#6B7280' }}>{t('leaderboard.loadingRankings')}</p>
       </div>
     );
   }
-
   if (error) {
     return (
       <div style={{ padding: 40, textAlign: 'center' }}>
@@ -94,11 +84,10 @@ const CooperativeLeaderboard: React.FC = () => {
         <button onClick={loadLeaderboard} style={{
           marginTop: 8, padding: '8px 16px', background: '#1E3A5F',
           color: 'white', border: 'none', borderRadius: 8, cursor: 'pointer'
-        }}>Retry</button>
+        }}>{t('common.retry')}</button>
       </div>
     );
   }
-
   return (
     <div style={{ maxWidth: 800, margin: '0 auto', padding: 16 }}>
       {/* Header */}
@@ -119,11 +108,10 @@ const CooperativeLeaderboard: React.FC = () => {
           <span>👥 Staff Quality: 20%</span>
         </div>
       </div>
-
       {/* Leaderboard */}
       {cooperatives.length === 0 ? (
         <p style={{ textAlign: 'center', color: '#9CA3AF', padding: 40 }}>
-          No cooperative data available yet.
+          {t('leaderboard.noData')}.
         </p>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -160,7 +148,6 @@ const CooperativeLeaderboard: React.FC = () => {
                     </div>
                   </div>
                 </div>
-
                 {/* Grade & Score */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   {/* Score bar */}
@@ -193,7 +180,6 @@ const CooperativeLeaderboard: React.FC = () => {
                   </div>
                 </div>
               </div>
-
               {/* Expanded detail */}
               {expandedId === coop.cooperative_id && (
                 <div style={{
@@ -214,11 +200,9 @@ const CooperativeLeaderboard: React.FC = () => {
     </div>
   );
 };
-
 // ============================================
 // SUB-COMPONENT: Score Bar
 // ============================================
-
 const ScoreBar: React.FC<{ label: string; score: number; detail: string }> = ({ label, score, detail }) => (
   <div>
     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>

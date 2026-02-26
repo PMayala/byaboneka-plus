@@ -8,12 +8,11 @@ import { Button, Card, Input } from '../components/ui';
 import { useRecaptcha } from '../hooks/useRecaptcha';
 import api from '../services/api';
 import toast from 'react-hot-toast';
-
+import { useTranslation } from 'react-i18next';
 interface FaqItem {
   question: string;
   answer: string;
 }
-
 const faqs: FaqItem[] = [
   {
     question: 'How do I report a lost item?',
@@ -56,20 +55,18 @@ const faqs: FaqItem[] = [
     answer: 'The platform recommends safe handover locations such as police stations, sector offices, and cooperative offices in your area. We strongly recommend using these locations rather than private meeting spots, especially for valuable items.'
   },
 ];
-
 const ContactPage: React.FC = () => {
+  const { t } = useTranslation();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
   const [loading, setLoading] = useState(false);
   const { executeRecaptcha } = useRecaptcha();
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!contactForm.name || !contactForm.email || !contactForm.message) {
-      toast.error('Please fill in all fields');
+      toast.error(t('contact.fillAllFields'));
       return;
     }
-
     setLoading(true);
     try {
       const recaptchaToken = await executeRecaptcha('contact');
@@ -77,33 +74,29 @@ const ContactPage: React.FC = () => {
         ...contactForm,
         ...(recaptchaToken && { recaptchaToken }),
       });
-      toast.success('Message sent! We\'ll get back to you soon.');
+      toast.success(t('contact.messageSent'));
       setContactForm({ name: '', email: '', message: '' });
     } catch (err: any) {
-      const message = err.response?.data?.message || 'Failed to send message. Please try again.';
+      const message = err.response?.data?.message || t('contact.messageFailed');
       toast.error(message);
     } finally {
       setLoading(false);
     }
   };
-
   return (
     <div className="max-w-5xl mx-auto px-4 py-8 sm:py-12">
       <Link to="/" className="inline-flex items-center text-gray-600 hover:text-gray-900 mb-6">
         <ArrowLeft className="w-4 h-4 mr-2" />Back to Home
       </Link>
-
       <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Help & Contact</h1>
       <p className="text-gray-600 mb-8">Find answers to common questions or get in touch with us</p>
-
       <div className="grid lg:grid-cols-3 gap-8">
         {/* FAQ Section */}
         <div className="lg:col-span-2">
           <div className="flex items-center gap-2 mb-6">
             <HelpCircle className="w-5 h-5 text-primary-500" />
-            <h2 className="text-xl font-semibold text-gray-900">Frequently Asked Questions</h2>
+            <h2 className="text-xl font-semibold text-gray-900">{t('contact.faqTitle')}</h2>
           </div>
-
           <div className="space-y-3">
             {faqs.map((faq, index) => (
               <Card key={index} className="overflow-hidden">
@@ -127,7 +120,6 @@ const ContactPage: React.FC = () => {
             ))}
           </div>
         </div>
-
         {/* Contact Info & Form */}
         <div>
           <Card className="p-6 mb-6">
@@ -143,11 +135,10 @@ const ContactPage: React.FC = () => {
               </div>
               <div className="flex items-center gap-3 text-sm text-gray-600">
                 <MapPin className="w-4 h-4 text-primary-500" />
-                <span>Kigali, Rwanda</span>
+                <span>{t('contact.location')}</span>
               </div>
             </div>
           </Card>
-
           <Card className="p-6">
             <div className="flex items-center gap-2 mb-4">
               <MessageSquare className="w-5 h-5 text-primary-500" />
@@ -159,7 +150,7 @@ const ContactPage: React.FC = () => {
                 <Input
                   value={contactForm.name}
                   onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
-                  placeholder="Your name"
+                  placeholder={t('contact.namePlaceholder')}
                 />
               </div>
               <div>
@@ -168,7 +159,7 @@ const ContactPage: React.FC = () => {
                   type="email"
                   value={contactForm.email}
                   onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
-                  placeholder="your@email.com"
+                  placeholder={t('contact.emailPlaceholder')}
                 />
               </div>
               <div>
@@ -176,16 +167,16 @@ const ContactPage: React.FC = () => {
                 <textarea
                   value={contactForm.message}
                   onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
-                  placeholder="How can we help?"
+                  placeholder={t('contact.msgPlaceholder')}
                   rows={4}
                   className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm resize-none"
                 />
               </div>
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? (
-                  <>Sending...</>
+                  <>{t('contact.sending')}</>
                 ) : (
-                  <><Send className="w-4 h-4 mr-2" />Send Message</>
+                  <><Send className="w-4 h-4 mr-2" />{t('contact.sendMessage')}</>
                 )}
               </Button>
             </form>

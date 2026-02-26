@@ -16,6 +16,9 @@ import { runMigrations } from './migrations/001_initial';
 import { runPatchMigrations } from './migrations/002_patch';
 import { sendPendingExpiryWarnings, checkEmailHealth } from './services/emailService';
 import { swaggerSpec } from './config/swagger';
+import { csrfProtection } from './middleware/csrf';
+import { runDataRetention } from './services/dataRetentionService';
+import { runGapFixMigration } from './migrations/003_gap_fixes';
 
 // swagger-ui-express is CJS — use require for reliable loading
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -64,6 +67,9 @@ if (process.env.NODE_ENV !== 'test') {
 // Body parsing — 1MB default, upload routes handle larger payloads
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
+
+// CSRF protection (origin validation for state-changing requests)
+app.use(csrfProtection(allowedOrigins));
 
 // Rate limiting
 app.use('/api/v1', apiLimiter);
@@ -158,6 +164,16 @@ cron.schedule('0 1 * * *', async () => {
   }
 });
 
+// Data retention cleanup (weekly, Sunday at 3 AM)
+cron.schedule('0 3 * * 0', async () => {
+  console.log('🕐 Running data retention cleanup...');
+  try {
+    await runDataRetention();
+  } catch (error) {
+    console.error('❌ Data retention failed:', error);
+  }
+});
+
 // ============================================
 // SERVER STARTUP
 // ============================================
@@ -174,6 +190,7 @@ async function startServer() {
     // Run migrations
     await runMigrations();
     await runPatchMigrations();
+    await runGapFixMigration().catch(err => console.warn('Gap fix migration note:', err.message));
 
     // Create uploads directory if it doesn't exist
     const fs = await import('fs');

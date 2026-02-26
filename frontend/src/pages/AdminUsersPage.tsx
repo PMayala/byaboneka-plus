@@ -7,7 +7,7 @@ import { Button, Card, Badge, Input, LoadingSpinner, Modal, Alert } from '../com
 import api from '../services/api';
 import { formatDate, formatDateShort, formatDateTime } from '../utils/dateUtils';
 import toast from 'react-hot-toast';
-
+import { useTranslation } from 'react-i18next';
 interface User {
   id: number;
   email: string;
@@ -20,8 +20,8 @@ interface User {
   cooperative_name: string | null;
   created_at: string;
 }
-
 const AdminUsersPage: React.FC = () => {
+  const { t } = useTranslation();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -34,11 +34,9 @@ const AdminUsersPage: React.FC = () => {
   const [showBanModal, setShowBanModal] = useState(false);
   const [banReason, setBanReason] = useState('');
   const [processing, setProcessing] = useState(false);
-
   useEffect(() => {
     loadUsers();
   }, [page, roleFilter, statusFilter]);
-
   const loadUsers = async () => {
     setLoading(true);
     try {
@@ -46,81 +44,72 @@ const AdminUsersPage: React.FC = () => {
       if (search) params.search = search;
       if (roleFilter) params.role = roleFilter;
       if (statusFilter) params.status = statusFilter;
-
       const response = await api.get('/admin/users', { params });
       setUsers(response.data.data || []);
       setTotalPages(response.data.pagination?.totalPages || 1);
     } catch (error) {
-      toast.error('Failed to load users');
+      toast.error(t('admin.loadUsersError'));
     } finally {
       setLoading(false);
     }
   };
-
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setPage(1);
     loadUsers();
   };
-
   const handleBan = async () => {
     if (!selectedUser || !banReason.trim()) return;
     setProcessing(true);
     try {
       await api.post(`/admin/users/${selectedUser.id}/ban`, { reason: banReason });
-      toast.success('User banned successfully');
+      toast.success(t('admin.banSuccess'));
       setShowBanModal(false);
       setBanReason('');
       setSelectedUser(null);
       loadUsers();
     } catch (error) {
-      toast.error('Failed to ban user');
+      toast.error(t('admin.banFailed'));
     } finally {
       setProcessing(false);
     }
   };
-
   const handleUnban = async (userId: number) => {
     try {
       await api.post(`/admin/users/${userId}/unban`);
-      toast.success('User unbanned successfully');
+      toast.success(t('admin.unbanSuccess'));
       loadUsers();
     } catch (error) {
-      toast.error('Failed to unban user');
+      toast.error(t('admin.unbanFailed'));
     }
   };
-
   const handleRecalculateTrust = async (userId: number) => {
     try {
       const response = await api.post(`/admin/users/${userId}/recalculate-trust`);
       toast.success(`Trust score updated to ${response.data.data.new_trust_score}`);
       loadUsers();
     } catch (error) {
-      toast.error('Failed to recalculate trust');
+      toast.error(t('admin.loadError'));
     }
   };
-
   const getRoleBadge = (role: string) => {
     switch (role) {
-      case 'admin': return <Badge variant="verified">Admin</Badge>;
-      case 'coop_staff': return <Badge variant="active">Coop Staff</Badge>;
-      default: return <Badge variant="default">Citizen</Badge>;
+      case 'admin': return <Badge variant="verified">{t('nav.adminPanel')}</Badge>;
+      case 'coop_staff': return <Badge variant="active">{t('admin.coopStaff')}</Badge>;
+      default: return <Badge variant="default">{t('admin.citizen')}</Badge>;
     }
   };
-
   const getTrustBadge = (score: number) => {
     if (score >= 10) return <span className="text-trust-600 font-medium">+{score}</span>;
     if (score >= 0) return <span className="text-gray-600">{score}</span>;
     return <span className="text-red-600 font-medium">{score}</span>;
   };
-
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">User Management</h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">{t('admin.users')}</h1>
         <p className="text-gray-600">View and manage platform users</p>
       </div>
-
       {/* Filters */}
       <Card className="p-4 mb-6">
         <form onSubmit={handleSearch} className="flex flex-wrap gap-4">
@@ -130,7 +119,7 @@ const AdminUsersPage: React.FC = () => {
               <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search by name or email..."
+                placeholder={t('admin.searchPlaceholder')}
                 className="pl-10"
               />
             </div>
@@ -140,8 +129,8 @@ const AdminUsersPage: React.FC = () => {
             onChange={(e) => { setRoleFilter(e.target.value); setPage(1); }}
             className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
           >
-            <option value="">All Roles</option>
-            <option value="citizen">Citizens</option>
+            <option value="">{t('admin.allRoles')}</option>
+            <option value="citizen">{t('admin.citizens')}</option>
             <option value="coop_staff">Coop Staff</option>
             <option value="admin">Admins</option>
           </select>
@@ -157,7 +146,6 @@ const AdminUsersPage: React.FC = () => {
           <Button type="submit">Search</Button>
         </form>
       </Card>
-
       {/* Users Table */}
       <Card className="overflow-hidden">
         {loading ? (
@@ -243,7 +231,6 @@ const AdminUsersPage: React.FC = () => {
                 </tbody>
               </table>
             </div>
-
             {/* Pagination */}
             {totalPages > 1 && (
               <div className="flex items-center justify-between px-4 py-3 border-t">
@@ -273,7 +260,6 @@ const AdminUsersPage: React.FC = () => {
           </>
         )}
       </Card>
-
       {/* Ban Modal */}
       <Modal
         isOpen={showBanModal}
@@ -295,7 +281,7 @@ const AdminUsersPage: React.FC = () => {
                 onChange={(e) => setBanReason(e.target.value)}
                 rows={3}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                placeholder="Enter reason for banning this user..."
+                placeholder={t('admin.banPlaceholder')}
               />
             </div>
             <div className="flex gap-3">

@@ -7,7 +7,7 @@ import { Button, Card, Badge, LoadingSpinner, Modal, Alert } from '../components
 import api from '../services/api';
 import { formatDate, formatDateShort, formatDateTime } from '../utils/dateUtils';
 import toast from 'react-hot-toast';
-
+import { useTranslation } from 'react-i18next';
 interface ScamReport {
   id: number;
   reporter_id: number;
@@ -25,39 +25,34 @@ interface ScamReport {
   created_at: string;
   resolved_at: string | null;
 }
-
 const AdminScamReportsPage: React.FC = () => {
+  const { t } = useTranslation();
   const [reports, setReports] = useState<ScamReport[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('OPEN');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-
   const [selectedReport, setSelectedReport] = useState<ScamReport | null>(null);
   const [showResolveModal, setShowResolveModal] = useState(false);
   const [resolution, setResolution] = useState({ notes: '', action: 'dismiss' });
   const [processing, setProcessing] = useState(false);
-
   useEffect(() => {
     loadReports();
   }, [page, statusFilter]);
-
   const loadReports = async () => {
     setLoading(true);
     try {
       const params: any = { page, limit: 20 };
       if (statusFilter) params.status = statusFilter;
-
       const response = await api.get('/admin/scam-reports', { params });
       setReports(response.data.data || []);
       setTotalPages(response.data.pagination?.totalPages || 1);
     } catch (error) {
-      toast.error('Failed to load scam reports');
+      toast.error(t('admin.loadReportsError'));
     } finally {
       setLoading(false);
     }
   };
-
   const handleResolve = async () => {
     if (!selectedReport || !resolution.notes.trim()) return;
     setProcessing(true);
@@ -66,34 +61,31 @@ const AdminScamReportsPage: React.FC = () => {
         resolution_notes: resolution.notes,
         action: resolution.action
       });
-      toast.success('Report resolved successfully');
+      toast.success(t('admin.resolveSuccess'));
       setShowResolveModal(false);
       setSelectedReport(null);
       setResolution({ notes: '', action: 'dismiss' });
       loadReports();
     } catch (error) {
-      toast.error('Failed to resolve report');
+      toast.error(t('admin.resolveFailed'));
     } finally {
       setProcessing(false);
     }
   };
-
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'OPEN': return <Badge variant="danger">Open</Badge>;
-      case 'INVESTIGATING': return <Badge variant="pending">Investigating</Badge>;
-      case 'RESOLVED': return <Badge variant="verified">Resolved</Badge>;
+      case 'OPEN': return <Badge variant="danger">{t('admin.open')}</Badge>;
+      case 'INVESTIGATING': return <Badge variant="pending">{t('admin.investigating')}</Badge>;
+      case 'RESOLVED': return <Badge variant="verified">{t('admin.resolved')}</Badge>;
       default: return <Badge variant="default">{status}</Badge>;
     }
   };
-
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Scam Reports</h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">{t('admin.scamReports')}</h1>
         <p className="text-gray-600">Review and resolve user scam reports</p>
       </div>
-
       {/* Filters */}
       <Card className="p-4 mb-6">
         <div className="flex gap-4">
@@ -102,14 +94,13 @@ const AdminScamReportsPage: React.FC = () => {
             onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
             className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
           >
-            <option value="">All Status</option>
+            <option value="">{t('admin.allStatus')}</option>
             <option value="OPEN">Open</option>
             <option value="INVESTIGATING">Investigating</option>
             <option value="RESOLVED">Resolved</option>
           </select>
         </div>
       </Card>
-
       {/* Reports List */}
       {loading ? (
         <div className="flex justify-center py-12">
@@ -139,7 +130,6 @@ const AdminScamReportsPage: React.FC = () => {
                 </div>
                 {getStatusBadge(report.status)}
               </div>
-
               <div className="grid md:grid-cols-2 gap-4 mb-4">
                 <div className="p-3 bg-gray-50 rounded-lg">
                   <p className="text-xs text-gray-500 mb-1">Reporter</p>
@@ -152,12 +142,10 @@ const AdminScamReportsPage: React.FC = () => {
                   <p className="text-sm text-gray-500">{report.reported_email}</p>
                 </div>
               </div>
-
               <div className="mb-4">
                 <p className="text-xs text-gray-500 mb-1">Reason</p>
                 <p className="text-gray-900">{report.reason}</p>
               </div>
-
               {report.message_content && (
                 <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                   <div className="flex items-center gap-2 mb-2">
@@ -167,7 +155,6 @@ const AdminScamReportsPage: React.FC = () => {
                   <p className="text-sm text-gray-900">"{report.message_content}"</p>
                 </div>
               )}
-
               {report.resolution_notes && (
                 <div className="mb-4 p-3 bg-trust-50 border border-trust-200 rounded-lg">
                   <p className="text-xs text-trust-700 font-medium mb-1">Resolution</p>
@@ -179,7 +166,6 @@ const AdminScamReportsPage: React.FC = () => {
                   )}
                 </div>
               )}
-
               {report.status === 'OPEN' && (
                 <div className="flex gap-3">
                   <Button
@@ -194,7 +180,6 @@ const AdminScamReportsPage: React.FC = () => {
               )}
             </Card>
           ))}
-
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between">
@@ -223,7 +208,6 @@ const AdminScamReportsPage: React.FC = () => {
           )}
         </div>
       )}
-
       {/* Resolve Modal */}
       <Modal
         isOpen={showResolveModal}
@@ -278,7 +262,6 @@ const AdminScamReportsPage: React.FC = () => {
                 </label>
               </div>
             </div>
-
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Resolution notes *
@@ -288,10 +271,9 @@ const AdminScamReportsPage: React.FC = () => {
                 onChange={(e) => setResolution({ ...resolution, notes: e.target.value })}
                 rows={3}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                placeholder="Describe your findings and reasoning..."
+                placeholder={t('admin.resolutionPlaceholder')}
               />
             </div>
-
             <div className="flex gap-3">
               <Button
                 variant="secondary"

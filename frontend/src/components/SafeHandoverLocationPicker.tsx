@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { handoverLocationsApi } from '../services/novelFeatureApi';
-
+import { useTranslation } from 'react-i18next';
 // ============================================
 // TYPES
 // ============================================
-
 interface SafeHandoverPoint {
   id: number;
   name: string;
@@ -14,28 +13,24 @@ interface SafeHandoverPoint {
   operating_hours: string;
   safety_rating: number;
 }
-
 interface Props {
   itemArea: string;
   itemCategory: string;
   onSelectLocation?: (location: SafeHandoverPoint) => void;
 }
-
 // ============================================
 // COMPONENT
 // ============================================
-
 const SafeHandoverLocationPicker: React.FC<Props> = ({
   itemArea, itemCategory, onSelectLocation
 }) => {
+  const { t } = useTranslation();
   const [locations, setLocations] = useState<SafeHandoverPoint[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedId, setSelectedId] = useState<number | null>(null);
-
   useEffect(() => {
     loadRecommendations();
   }, [itemArea, itemCategory]);
-
   const loadRecommendations = async () => {
     try {
       setLoading(true);
@@ -53,33 +48,28 @@ const SafeHandoverLocationPicker: React.FC<Props> = ({
       setLoading(false);
     }
   };
-
   const typeIcons: Record<string, string> = {
     'COOPERATIVE_OFFICE': '🏢',
     'SECTOR_OFFICE': '🏛️',
     'POLICE_POST': '👮',
     'TRANSIT_HUB': '🚌',
   };
-
   const typeLabels: Record<string, string> = {
     'COOPERATIVE_OFFICE': 'Cooperative Office',
     'SECTOR_OFFICE': 'Sector Office',
     'POLICE_POST': 'Police Post',
     'TRANSIT_HUB': 'Transit Hub',
   };
-
   const typeColors: Record<string, string> = {
     'COOPERATIVE_OFFICE': '#1E3A5F',
     'SECTOR_OFFICE': '#2E7D32',
     'POLICE_POST': '#4A148C',
     'TRANSIT_HUB': '#E65100',
   };
-
   const handleSelect = (loc: SafeHandoverPoint) => {
     setSelectedId(loc.id);
     onSelectLocation?.(loc);
   };
-
   if (loading) {
     return (
       <div style={{ padding: 20, textAlign: 'center', color: '#6B7280', fontSize: 14 }}>
@@ -87,7 +77,6 @@ const SafeHandoverLocationPicker: React.FC<Props> = ({
       </div>
     );
   }
-
   return (
     <div style={{ borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'hidden' }}>
       {/* Header */}
@@ -104,7 +93,6 @@ const SafeHandoverLocationPicker: React.FC<Props> = ({
             : 'Choose a well-lit public location during business hours.'}
         </div>
       </div>
-
       {/* Location list */}
       {locations.length === 0 ? (
         <div style={{ padding: 20, textAlign: 'center', color: '#9CA3AF', fontSize: 13 }}>
@@ -129,7 +117,6 @@ const SafeHandoverLocationPicker: React.FC<Props> = ({
               <span style={{ fontSize: 24, flexShrink: 0, marginTop: 2 }}>
                 {typeIcons[loc.type] || '📍'}
               </span>
-
               {/* Details */}
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
@@ -163,7 +150,6 @@ const SafeHandoverLocationPicker: React.FC<Props> = ({
                   </span>
                 </div>
               </div>
-
               {/* Selection indicator */}
               <div style={{
                 width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
@@ -181,7 +167,6 @@ const SafeHandoverLocationPicker: React.FC<Props> = ({
           ))}
         </div>
       )}
-
       {/* Safety reminder */}
       <div style={{
         padding: '10px 16px', background: '#FFFBEB',

@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { verificationStrengthApi } from '../services/novelFeatureApi';
-
+import { useTranslation } from 'react-i18next';
 // ============================================
 // TYPES
 // ============================================
-
 interface QuestionAnalysis {
   question_index: number;
   strength: 'WEAK' | 'MODERATE' | 'STRONG';
@@ -12,7 +11,6 @@ interface QuestionAnalysis {
   issues: string[];
   suggestions: string[];
 }
-
 interface StrengthResult {
   overall_strength: 'WEAK' | 'MODERATE' | 'STRONG';
   overall_score: number;
@@ -20,13 +18,11 @@ interface StrengthResult {
   redundancy_warning: boolean;
   improvement_tips: string[];
 }
-
 interface QuestionTemplate {
   category: string;
   question: string;
   why_effective: string;
 }
-
 interface Props {
   questions: string[];
   answers: string[];
@@ -34,20 +30,18 @@ interface Props {
   description: string;
   onSelectTemplate?: (index: number, question: string) => void;
 }
-
 // ============================================
 // COMPONENT
 // ============================================
-
 const VerificationStrengthIndicator: React.FC<Props> = ({
   questions, answers, category, description, onSelectTemplate
 }) => {
+  const { t } = useTranslation();
   const [analysis, setAnalysis] = useState<StrengthResult | null>(null);
   const [templates, setTemplates] = useState<QuestionTemplate[]>([]);
   const [showTemplates, setShowTemplates] = useState(false);
   const [loading, setLoading] = useState(false);
   const [expandedQuestion, setExpandedQuestion] = useState<number | null>(null);
-
   // Fetch templates on mount
   useEffect(() => {
     if (category) {
@@ -56,12 +50,10 @@ const VerificationStrengthIndicator: React.FC<Props> = ({
         .catch(() => {});
     }
   }, [category]);
-
   // Debounced analysis
   const analyzeQuestions = useCallback(async () => {
     const hasContent = questions.some(q => q.length > 3) && answers.some(a => a.length > 0);
     if (!hasContent || !category) return;
-
     setLoading(true);
     try {
       const res = await verificationStrengthApi.analyzeStrength({
@@ -74,27 +66,22 @@ const VerificationStrengthIndicator: React.FC<Props> = ({
       setLoading(false);
     }
   }, [questions, answers, category, description]);
-
   useEffect(() => {
     const timer = setTimeout(analyzeQuestions, 800);
     return () => clearTimeout(timer);
   }, [analyzeQuestions]);
-
   // ── Strength badge colors ──
   const strengthColors = {
     WEAK: { bg: '#FEE2E2', text: '#991B1B', border: '#FECACA', icon: '⚠️' },
     MODERATE: { bg: '#FEF3C7', text: '#92400E', border: '#FDE68A', icon: '⚡' },
     STRONG: { bg: '#D1FAE5', text: '#065F46', border: '#A7F3D0', icon: '✅' },
   };
-
   const getScoreBarColor = (score: number) => {
     if (score >= 65) return '#10B981';
     if (score >= 35) return '#F59E0B';
     return '#EF4444';
   };
-
   if (!analysis && !loading) return null;
-
   return (
     <div style={{ marginTop: 16, borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'hidden' }}>
       {/* Header */}
@@ -133,7 +120,6 @@ const VerificationStrengthIndicator: React.FC<Props> = ({
           </div>
         )}
       </div>
-
       {/* Per-question analysis */}
       {analysis && (
         <div style={{ padding: '8px 0' }}>
@@ -158,7 +144,6 @@ const VerificationStrengthIndicator: React.FC<Props> = ({
                   {qa.strength}
                 </span>
               </div>
-
               {/* Expanded details */}
               {expandedQuestion === i && (
                 <div style={{ marginTop: 8, paddingLeft: 8 }}>
@@ -186,7 +171,6 @@ const VerificationStrengthIndicator: React.FC<Props> = ({
           ))}
         </div>
       )}
-
       {/* Redundancy warning */}
       {analysis?.redundancy_warning && (
         <div style={{
@@ -196,7 +180,6 @@ const VerificationStrengthIndicator: React.FC<Props> = ({
           ⚠️ Your questions are too similar to each other. Use different types of questions for better security.
         </div>
       )}
-
       {/* Templates toggle */}
       <div style={{ padding: '8px 16px', borderTop: '1px solid #E5E7EB' }}>
         <button
@@ -209,7 +192,6 @@ const VerificationStrengthIndicator: React.FC<Props> = ({
         >
           {showTemplates ? 'Hide' : 'Show'} suggested questions for {category.toLowerCase()} items
         </button>
-
         {showTemplates && templates.length > 0 && (
           <div style={{ marginTop: 8 }}>
             {templates.map((t, i) => (

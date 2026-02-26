@@ -23,8 +23,15 @@ import { UserRole } from '../types';
 import { checkConnection } from '../config/database';
 import { fraudCheck } from '../services/fraudDetectionService';
 import { requireRecaptcha, softRecaptcha } from '../middleware/recaptcha';
-
 import { checkEmailHealth, sendContactFormEmail } from '../services/emailService';
+import { requireConsent } from '../middleware/consent';
+import { deleteAccount, exportUserData } from '../controllers/accountController';
+
+// Cooperative accountability service (for leaderboard)
+import {
+  computeCooperativeAccountability,
+  getCooperativeAccountability
+} from '../services/cooperativeAccountabilityService';
 
 const router = Router();
 
@@ -63,6 +70,7 @@ const upload = multer({
 
 router.post('/auth/register',
   authLimiter,
+  requireConsent,
   requireRecaptcha('register'),
   validate(registerSchema),
   authController.register
@@ -110,6 +118,22 @@ router.put('/auth/profile',
 router.post('/auth/change-password',
   authenticate,
   authController.changePassword
+);
+
+// ============================================
+// ACCOUNT MANAGEMENT (Data Protection Rights)
+// ============================================
+
+// Delete own account (Right to Erasure — Rwanda Law N°058/2021)
+router.delete('/users/me',
+  authenticate,
+  deleteAccount
+);
+
+// Export own data (Right to Portability)
+router.get('/users/me/export',
+  authenticate,
+  exportUserData
 );
 
 // ============================================
@@ -289,12 +313,51 @@ router.get('/messages/unread-count',
 // ============================================
 // COOPERATIVES ROUTES
 // ============================================
+// IMPORTANT: Static paths (/leaderboard) MUST be registered
+// BEFORE parameterized paths (/:id) — otherwise Express
+// treats "leaderboard" as an :id value and passes it to
+// getCooperative(), which tries to parse it as an integer.
 
 router.get('/cooperatives',
   optionalAuth,
   cooperativesController.getCooperatives
 );
 
+// ── Cooperative Accountability Leaderboard (public) ──
+router.get('/cooperatives/leaderboard',
+  async (req, res) => {
+    try {
+      const rankings = await computeCooperativeAccountability();
+      res.json({
+        success: true,
+        data: rankings,
+        meta: {
+          total: rankings.length,
+          computed_at: new Date().toISOString(),
+          scoring_weights: {
+            return_rate: '35%',
+            speed: '25%',
+            reliability: '20%',
+            staff_quality: '20%'
+          }
+        }
+      });
+    } catch (error: any) {
+      console.error('Leaderboard computation error:', error?.message || error);
+      res.json({
+        success: true,
+        data: [],
+        meta: {
+          total: 0,
+          computed_at: new Date().toISOString(),
+          note: 'No cooperative data available yet.'
+        }
+      });
+    }
+  }
+);
+
+// ── Parameterized routes come AFTER static ones ──
 router.get('/cooperatives/:id',
   optionalAuth,
   cooperativesController.getCooperative
@@ -328,6 +391,26 @@ router.get('/cooperatives/:id/items',
   authenticate,
   adminOrCoopStaff,
   cooperativesController.getCooperativeItems
+);
+
+// ── Cooperative Accountability Detail ──
+router.get('/cooperatives/:id/accountability',
+  async (req, res) => {
+    try {
+      const cooperativeId = parseInt(req.params.id);
+      const report = await getCooperativeAccountability(cooperativeId);
+
+      if (!report) {
+        res.status(404).json({ success: false, message: 'Cooperative not found' });
+        return;
+      }
+
+      res.json({ success: true, data: report });
+    } catch (error) {
+      console.error('Accountability report error:', error);
+      res.status(500).json({ success: false, message: 'Failed to generate report' });
+    }
+  }
 );
 
 router.get('/cooperative/dashboard',
@@ -395,10 +478,6 @@ router.post('/admin/cleanup',
 );
 
 // ============================================
-// HEALTH CHECK (with DB connectivity)
-// ============================================
-
-// ============================================
 // CONTACT FORM
 // ============================================
 router.post('/contact',
@@ -441,9 +520,6 @@ router.post('/contact',
 );
 
 // ============================================
-// HEALTH CHECK
-// ============================================
-// ============================================
 // ROOT & HEALTH
 // ============================================
 router.get('/', (req, res) => {
@@ -483,3 +559,4 @@ router.get('/health', async (req, res) => {
 });
 
 export default router;
+

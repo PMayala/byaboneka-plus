@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { messagesApi, getErrorMessage } from '../services/api';
-
+import { useTranslation } from 'react-i18next';
 /**
  * ScamReportButton Component for Byaboneka+
  * 
@@ -11,7 +11,6 @@ import { messagesApi, getErrorMessage } from '../services/api';
  * FIX: Uses correct backend route: POST /messages/:messageId/report
  *      (not the non-existent POST /scam-reports endpoint)
  */
-
 interface ScamReportButtonProps {
   claimId: number;
   messageId: number;
@@ -19,7 +18,6 @@ interface ScamReportButtonProps {
   reportedUserName: string;
   onReportSubmitted?: () => void;
 }
-
 export const ScamReportButton: React.FC<ScamReportButtonProps> = ({
   claimId,
   messageId,
@@ -27,27 +25,24 @@ export const ScamReportButton: React.FC<ScamReportButtonProps> = ({
   reportedUserName,
   onReportSubmitted
 }) => {
+  const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [reason, setReason] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (reason.trim().length < 10) {
-      setError('Please provide a detailed reason (at least 10 characters)');
+      setError(t('scamReport.reasonMinLength'));
       return;
     }
-
     setIsSubmitting(true);
     setError('');
-
     try {
       // Uses the correct backend route: POST /messages/:messageId/report
       await messagesApi.reportScam(messageId, reason.trim());
-
       setSuccess(true);
       setTimeout(() => {
         setIsModalOpen(false);
@@ -61,7 +56,6 @@ export const ScamReportButton: React.FC<ScamReportButtonProps> = ({
       setIsSubmitting(false);
     }
   };
-
   return (
     <>
       {/* Report Button */}
@@ -85,7 +79,6 @@ export const ScamReportButton: React.FC<ScamReportButtonProps> = ({
         </svg>
         Report Scam
       </button>
-
       {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -106,7 +99,6 @@ export const ScamReportButton: React.FC<ScamReportButtonProps> = ({
                 </button>
               </div>
             </div>
-
             {/* Content */}
             <div className="px-6 py-4">
               {success ? (
@@ -131,17 +123,15 @@ export const ScamReportButton: React.FC<ScamReportButtonProps> = ({
                       </svg>
                       <div className="ml-3">
                         <p className="text-sm text-yellow-800">
-                          <strong>Never pay money</strong> before meeting in person and verifying the item.
+                          <strong>{t('safety.neverPay')}</strong> {t('safety.neverPayDetail')}.
                           Legitimate finders will never ask for payment upfront.
                         </p>
                       </div>
                     </div>
                   </div>
-
                   <p className="text-sm text-gray-600 mb-4">
                     You are reporting <span className="font-medium">{reportedUserName}</span> for suspicious behavior.
                   </p>
-
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Describe the issue <span className="text-red-500">*</span>
@@ -149,7 +139,7 @@ export const ScamReportButton: React.FC<ScamReportButtonProps> = ({
                     <textarea
                       value={reason}
                       onChange={(e) => setReason(e.target.value)}
-                      placeholder="Please describe what happened and why you believe this is suspicious..."
+                      placeholder={t('scamReport.reasonPlaceholder')}
                       className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
                       rows={4}
                       maxLength={1000}
@@ -158,13 +148,11 @@ export const ScamReportButton: React.FC<ScamReportButtonProps> = ({
                       {reason.length}/1000 characters
                     </p>
                   </div>
-
                   {error && (
                     <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4 text-sm">
                       {error}
                     </div>
                   )}
-
                   <div className="flex justify-end gap-3">
                     <button
                       type="button"

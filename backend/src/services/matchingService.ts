@@ -1,4 +1,5 @@
 import { query } from '../config/database';
+import { notifyOwnerOfMatches } from './matchNotificationTrigger';
 import {
   LostItem,
   FoundItem,
@@ -262,6 +263,14 @@ async function cacheMatches(lostItemId: number, matches: MatchResult[]): Promise
       [lostItemId, match.found_item.id, match.score, match.explanation]
     );
   }
+
+  // Notify owner of high-confidence matches via email
+  if (matches.length > 0) {
+    notifyOwnerOfMatches(
+      lostItemId,
+      matches.map(m => ({ found_item_id: m.found_item.id, score: m.score }))
+    ).catch(err => console.error('Match notification failed:', err));
+  }
 }
 
 // Trigger matching when a new item is created
@@ -313,3 +322,4 @@ export async function clearStaleMatches(): Promise<number> {
   );
   return result.rowCount || 0;
 }
+

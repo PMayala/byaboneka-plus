@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { handoverApi, getErrorMessage } from '../services/api';
-
+import { useTranslation } from 'react-i18next';
 /**
  * HandoverOTPPanel Component for Byaboneka+
  * 
@@ -15,14 +15,12 @@ import { handoverApi, getErrorMessage } from '../services/api';
  *         This ensures proper auth token injection, refresh handling, and
  *         correct base URL in production (Vercel → Render).
  */
-
 interface HandoverOTPPanelProps {
   claimId: number;
   claimStatus: string;
   userRole: 'owner' | 'finder' | 'coop_staff';
   onHandoverComplete?: () => void;
 }
-
 interface HandoverStatus {
   has_otp: boolean;
   otp_verified?: boolean;
@@ -30,13 +28,13 @@ interface HandoverStatus {
   attempts_used?: number;
   is_expired?: boolean;
 }
-
 export const HandoverOTPPanel: React.FC<HandoverOTPPanelProps> = ({
   claimId,
   claimStatus,
   userRole,
   onHandoverComplete
 }) => {
+  const { t } = useTranslation();
   const [status, setStatus] = useState<HandoverStatus | null>(null);
   const [generatedOTP, setGeneratedOTP] = useState<string | null>(null);
   const [otpInput, setOtpInput] = useState('');
@@ -44,12 +42,10 @@ export const HandoverOTPPanel: React.FC<HandoverOTPPanelProps> = ({
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [showOTP, setShowOTP] = useState(false);
-
   // Fetch handover status
   useEffect(() => {
     fetchHandoverStatus();
   }, [claimId]);
-
   const fetchHandoverStatus = async () => {
     try {
       const response = await handoverApi.getStatus(claimId);
@@ -60,17 +56,15 @@ export const HandoverOTPPanel: React.FC<HandoverOTPPanelProps> = ({
       console.error('Failed to fetch handover status:', err);
     }
   };
-
   // Generate OTP (Owner only)
   const handleGenerateOTP = async () => {
     setLoading(true);
     setError('');
     setGeneratedOTP(null);
-
     try {
       const response = await handoverApi.generateOtp(claimId);
       setGeneratedOTP(response.data.data.otp);
-      setSuccess('Handover code generated! Share it only when meeting in person.');
+      setSuccess(t('handover.codeGeneratedMsg'));
       fetchHandoverStatus();
     } catch (err: any) {
       setError(getErrorMessage(err));
@@ -78,22 +72,19 @@ export const HandoverOTPPanel: React.FC<HandoverOTPPanelProps> = ({
       setLoading(false);
     }
   };
-
   // Verify OTP (Finder/Coop only)
   const handleVerifyOTP = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (otpInput.length !== 6) {
-      setError('Please enter a 6-digit code');
+      setError(t('handover.enterSixDigit'));
       return;
     }
-
     setLoading(true);
     setError('');
-
     try {
       const response = await handoverApi.confirmHandover(claimId, otpInput);
-      setSuccess(response.data.message || 'Handover confirmed!');
+      setSuccess(response.data.message || t('handover.confirmed'));
       onHandoverComplete?.();
     } catch (err: any) {
       const errData = err.response?.data;
@@ -108,7 +99,6 @@ export const HandoverOTPPanel: React.FC<HandoverOTPPanelProps> = ({
       setOtpInput('');
     }
   };
-
   // Format time remaining
   const getTimeRemaining = () => {
     if (!status?.expires_at) return null;
@@ -123,12 +113,10 @@ export const HandoverOTPPanel: React.FC<HandoverOTPPanelProps> = ({
     
     return `${hours}h ${minutes}m remaining`;
   };
-
   // Claim must be VERIFIED for handover
   if (claimStatus !== 'VERIFIED') {
     return null;
   }
-
   // Handover already completed
   if (status?.otp_verified) {
     return (
@@ -147,7 +135,6 @@ export const HandoverOTPPanel: React.FC<HandoverOTPPanelProps> = ({
       </div>
     );
   }
-
   return (
     <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
       {/* Header */}
@@ -164,7 +151,6 @@ export const HandoverOTPPanel: React.FC<HandoverOTPPanelProps> = ({
             : 'Enter the code provided by the owner to confirm handover.'}
         </p>
       </div>
-
       {/* Content */}
       <div className="p-6">
         {/* Status Display */}
@@ -183,7 +169,6 @@ export const HandoverOTPPanel: React.FC<HandoverOTPPanelProps> = ({
             )}
           </div>
         )}
-
         {/* Owner View: Generate OTP */}
         {userRole === 'owner' && (
           <div>
@@ -238,7 +223,6 @@ export const HandoverOTPPanel: React.FC<HandoverOTPPanelProps> = ({
             )}
           </div>
         )}
-
         {/* Finder/Coop View: Verify OTP */}
         {(userRole === 'finder' || userRole === 'coop_staff') && (
           <form onSubmit={handleVerifyOTP}>
@@ -250,7 +234,7 @@ export const HandoverOTPPanel: React.FC<HandoverOTPPanelProps> = ({
                 type="text"
                 value={otpInput}
                 onChange={(e) => setOtpInput(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                placeholder="000000"
+                placeholder={t('handover.otpPlaceholder')}
                 className="flex-1 text-center text-2xl font-mono tracking-widest border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 maxLength={6}
               />
@@ -264,7 +248,6 @@ export const HandoverOTPPanel: React.FC<HandoverOTPPanelProps> = ({
             </div>
           </form>
         )}
-
         {/* Messages */}
         {error && (
           <div className="mt-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
@@ -276,7 +259,6 @@ export const HandoverOTPPanel: React.FC<HandoverOTPPanelProps> = ({
             {success}
           </div>
         )}
-
         {/* Instructions */}
         <div className="mt-6 pt-6 border-t border-gray-200">
           <h4 className="text-sm font-medium text-gray-900 mb-2">How it works:</h4>

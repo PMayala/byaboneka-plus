@@ -14,26 +14,34 @@ import {
   verifyClaimSchema,
   sendMessageSchema,
 } from '../src/middleware/validation';
+import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 
 describe('Validation Middleware', () => {
   let mockRequest: Partial<Request>;
-  let mockResponse: Partial<Response>;
-  let mockNext: jest.Mock;
-  let jsonMock: jest.Mock;
-  let statusMock: jest.Mock;
+  let mockResponse: Response;
+  let mockNext: NextFunction;
+
+  // typed mocks you can assert on
+  let statusMock: jest.MockedFunction<Response['status']>;
+  let jsonMock: jest.MockedFunction<Response['json']>;
 
   beforeEach(() => {
     jest.clearAllMocks();
-    jsonMock = jest.fn();
-    statusMock = jest.fn(() => ({ json: jsonMock }));
-    mockNext = jest.fn();
-    mockResponse = {
-      json: jsonMock,
-      status: statusMock,
-    };
-    mockRequest = {
-      body: {},
-    };
+
+    // Create a real-ish Response object with only the pieces we need
+    const res: Partial<Response> = {};
+
+    jsonMock = jest.fn(() => res as Response) as unknown as jest.MockedFunction<Response['json']>;
+    statusMock = jest.fn(() => res as Response) as unknown as jest.MockedFunction<Response['status']>;
+
+    res.json = jsonMock;
+    res.status = statusMock;
+
+    mockResponse = res as Response;
+
+    mockNext = jest.fn() as unknown as NextFunction;
+
+    mockRequest = { body: {} };
   });
 
   describe('registerSchema', () => {

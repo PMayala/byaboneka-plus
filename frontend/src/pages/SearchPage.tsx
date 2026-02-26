@@ -8,7 +8,7 @@ import { Button, Card, Badge, LoadingSpinner, EmptyState } from '../components/u
 import { foundItemsApi, lostItemsApi } from '../services/api';
 import { FoundItem, LostItem, ItemCategory, CATEGORY_INFO, RWANDA_LOCATIONS } from '../types';
 import { format, isValid, parseISO } from 'date-fns';
-
+import { useTranslation } from 'react-i18next';
 // Safe date formatter
 const formatDateShort = (dateString: string | null | undefined): string => {
   if (!dateString) return 'N/A';
@@ -20,8 +20,8 @@ const formatDateShort = (dateString: string | null | undefined): string => {
     return 'N/A';
   }
 };
-
 const SearchPage: React.FC = () => {
+  const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<'found' | 'lost'>(
     (searchParams.get('type') as 'found' | 'lost') || 'found'
@@ -31,7 +31,6 @@ const SearchPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [pagination, setPagination] = useState({ page: 1, total: 0, totalPages: 1 });
-
   // Filter states
   const [filters, setFilters] = useState({
     keyword: searchParams.get('keyword') || '',
@@ -40,11 +39,9 @@ const SearchPage: React.FC = () => {
     date_from: searchParams.get('date_from') || '',
     date_to: searchParams.get('date_to') || '',
   });
-
   useEffect(() => {
     loadItems();
   }, [activeTab, searchParams]);
-
   const loadItems = async () => {
     setLoading(true);
     setError(null);
@@ -57,22 +54,19 @@ const SearchPage: React.FC = () => {
       if (filters.date_to) params.date_to = filters.date_to;
       params.page = searchParams.get('page') || '1';
       params.limit = '12';
-
       const response = activeTab === 'found'
         ? await foundItemsApi.getAll(params)
         : await lostItemsApi.getAll(params);
-
       setItems(response.data.data || []);
       setPagination(response.data.pagination || { page: 1, total: 0, totalPages: 1 });
     } catch (err: any) {
       console.error('Failed to load items:', err);
-      setError('Failed to load items. Please try again.');
+      setError(t('search.loadError'));
       setItems([]);
     } finally {
       setLoading(false);
     }
   };
-
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams();
@@ -84,7 +78,6 @@ const SearchPage: React.FC = () => {
     if (filters.date_to) params.set('date_to', filters.date_to);
     setSearchParams(params);
   };
-
   const handleTabChange = (tab: 'found' | 'lost') => {
     setActiveTab(tab);
     const params = new URLSearchParams(searchParams);
@@ -92,7 +85,6 @@ const SearchPage: React.FC = () => {
     params.delete('page');
     setSearchParams(params);
   };
-
   const clearFilters = () => {
     setFilters({
       keyword: '',
@@ -103,31 +95,26 @@ const SearchPage: React.FC = () => {
     });
     setSearchParams({ type: activeTab });
   };
-
   const handlePageChange = (page: number) => {
     const params = new URLSearchParams(searchParams);
     params.set('page', page.toString());
     setSearchParams(params);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
-
   const hasActiveFilters = filters.keyword || filters.category || filters.location_area || filters.date_from || filters.date_to;
-
   const getItemDate = (item: FoundItem | LostItem): string => {
     if (activeTab === 'found') {
       return (item as FoundItem).found_date || '';
     }
     return (item as LostItem).lost_date || '';
   };
-
   return (
     <div className="max-w-7xl mx-auto px-4 py-6 sm:py-8">
       {/* Header */}
       <div className="mb-6 sm:mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Search Items</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{t('search.title')}</h1>
         <p className="text-gray-600">Find lost or found items reported in Rwanda</p>
       </div>
-
       {/* Tabs */}
       <div className="flex border-b border-gray-200 mb-6">
         <button
@@ -151,7 +138,6 @@ const SearchPage: React.FC = () => {
           Lost Items
         </button>
       </div>
-
       {/* Search Bar */}
       <Card className="p-4 mb-6">
         <form onSubmit={handleSearch}>
@@ -162,7 +148,7 @@ const SearchPage: React.FC = () => {
                 type="text"
                 value={filters.keyword}
                 onChange={(e) => setFilters({ ...filters, keyword: e.target.value })}
-                placeholder="Search by keyword..."
+                placeholder={t('search.searchByKeyword')}
                 className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               />
             </div>
@@ -185,7 +171,6 @@ const SearchPage: React.FC = () => {
               </Button>
             </div>
           </div>
-
           {/* Filters Panel */}
           {showFilters && (
             <div className="mt-4 pt-4 border-t border-gray-200 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -196,7 +181,7 @@ const SearchPage: React.FC = () => {
                   onChange={(e) => setFilters({ ...filters, category: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
                 >
-                  <option value="">All Categories</option>
+                  <option value="">{t('search.allCategories')}</option>
                   {Object.entries(CATEGORY_INFO).map(([key, info]) => (
                     <option key={key} value={key}>
                       {info.label}
@@ -204,7 +189,6 @@ const SearchPage: React.FC = () => {
                   ))}
                 </select>
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
                 <select
@@ -212,13 +196,12 @@ const SearchPage: React.FC = () => {
                   onChange={(e) => setFilters({ ...filters, location_area: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
                 >
-                  <option value="">All Locations</option>
+                  <option value="">{t('search.allLocations')}</option>
                   {RWANDA_LOCATIONS.map((loc) => (
                     <option key={loc} value={loc}>{loc}</option>
                   ))}
                 </select>
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Date From</label>
                 <input
@@ -228,7 +211,6 @@ const SearchPage: React.FC = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
                 />
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Date To</label>
                 <input
@@ -238,7 +220,6 @@ const SearchPage: React.FC = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
                 />
               </div>
-
               {hasActiveFilters && (
                 <div className="sm:col-span-2 lg:col-span-4 flex justify-end">
                   <Button type="button" variant="secondary" size="sm" onClick={clearFilters}>
@@ -251,7 +232,6 @@ const SearchPage: React.FC = () => {
           )}
         </form>
       </Card>
-
       {/* Results */}
       {loading ? (
         <div className="flex justify-center py-12">
@@ -268,7 +248,7 @@ const SearchPage: React.FC = () => {
       ) : items.length === 0 ? (
         <EmptyState
           icon={<Search className="w-16 h-16" />}
-          title="No items found"
+          title="{t('search.noItemsFound')}"
           description={hasActiveFilters 
             ? "Try adjusting your filters or search terms" 
             : `No ${activeTab} items have been reported yet`
@@ -280,7 +260,7 @@ const SearchPage: React.FC = () => {
               </Button>
             ) : (
               <Link to={activeTab === 'found' ? '/report-found' : '/report-lost'}>
-                <Button>Report an Item</Button>
+                <Button>{t('search.reportAnItem')}</Button>
               </Link>
             )
           }
@@ -294,7 +274,6 @@ const SearchPage: React.FC = () => {
               <span className="font-medium">{pagination.total}</span> items
             </p>
           </div>
-
           {/* Items Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             {items.map((item) => (
@@ -328,7 +307,6 @@ const SearchPage: React.FC = () => {
                       </Badge>
                     </div>
                   </div>
-
                   {/* Content */}
                   <div className="p-4">
                     <div className="flex items-start justify-between gap-2 mb-2">
@@ -356,7 +334,6 @@ const SearchPage: React.FC = () => {
                         {formatDateShort(getItemDate(item))}
                       </span>
                     </div>
-
                     {activeTab === 'found' && (item as FoundItem).source === 'COOPERATIVE' && (
                       <div className="mt-3 pt-3 border-t border-gray-100">
                         <span className="text-xs text-trust-600 font-medium">
@@ -369,7 +346,6 @@ const SearchPage: React.FC = () => {
               </Link>
             ))}
           </div>
-
           {/* Pagination */}
           {pagination.totalPages > 1 && (
             <div className="flex justify-center gap-2 mt-8 flex-wrap">
@@ -407,7 +383,6 @@ const SearchPage: React.FC = () => {
                   </button>
                 );
               })}
-
               <Button
                 variant="secondary"
                 size="sm"

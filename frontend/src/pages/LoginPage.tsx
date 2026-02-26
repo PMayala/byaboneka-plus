@@ -6,42 +6,38 @@ import { authApi } from '../services/api';
 import { useAuthStore } from '../store/authStore';
 import { useRecaptcha } from '../hooks/useRecaptcha';
 import toast from 'react-hot-toast';
-
+import { useTranslation } from 'react-i18next';
 const LoginPage: React.FC = () => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const { executeRecaptcha } = useRecaptcha();
-
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuthStore();
-
   const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/dashboard';
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
-
     try {
       const recaptchaToken = await executeRecaptcha('login');
       const response = await authApi.login({ email, password, ...(recaptchaToken && { recaptchaToken }) } as any);
       const { user, tokens } = response.data.data;
       
       login(user, tokens.accessToken, tokens.refreshToken);
-      toast.success(`Welcome back, ${user.name}!`);
+      toast.success(t('auth.welcomeBackUser', { name: user.name }));
       navigate(from, { replace: true });
     } catch (err: any) {
-      const message = err.response?.data?.message || 'Login failed. Please try again.';
+      const message = err.response?.data?.message || t('auth.loginFailed');
       setError(message);
     } finally {
       setLoading(false);
     }
   };
-
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center py-12 px-4">
       <div className="w-full max-w-md">
@@ -51,17 +47,15 @@ const LoginPage: React.FC = () => {
               <span className="text-white font-bold text-2xl">B+</span>
             </div>
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900">Welcome back</h1>
-          <p className="text-gray-600 mt-2">Sign in to your Byaboneka+ account</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('auth.welcomeBack')}</h1>
+          <p className="text-gray-600 mt-2">{t('auth.signInSubtitle')}</p>
         </div>
-
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
           {error && (
             <Alert type="error" className="mb-6">
               {error}
             </Alert>
           )}
-
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -74,12 +68,11 @@ const LoginPage: React.FC = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="input pl-10"
-                  placeholder="you@example.com"
+                  placeholder={t('auth.emailPlaceholder')}
                   required
                 />
               </div>
             </div>
-
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Password
@@ -91,7 +84,7 @@ const LoginPage: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="input pl-10 pr-10"
-                  placeholder="••••••••"
+                  placeholder={t('auth.passwordPlaceholder')}
                   required
                 />
                 <button
@@ -103,37 +96,33 @@ const LoginPage: React.FC = () => {
                 </button>
               </div>
             </div>
-
             <div className="flex items-center justify-between">
               <label className="flex items-center">
                 <input type="checkbox" className="rounded border-gray-300 text-primary-500 focus:ring-primary-500" />
-                <span className="ml-2 text-sm text-gray-600">Remember me</span>
+                <span className="ml-2 text-sm text-gray-600">{t('auth.rememberMe')}</span>
               </label>
               <Link to="/forgot-password" className="text-sm text-primary-500 hover:text-primary-600">
                 Forgot password?
               </Link>
             </div>
-
             <Button type="submit" loading={loading} className="w-full" size="lg">
-              Sign in
+              {t('auth.signInBtn')}
             </Button>
           </form>
-
           <p className="mt-6 text-center text-sm text-gray-600">
-            Don't have an account?{' '}
+            {t('auth.noAccount')}{' '}
             <Link to="/register" className="text-primary-500 hover:text-primary-600 font-medium">
               Sign up
             </Link>
           </p>
         </div>
-
         {/* Demo Accounts */}
         <div className="mt-6 bg-blue-50 rounded-xl p-4 border border-blue-200">
-          <p className="text-sm font-medium text-blue-800 mb-2">Demo Accounts:</p>
+          <p className="text-sm font-medium text-blue-800 mb-2">{t('auth.demoAccounts')}</p>
           <div className="text-xs text-blue-700 space-y-1">
-            <p>Admin: admin@byaboneka.rw / Admin@123</p>
-            <p>Cooperative: jbmugisha@kigalimoto.rw / User@123</p>
-            <p>Citizen: emmanuel.k@gmail.com / User@123</p>
+            <p>{t('auth.demoAdmin')}</p>
+            <p>{t('auth.demoCoop')}</p>
+            <p>{t('auth.demoCitizen')}</p>
           </div>
         </div>
       </div>

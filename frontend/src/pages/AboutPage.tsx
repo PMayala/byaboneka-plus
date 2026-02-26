@@ -7,10 +7,10 @@ import {
 } from 'lucide-react';
 import { Button, Card, Badge } from '../components/ui';
 import { useAuthStore } from '../store/authStore';
-
+import { useTranslation } from 'react-i18next';
 const AboutPage: React.FC = () => {
+  const { t } = useTranslation();
   const { isAuthenticated } = useAuthStore();
-
   return (
     <div className="min-h-screen">
       {/* Hero */}
@@ -28,7 +28,6 @@ const AboutPage: React.FC = () => {
           </p>
         </div>
       </section>
-
       {/* The Problem */}
       <section className="py-12 sm:py-16 bg-white">
         <div className="max-w-4xl mx-auto px-4">
@@ -58,7 +57,6 @@ const AboutPage: React.FC = () => {
           </div>
         </div>
       </section>
-
       {/* Step-by-Step Process */}
       <section className="py-12 sm:py-16 bg-gray-50">
         <div className="max-w-5xl mx-auto px-4">
@@ -66,7 +64,6 @@ const AboutPage: React.FC = () => {
           <p className="text-gray-600 text-center mb-12 max-w-2xl mx-auto">
             From reporting to recovery, Byaboneka+ guides every step with security and trust built in.
           </p>
-
           <div className="space-y-8">
             {[
               {
@@ -130,7 +127,6 @@ const AboutPage: React.FC = () => {
           </div>
         </div>
       </section>
-
       {/* Key Features */}
       <section className="py-12 sm:py-16 bg-white">
         <div className="max-w-5xl mx-auto px-4">
@@ -157,7 +153,6 @@ const AboutPage: React.FC = () => {
           </div>
         </div>
       </section>
-
       {/* Tech Stack */}
       <section className="py-12 sm:py-16 bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 text-center">
@@ -172,7 +167,6 @@ const AboutPage: React.FC = () => {
           </div>
         </div>
       </section>
-
       {/* CTA */}
       <section className="py-12 sm:py-16 bg-gradient-to-r from-primary-600 to-primary-700">
         <div className="max-w-4xl mx-auto px-4 text-center">
@@ -181,12 +175,12 @@ const AboutPage: React.FC = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             {isAuthenticated ? (
               <>
-                <Link to="/dashboard"><Button size="lg" variant="accent">Go to Dashboard</Button></Link>
+                <Link to="/dashboard"><Button size="lg" variant="accent">{t('about.goToDashboard')}</Button></Link>
                 <Link to="/search"><Button size="lg" variant="secondary" className="bg-white/10 border-white/30 text-white hover:bg-white/20">Search Items</Button></Link>
               </>
             ) : (
               <>
-                <Link to="/register"><Button size="lg" variant="accent">Create Free Account</Button></Link>
+                <Link to="/register"><Button size="lg" variant="accent">{t('about.createFreeAccount')}</Button></Link>
                 <Link to="/login"><Button size="lg" variant="secondary" className="bg-white/10 border-white/30 text-white hover:bg-white/20">Sign In</Button></Link>
               </>
             )}

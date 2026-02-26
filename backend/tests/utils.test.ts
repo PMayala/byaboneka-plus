@@ -17,6 +17,7 @@ import {
   TRUST_CHANGES
 } from '../src/utils';
 import { TrustLevel } from '../src/types';
+import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 
 describe('Utility Functions', () => {
   describe('extractKeywords', () => {
