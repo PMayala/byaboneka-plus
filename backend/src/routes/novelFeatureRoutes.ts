@@ -1,5 +1,9 @@
 import { Router, Request, Response } from 'express';
-import { authenticate, adminOnly } from '../middleware/auth';
+import { authenticate, adminOnly, authorize } from '../middleware/auth';
+import { query } from '../config/database';
+import { UserRole } from '../types';
+
+// Existing imports you already had in novelFeatureRoutes.ts
 import { fraudCheck } from '../services/fraudDetectionService';
 import { getFlaggedUsers } from '../services/fraudDetectionService';
 import {
@@ -13,16 +17,187 @@ import {
   SAFE_HANDOVER_POINTS
 } from '../services/cooperativeAccountabilityService';
 
+// ✅ Trust transparency service (you already wrote this)
+import { getTrustScoreExplanation } from '../services/trustTransparencyService';
+
 const router = Router();
 
-// ============================================
-// FRAUD DETECTION ROUTES (Admin)
-// ============================================
+// ======================================================
+// 1) TRUST TRANSPARENCY ENDPOINT
+// ======================================================
 
 /**
- * GET /api/v1/admin/fraud/flagged-users
- * Returns users with high-risk fraud assessments in the last 7 days
+ * GET /api/v1/trust/transparency
+ * Returns: explanation of *my* trust score (events + rules + permissions)
  */
+router.get('/trust/transparency',
+  authenticate,
+  async (req: Request, res: Response) => {
+    try {
+      const userId = req.user!.userId;
+      const explanation = await getTrustScoreExplanation(userId);
+      res.json({ success: true, data: explanation });
+    } catch (error) {
+      console.error('Trust transparency error:', error);
+      res.status(500).json({ success: false, message: 'Failed to load trust transparency data' });
+    }
+  }
+);
+
+/**
+ * (Optional, Admin) GET /api/v1/trust/transparency/:userId
+ * Lets admins view an explanation for any user (useful for disputes/support).
+ */
+router.get('/trust/transparency/:userId',
+  authenticate,
+  adminOnly,
+  async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      if (!Number.isFinite(userId)) {
+        res.status(400).json({ success: false, message: 'Invalid userId' });
+        return;
+      }
+      const explanation = await getTrustScoreExplanation(userId);
+      res.json({ success: true, data: explanation });
+    } catch (error) {
+      console.error('Admin trust transparency error:', error);
+      res.status(500).json({ success: false, message: 'Failed to load trust transparency data' });
+    }
+  }
+);
+
+// ======================================================
+// 2) COOPERATIVE STAFF AUDIT ENDPOINT
+// ======================================================
+// Reads from VIEW: cooperative_staff_audit (created in migration 005)
+
+/**
+ * GET /api/v1/cooperatives/staff-audit
+ * Access:
+ *  - admin: can see all cooperatives
+ *  - coop_staff: can see only their cooperative
+ *
+ * Query params:
+ *  - cooperative_id (admin only, optional)
+ *  - page, limit
+ *  - sort = trust_score | items_returned | total_items_handled | handovers_confirmed | avg_return_hours
+ *  - order = asc | desc
+ */
+router.get('/cooperatives/staff-audit',
+  authenticate,
+  async (req: Request, res: Response) => {
+    try {
+      const role = req.user!.role;
+      const myUserId = req.user!.userId;
+
+      // Pagination
+      const page = Math.max(1, parseInt(String(req.query.page || '1')) || 1);
+      const limit = Math.min(50, Math.max(1, parseInt(String(req.query.limit || '20')) || 20));
+      const offset = (page - 1) * limit;
+
+      // Sorting whitelist
+      const sortRaw = String(req.query.sort || 'items_returned');
+      const orderRaw = String(req.query.order || 'desc').toLowerCase();
+      const order = orderRaw === 'asc' ? 'ASC' : 'DESC';
+
+      const SORT_MAP: Record<string, string> = {
+        trust_score: 'trust_score',
+        items_returned: 'items_returned',
+        total_items_handled: 'total_items_handled',
+        handovers_confirmed: 'handovers_confirmed',
+        avg_return_hours: 'avg_return_hours',
+      };
+
+      const sortCol = SORT_MAP[sortRaw] || 'items_returned';
+
+      // Determine cooperative scope
+      let cooperativeId: number | null = null;
+
+      if (role === UserRole.COOP_STAFF) {
+        const r = await query('SELECT cooperative_id FROM users WHERE id = $1', [myUserId]);
+        cooperativeId = r.rows[0]?.cooperative_id ?? null;
+
+        if (!cooperativeId) {
+          res.status(400).json({ success: false, message: 'No cooperative linked to this staff account' });
+          return;
+        }
+      } else if (role === UserRole.ADMIN) {
+        if (req.query.cooperative_id) {
+          const cid = parseInt(String(req.query.cooperative_id));
+          if (Number.isFinite(cid)) cooperativeId = cid;
+        }
+      } else {
+        res.status(403).json({ success: false, message: 'Not authorized' });
+        return;
+      }
+
+      // Build WHERE
+      const conditions: string[] = [];
+      const params: any[] = [];
+      let i = 1;
+
+      if (cooperativeId) {
+        conditions.push(`cooperative_id = $${i++}`);
+        params.push(cooperativeId);
+      }
+
+      const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+
+      // Total count
+      const countRes = await query(
+        `SELECT COUNT(*) FROM cooperative_staff_audit ${where}`,
+        params
+      );
+      const total = parseInt(countRes.rows[0].count || '0', 10);
+
+      // Data
+      const dataRes = await query(
+        `
+        SELECT
+          staff_id,
+          staff_name,
+          cooperative_id,
+          cooperative_name,
+          items_returned,
+          total_items_handled,
+          handovers_confirmed,
+          avg_return_hours,
+          trust_score
+        FROM cooperative_staff_audit
+        ${where}
+        ORDER BY ${sortCol} ${order} NULLS LAST
+        LIMIT $${i++} OFFSET $${i++}
+        `,
+        [...params, limit, offset]
+      );
+
+      res.json({
+        success: true,
+        data: dataRes.rows,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit)
+        },
+        meta: {
+          scope: cooperativeId ? { cooperative_id: cooperativeId } : { scope: 'all_cooperatives' },
+          sort: { by: sortCol, order }
+        }
+      });
+    } catch (error) {
+      console.error('Cooperative staff audit error:', error);
+      res.status(500).json({ success: false, message: 'Failed to load cooperative staff audit' });
+    }
+  }
+);
+
+// ======================================================
+// KEEP YOUR EXISTING ROUTES BELOW (unchanged)
+// ======================================================
+
+// Admin fraud flagged users
 router.get('/admin/fraud/flagged-users',
   authenticate,
   adminOnly,
@@ -37,16 +212,7 @@ router.get('/admin/fraud/flagged-users',
   }
 );
 
-// ============================================
-// VERIFICATION STRENGTH ROUTES
-// ============================================
-
-/**
- * POST /api/v1/verification/analyze-strength
- * Analyze the quality of verification questions before saving them
- * 
- * Body: { questions: string[], answers: string[], category: string, description: string }
- */
+// Verification strength analysis
 router.post('/verification/analyze-strength',
   authenticate,
   async (req: Request, res: Response) => {
@@ -76,10 +242,6 @@ router.post('/verification/analyze-strength',
   }
 );
 
-/**
- * GET /api/v1/verification/templates/:category
- * Get category-specific question templates
- */
 router.get('/verification/templates/:category',
   authenticate,
   async (req: Request, res: Response) => {
@@ -89,10 +251,6 @@ router.get('/verification/templates/:category',
   }
 );
 
-/**
- * GET /api/v1/verification/templates
- * Get all question templates grouped by category
- */
 router.get('/verification/templates',
   authenticate,
   async (req: Request, res: Response) => {
@@ -100,15 +258,7 @@ router.get('/verification/templates',
   }
 );
 
-// ============================================
-// SENSITIVE CONTENT REDACTION ROUTES
-// ============================================
-
-/**
- * POST /api/v1/privacy/preview-redaction
- * Preview what a description would look like after redaction
- * (Useful for testing during development and for admin review)
- */
+// Redaction preview
 router.post('/privacy/preview-redaction',
   authenticate,
   async (req: Request, res: Response) => {
@@ -129,21 +279,7 @@ router.post('/privacy/preview-redaction',
   }
 );
 
-// ============================================
-// COOPERATIVE ACCOUNTABILITY ROUTES
-// ============================================
-// NOTE: /cooperatives/leaderboard and /cooperatives/:id/accountability
-// are now defined in routes/index.ts to avoid route ordering conflicts
-// with /cooperatives/:id.
-
-// ============================================
-// SAFE HANDOVER LOCATION ROUTES
-// ============================================
-
-/**
- * GET /api/v1/handover/safe-locations
- * Get all safe handover locations
- */
+// Safe locations
 router.get('/handover/safe-locations',
   authenticate,
   async (req: Request, res: Response) => {
@@ -151,12 +287,6 @@ router.get('/handover/safe-locations',
   }
 );
 
-/**
- * GET /api/v1/handover/recommended-locations
- * Get recommended handover locations based on item area and category
- * 
- * Query: ?area=Kimironko&category=PHONE
- */
 router.get('/handover/recommended-locations',
   authenticate,
   async (req: Request, res: Response) => {
@@ -178,7 +308,8 @@ router.get('/handover/recommended-locations',
       meta: {
         search_area: area,
         category: category || 'OTHER',
-        safety_note: 'Always meet at the recommended location during operating hours. For sensitive items (ID, wallet, phone), cooperative offices and sector offices are strongly recommended.'
+        safety_note:
+          'Always meet at the recommended location during operating hours. For sensitive items (ID, wallet, phone), cooperative offices and sector offices are strongly recommended.'
       }
     });
   }

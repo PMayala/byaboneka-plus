@@ -127,7 +127,7 @@ const ContactPage: React.FC = () => {
             <div className="space-y-3">
               <div className="flex items-center gap-3 text-sm text-gray-600">
                 <Mail className="w-4 h-4 text-primary-500" />
-                <a href="mailto:support@byaboneka.rw" className="hover:text-primary-500">mayalaplamedi.rw@gmail.com</a>
+                <a href="mailto:mayalaplamedi.rw@gmail.com" className="hover:text-primary-500">mayalaplamedi.rw@gmail.com</a>
               </div>
               <div className="flex items-center gap-3 text-sm text-gray-600">
                 <Phone className="w-4 h-4 text-primary-500" />

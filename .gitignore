@@ -1,32 +1,34 @@
-# Dependencies
+# ============================================
+# Byaboneka+ Root .gitignore
+# ============================================
+
+# Environment files (secrets)
+.env
+.env.*
+!.env.example
+
+# Node
 node_modules/
 
 # Build outputs
 dist/
 build/
 
-# Environment files (never commit secrets)
-.env
-.env.local
-.env.production.local
+# Logs
+*.log
 
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS
+# OS files
 .DS_Store
 Thumbs.db
 
+# Editor
+.vscode/
+.idea/
+
 # Uploads
 uploads/
-!uploads/.gitkeep
 
-# Coverage
-coverage/
-
-# Logs
-*.log
-npm-debug.log*
+# Database dumps
+*.dump
+*.sql.gz
+backups/

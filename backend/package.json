@@ -17,9 +17,7 @@
     "test:integration": "jest --testPathPattern=tests/integration --forceExit --detectOpenHandles",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
-    "format": "prettier --write src/**/*.ts",
-    "docker:build": "docker build -t byaboneka-plus-api .",
-    "docker:run": "docker run -p 4000:4000 --env-file .env byaboneka-plus-api"
+    "format": "prettier --write src/**/*.ts"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

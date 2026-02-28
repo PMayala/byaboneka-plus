@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { 
   MapPin, Calendar, User, ArrowLeft, Edit, Trash2,
-  Sparkles, ExternalLink, Shield, Clock, CheckCircle
+  Sparkles, ExternalLink, Shield, Clock, CheckCircle, XCircle
 } from 'lucide-react';
 import { Button, Card, Badge, LoadingSpinner, Alert, Modal } from '../components/ui';
 import { lostItemsApi, claimsApi } from '../services/api';
@@ -11,6 +11,7 @@ import { useAuthStore } from '../store/authStore';
 import { formatDate, formatDateShort, formatDateLong, formatDateTime } from '../utils/dateUtils';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+
 const LostItemDetailPage: React.FC = () => {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
@@ -23,15 +24,19 @@ const LostItemDetailPage: React.FC = () => {
   const [claimLoading, setClaimLoading] = useState<number | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
+
   const isOwner = user?.id === item?.user_id;
+
   useEffect(() => {
     loadItem();
   }, [id]);
+
   useEffect(() => {
     if (item && isOwner) {
       loadMatches();
     }
   }, [item, isOwner]);
+
   const loadItem = async () => {
     try {
       const response = await lostItemsApi.getById(parseInt(id!));
@@ -43,6 +48,7 @@ const LostItemDetailPage: React.FC = () => {
       setLoading(false);
     }
   };
+
   const loadMatches = async () => {
     setMatchesLoading(true);
     try {
@@ -54,6 +60,7 @@ const LostItemDetailPage: React.FC = () => {
       setMatchesLoading(false);
     }
   };
+
   const handleClaim = async (foundItemId: number) => {
     if (!isAuthenticated) {
       toast.error(t('items.loginToClaim'));
@@ -76,6 +83,7 @@ const LostItemDetailPage: React.FC = () => {
       setClaimLoading(null);
     }
   };
+
   const handleDelete = async () => {
     setDeleting(true);
     try {
@@ -89,6 +97,18 @@ const LostItemDetailPage: React.FC = () => {
       setShowDeleteModal(false);
     }
   };
+
+  // FIX MATCH-06: Dismiss match — "Not my item"
+  const handleDismissMatch = async (foundItemId: number) => {
+    try {
+      await lostItemsApi.dismissMatch(parseInt(id!), foundItemId);
+      setMatches(prev => prev.filter(m => m.found_item?.id !== foundItemId));
+      toast.success('Match dismissed');
+    } catch (error) {
+      toast.error('Failed to dismiss match');
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center py-12">
@@ -96,6 +116,7 @@ const LostItemDetailPage: React.FC = () => {
       </div>
     );
   }
+
   if (!item) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-12 text-center">
@@ -106,8 +127,10 @@ const LostItemDetailPage: React.FC = () => {
       </div>
     );
   }
+
   const statusInfo = STATUS_INFO[item.status];
   const categoryInfo = CATEGORY_INFO[item.category];
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       {/* Back Link */}
@@ -118,6 +141,7 @@ const LostItemDetailPage: React.FC = () => {
         <ArrowLeft className="w-4 h-4 mr-2" />
         Back to Search
       </Link>
+
       <div className="grid md:grid-cols-3 gap-8">
         {/* Main Content */}
         <div className="md:col-span-2">
@@ -142,8 +166,10 @@ const LostItemDetailPage: React.FC = () => {
                 </div>
               )}
             </div>
+
             {/* Title */}
             <h1 className="text-2xl font-bold text-gray-900 mb-4">{item.title}</h1>
+
             {/* Details */}
             <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-6">
               <span className="flex items-center gap-1">
@@ -159,17 +185,37 @@ const LostItemDetailPage: React.FC = () => {
                 {item.user_name || 'Anonymous'}
               </span>
             </div>
+
+            {/* Images */}
+            {item.image_urls && item.image_urls.length > 0 && (
+              <div className="mb-6">
+                <h3 className="font-semibold text-gray-900 mb-2">Photos</h3>
+                <div className="grid grid-cols-3 gap-2">
+                  {item.image_urls.map((url, i) => (
+                    <img
+                      key={i}
+                      src={url.startsWith('http') ? url : `${import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'http://localhost:4000'}${url}`}
+                      alt={`${item.title} photo ${i + 1}`}
+                      className="w-full aspect-square object-cover rounded-lg"
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Description */}
             <div className="mb-6">
               <h3 className="font-semibold text-gray-900 mb-2">Description</h3>
               <p className="text-gray-600 whitespace-pre-wrap">{item.description}</p>
             </div>
+
             {item.location_hint && (
               <div className="mb-6">
                 <h3 className="font-semibold text-gray-900 mb-2">Location Details</h3>
                 <p className="text-gray-600">{item.location_hint}</p>
               </div>
             )}
+
             {/* Verification Questions (Owner Only) */}
             {isOwner && item.verification_questions && (
               <div className="mt-6 pt-6 border-t border-gray-100">
@@ -190,6 +236,7 @@ const LostItemDetailPage: React.FC = () => {
               </div>
             )}
           </Card>
+
           {/* Matches Section (Owner Only) */}
           {isOwner && (
             <Card className="p-6">
@@ -202,6 +249,7 @@ const LostItemDetailPage: React.FC = () => {
                   Refresh
                 </Button>
               </div>
+
               {matchesLoading ? (
                 <LoadingSpinner />
               ) : matches.length === 0 ? (
@@ -232,6 +280,7 @@ const LostItemDetailPage: React.FC = () => {
                           <p className="text-sm text-gray-600 line-clamp-2 mb-2">
                             {match.found_item?.description}
                           </p>
+
                           <div className="flex items-center gap-3 text-xs text-gray-500">
                             <span className="flex items-center gap-1">
                               <MapPin className="w-3 h-3" />
@@ -242,6 +291,7 @@ const LostItemDetailPage: React.FC = () => {
                               {formatDateShort(match.found_item?.found_date || '')}
                             </span>
                           </div>
+
                           {/* Match Explanation */}
                           <div className="mt-3 flex flex-wrap gap-1">
                             {match.explanation.slice(0, 4).map((exp, i) => (
@@ -254,6 +304,7 @@ const LostItemDetailPage: React.FC = () => {
                             ))}
                           </div>
                         </div>
+
                         <div className="flex flex-col gap-2">
                           <Link to={`/found-items/${match.found_item?.id}`}>
                             <Button variant="ghost" size="sm">
@@ -267,6 +318,16 @@ const LostItemDetailPage: React.FC = () => {
                           >
                             Claim
                           </Button>
+                          {/* FIX MATCH-06: "Not my item" dismiss button */}
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDismissMatch(match.found_item!.id)}
+                            className="text-gray-400 hover:text-red-500"
+                            title="Not my item — dismiss this match"
+                          >
+                            <XCircle className="w-4 h-4" />
+                          </Button>
                         </div>
                       </div>
                     </div>
@@ -276,6 +337,7 @@ const LostItemDetailPage: React.FC = () => {
             </Card>
           )}
         </div>
+
         {/* Sidebar */}
         <div>
           {/* Status Card */}
@@ -296,6 +358,7 @@ const LostItemDetailPage: React.FC = () => {
                 <span className={item.status === 'RETURNED' ? 'font-medium' : 'text-gray-500'}>Returned</span>
               </div>
             </div>
+
             {item.status === 'RETURNED' && (
               <Alert type="success" className="mt-4">
                 <CheckCircle className="w-4 h-4 inline mr-2" />
@@ -303,6 +366,7 @@ const LostItemDetailPage: React.FC = () => {
               </Alert>
             )}
           </Card>
+
           {/* Posted Date */}
           <Card className="p-6">
             <p className="text-sm text-gray-500">
@@ -312,6 +376,7 @@ const LostItemDetailPage: React.FC = () => {
           </Card>
         </div>
       </div>
+
       {/* Delete Confirmation Modal */}
       <Modal
         isOpen={showDeleteModal}

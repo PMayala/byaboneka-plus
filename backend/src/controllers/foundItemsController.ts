@@ -4,6 +4,7 @@ import { extractKeywords, parsePaginationParams } from '../utils';
 import { logCreate, logUpdate, logDelete } from '../services/auditService';
 import { onItemCreated, findMatchesForFoundItem } from '../services/matchingService';
 import { ItemCategory, FoundItemStatus, ItemSource, UserRole } from '../types';
+import { redactSensitiveContent, redactItemList } from '../services/sensitiveRedactionService';
 
 // ============================================
 // FOUND ITEMS CONTROLLER
@@ -15,6 +16,7 @@ export async function createFoundItem(req: Request, res: Response): Promise<void
     const userId = req.user!.userId;
     const {
       category,
+      subcategory,
       title,
       description,
       location_area,
@@ -32,7 +34,7 @@ export async function createFoundItem(req: Request, res: Response): Promise<void
         'SELECT cooperative_id FROM users WHERE id = $1',
         [userId]
       );
-      
+
       if (userResult.rows[0]?.cooperative_id === cooperative_id) {
         source = ItemSource.COOPERATIVE;
         coopId = cooperative_id;
@@ -42,11 +44,11 @@ export async function createFoundItem(req: Request, res: Response): Promise<void
     const keywords = extractKeywords(`${title} ${description}`);
 
     const result = await query(
-      `INSERT INTO found_items (finder_id, cooperative_id, category, title, description, 
+      `INSERT INTO found_items (finder_id, cooperative_id, category, subcategory, title, description, 
         location_area, location_hint, found_date, source, keywords, image_urls)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
        RETURNING *`,
-      [userId, coopId, category, title, description, location_area, 
+      [userId, coopId, category, subcategory || null, title, description, location_area,
        location_hint || null, found_date, source, keywords, []]
     );
 
@@ -65,7 +67,7 @@ export async function createFoundItem(req: Request, res: Response): Promise<void
   }
 }
 
-// Get all found items (public, with filters)
+// Get all found items (public, with filters) — WITH REDACTION (THREAT-7.4)
 export async function getFoundItems(req: Request, res: Response): Promise<void> {
   try {
     const { page, limit, offset } = parsePaginationParams(
@@ -118,10 +120,9 @@ export async function getFoundItems(req: Request, res: Response): Promise<void> 
     const total = parseInt(countResult.rows[0].count);
 
     const result = await query(
-      `SELECT f.id, f.category, f.title, 
-              CASE WHEN f.category IN ('ID', 'WALLET') THEN LEFT(f.description, 100) || '...' ELSE f.description END as description,
+      `SELECT f.id, f.category, f.subcategory, f.title, f.description,
               f.location_area, f.found_date, f.status, f.source,
-              CASE WHEN f.category IN ('ID', 'WALLET') THEN ARRAY[]::text[] ELSE f.image_urls END as image_urls,
+              f.image_urls, f.finder_id,
               f.created_at, u.name as finder_name, c.name as cooperative_name
        FROM found_items f
        JOIN users u ON f.finder_id = u.id
@@ -132,10 +133,29 @@ export async function getFoundItems(req: Request, res: Response): Promise<void> 
       [...params, limit, offset]
     );
 
+    // THREAT-7.4: Apply sensitive content redaction to list results
+    const userId = req.user?.userId;
+    const redactedItems = redactItemList(result.rows, userId);
+
+    // For ID/WALLET categories, also hide images from non-owners in list view
+    for (const item of redactedItems) {
+      if (['ID', 'WALLET'].includes(item.category)) {
+        const isOwner = userId !== undefined && item.finder_id === userId;
+        if (!isOwner) {
+          item.image_urls = []; // Hide images for sensitive categories
+        }
+      }
+    }
+
     res.json({
       success: true,
-      data: result.rows,
-      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) }
+      data: redactedItems,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit)
+      }
     });
   } catch (error) {
     console.error('Get found items error:', error);
@@ -143,7 +163,7 @@ export async function getFoundItems(req: Request, res: Response): Promise<void> 
   }
 }
 
-// Get single found item
+// Get single found item — WITH REDACTION (THREAT-7.4)
 export async function getFoundItem(req: Request, res: Response): Promise<void> {
   try {
     const { id } = req.params;
@@ -162,16 +182,31 @@ export async function getFoundItem(req: Request, res: Response): Promise<void> {
       return;
     }
 
-    let item = result.rows[0];
-    const isFinder = req.user?.userId === item.finder_id;
-    const isAdmin = req.user?.role === UserRole.ADMIN;
+    const item = result.rows[0];
+    const isOwner = req.user?.userId === item.finder_id;
 
-    if (!isFinder && !isAdmin && (item.category === 'ID' || item.category === 'WALLET')) {
-      item = {
-        ...item,
-        description: item.description.substring(0, 100) + '...',
-        image_urls: []
-      };
+    // THREAT-7.4: Apply redaction for non-owners
+    if (!isOwner) {
+      // Redact sensitive patterns in description
+      const descResult = redactSensitiveContent(item.description, item.category, false);
+      item.description = descResult.redacted_text;
+
+      // Redact sensitive patterns in title
+      const titleResult = redactSensitiveContent(item.title, item.category, false);
+      item.title = titleResult.redacted_text;
+
+      // Add privacy notice if redactions were applied
+      if (descResult.redactions_applied.length > 0 || titleResult.redactions_applied.length > 0) {
+        item._privacy_notice = 'Some sensitive information has been redacted for privacy protection. Full details visible after ownership verification.';
+        item._redaction_count = descResult.redactions_applied.length + titleResult.redactions_applied.length;
+      }
+
+      // For ID/WALLET categories, hide images from non-owners
+      if (['ID', 'WALLET'].includes(item.category)) {
+        item.image_urls = [];
+        item._images_hidden = true;
+        item._images_note = 'Images are hidden for sensitive items. Verify ownership to see full details.';
+      }
     }
 
     res.json({ success: true, data: item });
@@ -181,12 +216,12 @@ export async function getFoundItem(req: Request, res: Response): Promise<void> {
   }
 }
 
-// Update found item
+// Update found item (owner only)
 export async function updateFoundItem(req: Request, res: Response): Promise<void> {
   try {
     const { id } = req.params;
     const userId = req.user!.userId;
-    const { title, description, location_area, location_hint } = req.body;
+    const { title, description, location_area, location_hint, subcategory } = req.body;
 
     const existing = await query(
       'SELECT * FROM found_items WHERE id = $1 AND finder_id = $2',
@@ -194,7 +229,10 @@ export async function updateFoundItem(req: Request, res: Response): Promise<void
     );
 
     if (existing.rows.length === 0) {
-      res.status(404).json({ success: false, message: 'Found item not found or no permission' });
+      res.status(404).json({
+        success: false,
+        message: 'Found item not found or you do not have permission to update it'
+      });
       return;
     }
 
@@ -203,21 +241,33 @@ export async function updateFoundItem(req: Request, res: Response): Promise<void
       : existing.rows[0].keywords;
 
     const result = await query(
-      `UPDATE found_items SET title = COALESCE($1, title), description = COALESCE($2, description),
-        location_area = COALESCE($3, location_area), location_hint = COALESCE($4, location_hint), keywords = $5
-       WHERE id = $6 RETURNING *`,
-      [title, description, location_area, location_hint, newKeywords, id]
+      `UPDATE found_items SET
+        title = COALESCE($1, title),
+        description = COALESCE($2, description),
+        location_area = COALESCE($3, location_area),
+        location_hint = COALESCE($4, location_hint),
+        subcategory = COALESCE($5, subcategory),
+        keywords = $6,
+        updated_at = NOW()
+      WHERE id = $7
+      RETURNING *`,
+      [title, description, location_area, location_hint, subcategory, newKeywords, id]
     );
 
     await logUpdate(req, 'found_item', parseInt(id), existing.rows[0], result.rows[0]);
-    res.json({ success: true, data: result.rows[0], message: 'Found item updated' });
+
+    res.json({
+      success: true,
+      data: result.rows[0],
+      message: 'Found item updated successfully'
+    });
   } catch (error) {
     console.error('Update found item error:', error);
     res.status(500).json({ success: false, message: 'Failed to update found item' });
   }
 }
 
-// Delete found item
+// Delete found item (owner only)
 export async function deleteFoundItem(req: Request, res: Response): Promise<void> {
   try {
     const { id } = req.params;
@@ -229,30 +279,38 @@ export async function deleteFoundItem(req: Request, res: Response): Promise<void
     );
 
     if (existing.rows.length === 0) {
-      res.status(404).json({ success: false, message: 'Found item not found or no permission' });
+      res.status(404).json({
+        success: false,
+        message: 'Found item not found or you do not have permission to delete it'
+      });
       return;
     }
 
+    // Don't allow deletion if there's an active claim
     const activeClaim = await query(
       `SELECT id FROM claims WHERE found_item_id = $1 AND status IN ('PENDING', 'VERIFIED')`,
       [id]
     );
 
     if (activeClaim.rows.length > 0) {
-      res.status(400).json({ success: false, message: 'Cannot delete with active claim' });
+      res.status(400).json({
+        success: false,
+        message: 'Cannot delete found item with an active claim'
+      });
       return;
     }
 
     await query('DELETE FROM found_items WHERE id = $1', [id]);
     await logDelete(req, 'found_item', parseInt(id), existing.rows[0]);
-    res.json({ success: true, message: 'Found item deleted' });
+
+    res.json({ success: true, message: 'Found item deleted successfully' });
   } catch (error) {
     console.error('Delete found item error:', error);
     res.status(500).json({ success: false, message: 'Failed to delete found item' });
   }
 }
 
-// Upload images
+// Upload images for found item
 export async function uploadFoundItemImages(req: Request, res: Response): Promise<void> {
   try {
     const { id } = req.params;
@@ -282,19 +340,22 @@ export async function uploadFoundItemImages(req: Request, res: Response): Promis
       [allImages, id]
     );
 
-    res.json({ success: true, data: result.rows[0], message: 'Images uploaded' });
+    res.json({ success: true, data: result.rows[0], message: 'Images uploaded successfully' });
   } catch (error) {
-    console.error('Upload images error:', error);
+    console.error('Upload found item images error:', error);
     res.status(500).json({ success: false, message: 'Failed to upload images' });
   }
 }
 
-// Get matches for found item
+// Get matches for a found item
 export async function getFoundItemMatches(req: Request, res: Response): Promise<void> {
   try {
     const { id } = req.params;
 
-    const itemResult = await query('SELECT id, finder_id FROM found_items WHERE id = $1', [id]);
+    const itemResult = await query(
+      'SELECT id, finder_id, status FROM found_items WHERE id = $1',
+      [id]
+    );
 
     if (itemResult.rows.length === 0) {
       res.status(404).json({ success: false, message: 'Found item not found' });
@@ -302,12 +363,18 @@ export async function getFoundItemMatches(req: Request, res: Response): Promise<
     }
 
     const item = itemResult.rows[0];
-    if (req.user?.userId !== item.finder_id && req.user?.role !== UserRole.ADMIN) {
-      res.status(403).json({ success: false, message: 'Can only view matches for your own items' });
+
+    // Only finder can view matches for their item
+    if (req.user?.userId !== item.finder_id && req.user?.role !== 'admin') {
+      res.status(403).json({
+        success: false,
+        message: 'You can only view matches for your own found items'
+      });
       return;
     }
 
     const matches = await findMatchesForFoundItem(parseInt(id));
+
     res.json({
       success: true,
       data: matches.map(m => ({
@@ -317,7 +384,7 @@ export async function getFoundItemMatches(req: Request, res: Response): Promise<
           title: m.lost_item.title,
           description: m.lost_item.description,
           location_area: m.lost_item.location_area,
-          lost_date: m.lost_item.lost_date
+          lost_date: m.lost_item.lost_date,
         },
         score: m.score,
         explanation: m.explanation
@@ -338,19 +405,31 @@ export async function getMyFoundItems(req: Request, res: Response): Promise<void
       req.query.limit as string
     );
 
-    const countResult = await query('SELECT COUNT(*) FROM found_items WHERE finder_id = $1', [userId]);
+    const countResult = await query(
+      'SELECT COUNT(*) FROM found_items WHERE finder_id = $1',
+      [userId]
+    );
     const total = parseInt(countResult.rows[0].count);
 
     const result = await query(
-      `SELECT f.*, (SELECT COUNT(*) FROM claims c WHERE c.found_item_id = f.id) as claim_count
-       FROM found_items f WHERE f.finder_id = $1 ORDER BY f.created_at DESC LIMIT $2 OFFSET $3`,
+      `SELECT f.*,
+              (SELECT COUNT(*) FROM claims c WHERE c.found_item_id = f.id AND c.status = 'VERIFIED') as claim_count
+       FROM found_items f
+       WHERE f.finder_id = $1
+       ORDER BY f.created_at DESC
+       LIMIT $2 OFFSET $3`,
       [userId, limit, offset]
     );
 
     res.json({
       success: true,
       data: result.rows,
-      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) }
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit)
+      }
     });
   } catch (error) {
     console.error('Get my found items error:', error);

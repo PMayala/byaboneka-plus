@@ -204,7 +204,7 @@ const ReportFoundPage: React.FC = () => {
                 </button>
               ))}
             </div>
-            {errors.category && <p className="mt-2 text-sm text-red-500">{errors.category}</p>}
+            {errors.category && <p role="alert" className="mt-2 text-sm text-red-500">{errors.category}</p>}
           </div>
           {/* Title */}
           <div className="mb-6">
@@ -238,13 +238,16 @@ const ReportFoundPage: React.FC = () => {
           <h2 className="text-lg font-semibold text-gray-900 mb-6">Location & Date</h2>
           {/* Location */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              <MapPin className="w-4 h-4 inline mr-1" />
+            <label htmlFor="found-location-area" className="block text-sm font-medium text-gray-700 mb-1">
+              <MapPin className="w-4 h-4 inline mr-1" aria-hidden="true" />
               Where did you find it? *
             </label>
             <select
+              id="found-location-area"
               value={formData.location_area}
               onChange={(e) => setFormData({ ...formData, location_area: e.target.value })}
+              aria-invalid={!!errors.location_area}
+              aria-describedby={errors.location_area ? 'found-location-error' : undefined}
               className={`input ${errors.location_area ? 'border-red-500' : ''}`}
             >
               <option value="">{t('items.selectLocation')}</option>
@@ -252,7 +255,7 @@ const ReportFoundPage: React.FC = () => {
                 <option key={loc} value={loc}>{loc}</option>
               ))}
             </select>
-            {errors.location_area && <p className="mt-1 text-sm text-red-500">{errors.location_area}</p>}
+            {errors.location_area && <p id="found-location-error" role="alert" className="mt-1 text-sm text-red-500">{errors.location_area}</p>}
           </div>
           {/* Location Hint */}
           <div className="mb-6">
@@ -266,18 +269,21 @@ const ReportFoundPage: React.FC = () => {
           </div>
           {/* Date */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              <Calendar className="w-4 h-4 inline mr-1" />
+            <label htmlFor="found-date" className="block text-sm font-medium text-gray-700 mb-1">
+              <Calendar className="w-4 h-4 inline mr-1" aria-hidden="true" />
               When did you find it? *
             </label>
             <input
+              id="found-date"
               type="date"
               value={formData.found_date}
               onChange={(e) => setFormData({ ...formData, found_date: e.target.value })}
               max={new Date().toISOString().split('T')[0]}
+              aria-invalid={!!errors.found_date}
+              aria-describedby={errors.found_date ? 'found-date-error' : undefined}
               className={`input ${errors.found_date ? 'border-red-500' : ''}`}
             />
-            {errors.found_date && <p className="mt-1 text-sm text-red-500">{errors.found_date}</p>}
+            {errors.found_date && <p id="found-date-error" role="alert" className="mt-1 text-sm text-red-500">{errors.found_date}</p>}
           </div>
         </Card>
         <Card className="p-6 mb-6">
@@ -316,12 +322,13 @@ const ReportFoundPage: React.FC = () => {
           <input
             ref={fileInputRef}
             type="file"
+            aria-label="Upload item photos"
             accept="image/jpeg,image/png,image/webp"
             multiple
             onChange={handleImageSelect}
             className="hidden"
           />
-          {errors.images && <p className="text-sm text-red-500">{errors.images}</p>}
+          {errors.images && <p role="alert" className="text-sm text-red-500">{errors.images}</p>}
           <p className="text-xs text-gray-500 mt-2">
             Max 5 images, 5MB each. JPEG, PNG, or WebP format.
           </p>

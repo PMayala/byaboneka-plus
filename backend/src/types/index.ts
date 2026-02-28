@@ -145,6 +145,7 @@ export interface Cooperative extends BaseEntity {
 export interface LostItem extends BaseEntity {
   user_id: number;
   category: ItemCategory;
+  subcategory?: string;          // Added: migration 004
   title: string;
   description: string;
   location_area: string;
@@ -153,6 +154,7 @@ export interface LostItem extends BaseEntity {
   status: LostItemStatus;
   keywords: string[];
   photo_url?: string;
+  image_urls: string[];           // Added: migration 004
   expiry_warning_sent: boolean;
   expired_at?: Date;
 }
@@ -162,6 +164,7 @@ export interface FoundItem extends BaseEntity {
   finder_id: number;
   cooperative_id?: number;
   category: ItemCategory;
+  subcategory?: string;          // Added: migration 004
   title: string;
   description: string;
   location_area: string;

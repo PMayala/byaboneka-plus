@@ -14,6 +14,7 @@ describe('Matching Engine', () => {
     lost_date: new Date('2024-01-15T10:00:00Z'),
     status: LostItemStatus.ACTIVE,
     keywords: ['black', 'iphone', '13', 'blue', 'case'],
+    image_urls: [],
     created_at: new Date(),
     updated_at: new Date(),
     expiry_warning_sent: false,

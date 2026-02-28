@@ -63,19 +63,21 @@ const ForgotPasswordPage: React.FC = () => {
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Forgot Password?</h1>
           <p className="text-gray-600">
-            Enter your email address and we'll send you a link to reset your password.
+            Enter your email address and we&apos;ll send you a link to reset your password.
           </p>
         </div>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6" noValidate>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="forgot-email" className="block text-sm font-medium text-gray-700 mb-1">
               Email Address
             </label>
             <Input
+              id="forgot-email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder={t('auth.emailPlaceholder')}
+              autoComplete="email"
               required
             />
           </div>

@@ -61,6 +61,7 @@ export interface LostItem {
   id: number;
   user_id: number;
   category: ItemCategory;
+  subcategory?: string;          // Added: migration 004 (ALGO-3.1.2)
   title: string;
   description: string;
   location_area: string;
@@ -69,6 +70,7 @@ export interface LostItem {
   status: LostItemStatus;
   keywords?: string[];
   photo_url?: string;
+  image_urls?: string[];          // Added: migration 004
   created_at: string;
   user_name?: string;
   verification_questions?: string[];
@@ -82,6 +84,7 @@ export interface FoundItem {
   finder_id: number;
   cooperative_id?: number;
   category: ItemCategory;
+  subcategory?: string;          // Added: migration 004 (ALGO-3.1.2)
   title: string;
   description: string;
   location_area: string;

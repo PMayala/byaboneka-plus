@@ -2,250 +2,458 @@
 
 **Trust-Aware Lost & Found Infrastructure for Rwanda's Transport Ecosystem**
 
-> ALU Mission Capstone Project — A comprehensive platform that uses smart matching, verification systems, fraud detection, and cooperative accountability to securely reunite people with their lost belongings.
+> **ALU BSE Capstone Project** by MAYALA Plamedi — African Leadership University, 2026
+>
+> A comprehensive platform that uses smart matching, multi-layer verification, behavioral fraud detection, and cooperative accountability to securely reunite people with their lost belongings across Rwanda's transport network.
 
 ---
 
-## 🏗 Architecture Overview
+## Live Deployment
 
-```
-┌─────────────────┐     ┌──────────────────┐     ┌──────────────┐
-│   Frontend       │────▶│   Backend API    │────▶│  PostgreSQL  │
-│   React + Vite   │     │   Express + TS   │     │  16-alpine   │
-│   Tailwind CSS   │     │   Port 4000      │     │  Port 5432   │
-│   Port 80/3000   │     │                  │     │              │
-└─────────────────┘     └──────────────────┘     └──────────────┘
-```
+| Component | URL |
+|-----------|-----|
+| **Frontend** | [byaboneka-plus.vercel.app](https://byaboneka-plus.vercel.app) |
+| **Backend API** | [byaboneka-api.onrender.com/api/v1](https://byaboneka-api.onrender.com/api/v1) |
+| **API Health** | [byaboneka-api.onrender.com/api/v1/health](https://byaboneka-api.onrender.com/api/v1/health) |
+| **Swagger Docs** | [byaboneka-api.onrender.com/api-docs](https://byaboneka-api.onrender.com/api-docs) |
 
-**Stack:**  
-- **Frontend:** React 18, TypeScript, Vite, Tailwind CSS, Zustand, React Router 6  
-- **Backend:** Node.js 20, Express, TypeScript, PostgreSQL, Zod, JWT auth  
-- **Deployment:** Docker multi-stage builds, Vercel (frontend), Render (backend)  
-- **CI/CD:** GitHub Actions with lint, test, build, and deploy stages  
+> The backend runs on Render's free tier and may take ~30 seconds to wake on the first request.
 
 ---
 
-## 🚀 Quick Start
+## Architecture
 
-### Prerequisites
-- Node.js 20+
-- PostgreSQL 16+
-- Docker & Docker Compose (for containerized deployment)
-
-### Option 1: Docker (Recommended)
-
-```bash
-# Clone the repository
-git clone https://github.com/your-repo/byaboneka-plus.git
-cd byaboneka-plus
-
-# Copy environment template
-cp .env.example .env
-# Edit .env with your real values (generate JWT secrets with: openssl rand -hex 32)
-
-# Start everything
-docker compose -f docker-compose.production.yml up -d
-
-# Seed with demo data (optional)
-docker exec -it byaboneka-plus-api-1 node -e "require('./dist/seeds/run')"
+```
+┌──────────────────┐       ┌────────────────────┐       ┌───────────────┐
+│   Frontend        │──────▶│   Backend API       │──────▶│  PostgreSQL   │
+│   React 18 + Vite │       │   Express + TS      │       │  16-alpine    │
+│   Tailwind CSS    │       │   30+ REST endpoints│       │  24 tables    │
+│   Zustand state   │       │   15 services       │       │  6 migrations │
+│   i18next (3 lang)│       │   7 middleware layers│       │               │
+│   Vercel          │       │   Render             │       │  Render
+└──────────────────┘       └────────────────────┘       └───────────────┘
 ```
 
-Frontend: http://localhost  
-API: http://localhost:4000/api/v1  
-Health: http://localhost:4000/api/v1/health  
+### Tech Stack
 
-### Option 2: Manual Setup
-
-**Backend:**
-```bash
-cd backend
-cp .env.example .env   # Edit with your database credentials
-npm install
-npm run dev            # Starts on port 4000
-```
-
-**Frontend:**
-```bash
-cd frontend
-cp .env.example .env   # Set VITE_API_URL
-npm install
-npm run dev            # Starts on port 3000
-```
+| Layer | Technologies |
+|-------|-------------|
+| **Frontend** | React 18, TypeScript, Vite 5, Tailwind CSS 3, Zustand, React Router 6, i18next, Axios, Lucide Icons |
+| **Backend** | Node.js 20, Express 4, TypeScript 5, PostgreSQL 16 (`pg`), Zod validation, JWT auth, Helmet, Morgan |
+| **Email** | Brevo SMTP — verification, password reset, claim notifications, expiry warnings |
+| **Security** | reCAPTCHA v3, CSRF protection, rate limiting, bcrypt hashing, parameterized SQL queries |
+| **Testing** | Jest + Supertest (backend), Vitest + Testing Library (frontend), load testing |
+| **CI/CD** | GitHub Actions — lint, type check, unit tests, integration tests, Render deploy |
+| **Deployment** | Vercel (frontend), Render (backend + PostgreSQL) |
+| **Internationalization** | English, French, Kinyarwanda — 617 translation keys per language |
 
 ---
 
-## 🧠 Novel Technical Features
+## Key Features (Novel Technical Contributions)
 
 ### 1. Smart Matching Algorithm
-Multi-dimensional matching between lost and found items using category, location proximity, temporal analysis, and keyword overlap with weighted scoring.
+Multi-dimensional scoring between lost and found items using category match, GPS location proximity, temporal analysis, and keyword overlap with weighted scoring. Automatically suggests potential matches when new items are reported.
 
 ### 2. Verification Strength Analysis
 Real-time analysis of verification question quality — rates questions for entropy, specificity, and uniqueness to prevent easily-guessable ownership claims.
 
-### 3. Fraud Detection System
-Behavioral analysis engine that monitors for rapid-fire claims, suspicious patterns, and velocity anomalies. Risk signals are scored and aggregated per-user.
+### 3. Behavioral Fraud Detection
+Analysis engine that monitors rapid-fire claims, suspicious patterns, and velocity anomalies. Risk signals are scored and aggregated per-user, surfaced in an admin fraud dashboard.
 
 ### 4. Cooperative Accountability Leaderboard
-Transparent ranking of transport cooperatives based on return rates, speed, reliability, and staff quality — incentivizing good behavior.
+Transparent ranking of transport cooperatives based on return rates, response speed, reliability, and staff quality — incentivizing good behavior in Rwanda's bus/moto ecosystem.
 
 ### 5. Sensitive Content Redaction
-Automatic detection and redaction of phone numbers, IDs, and personally identifiable information in item descriptions to protect user privacy.
+Automatic detection and redaction of phone numbers, national IDs, and PII in item descriptions to protect user privacy.
 
 ### 6. OTP Handover Verification
-Secure 6-digit OTP system for physical item handovers — generated by the owner, verified by the finder, with attempt limits and expiry.
+Secure 6-digit OTP system for physical item handovers — generated by the owner, verified by the finder, with attempt limits and expiry to prevent fraud.
 
 ### 7. Dispute Resolution Workflow
-Structured dispute process with evidence submission, admin review, and trust score adjustments based on resolution outcomes.
+Structured dispute process with evidence submission, admin review queue, and trust score adjustments based on resolution outcomes.
 
 ### 8. Duplicate Detection
 Pre-submission analysis that checks for potential duplicate reports using category, description similarity, location, and date proximity.
 
 ---
 
-## 📁 Project Structure
+## Installation & Setup
 
+### Prerequisites
+
+- **Node.js** 18+ (recommended: 20 LTS)
+- **PostgreSQL** 16+
+- **Git**
+
+
+### How to Setup
+
+#### Step 1: Database
+
+```bash
+# Create PostgreSQL database
+psql -U postgres -c "CREATE USER byaboneka WITH PASSWORD 'your_password';"
+psql -U postgres -c "CREATE DATABASE byaboneka_plus OWNER byaboneka;"
 ```
-byaboneka-plus/
-├── backend/                    # Express API server
-│   ├── src/
-│   │   ├── config/            # Database, Swagger configs
-│   │   ├── controllers/       # Route handlers (7 controllers)
-│   │   ├── middleware/        # Auth, validation, rate limiting, error handling
-│   │   ├── migrations/        # Database schema (idempotent)
-│   │   ├── routes/            # Core, enhanced, and novel feature routes
-│   │   ├── seeds/             # Demo data seeder
-│   │   ├── services/          # Business logic (14 services)
-│   │   ├── types/             # TypeScript type definitions
-│   │   └── utils/             # Shared utilities
-│   ├── tests/                 # Unit + integration tests
-│   ├── Dockerfile             # Multi-stage production build
-│   └── docker-compose.yml     # Local dev with PostgreSQL
-│
-├── frontend/                   # React SPA
-│   ├── src/
-│   │   ├── components/        # Reusable UI components + layout
-│   │   ├── pages/             # 26 page components
-│   │   ├── services/          # API client with interceptors
-│   │   ├── store/             # Zustand auth store (persisted)
-│   │   ├── types/             # Shared TypeScript types
-│   │   └── utils/             # Date formatting, helpers
-│   ├── Dockerfile             # Multi-stage build with nginx
-│   ├── nginx.conf             # SPA serving + security headers
-│   └── vercel.json            # Vercel deployment config
-│
-├── docker-compose.production.yml  # Full-stack production deployment
-└── .env.example                   # Environment template
+
+#### Step 2: Backend
+
+```bash
+cd backend
+cp .env.example .env
+# Edit .env:
+#   DATABASE_URL=postgresql://byaboneka:your_password@localhost:5432/byaboneka_plus
+#   JWT_SECRET=<openssl rand -hex 32>
+#   JWT_REFRESH_SECRET=<openssl rand -hex 32>
+
+npm install
+npm run migrate    # Create database tables
+npm run seed       # Load demo data (optional)
+npm run dev        # Start at http://localhost:4000
+```
+
+#### Step 3: Frontend
+
+```bash
+cd frontend
+cp .env.example .env
+# Edit .env:
+#   VITE_API_URL=http://localhost:4000/api/v1
+
+npm install
+npm run dev        # Start at http://localhost:5173
 ```
 
 ---
 
-## 🔐 API Endpoints (30 routes)
+## Demo Accounts (After Seeding)
 
-### Auth
+| Role | Email | Password | Access |
+|------|-------|----------|--------|
+| **Admin** | admin@byaboneka.rw | Admin123 | Full admin dashboard, user management, fraud review |
+| **Citizen** | emmanuel.k@gmail.com | User@123 | Report items, create claims, messages |
+| **Coop Staff** | jbmugisha@kigalimoto.rw | User@123 | Report found items for cooperative, view leaderboard |
+
+---
+
+## API Endpoints (30+ Routes)
+
+### Authentication
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | POST | `/auth/register` | Register new user |
-| POST | `/auth/login` | Login |
-| POST | `/auth/refresh` | Refresh access token |
-| POST | `/auth/logout` | Logout |
-| POST | `/auth/forgot-password` | Request password reset |
+| POST | `/auth/login` | Login with email/password |
+| POST | `/auth/refresh` | Refresh JWT access token |
+| POST | `/auth/logout` | Revoke refresh token |
+| POST | `/auth/forgot-password` | Request password reset email |
 | POST | `/auth/reset-password` | Reset password with token |
 | GET | `/auth/profile` | Get current user profile |
 | PUT | `/auth/profile` | Update profile |
-| POST | `/auth/change-password` | Change password |
 | POST | `/auth/email/verify/request` | Request email verification |
 | POST | `/auth/email/verify` | Verify email with token |
-| GET | `/auth/email/status` | Check email verification status |
 
-### Items
+### Lost & Found Items
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/lost-items` | Report lost item |
-| GET | `/lost-items` | Search lost items |
-| GET | `/lost-items/:id` | Get lost item detail |
+| POST | `/lost-items` | Report a lost item |
+| GET | `/lost-items` | Search with filters (category, location, date, keyword) |
+| GET | `/lost-items/:id` | Get item detail with matches |
 | PUT | `/lost-items/:id` | Update lost item |
 | DELETE | `/lost-items/:id` | Delete lost item |
-| GET | `/lost-items/:id/matches` | Get matching found items |
-| POST | `/lost-items/check-duplicate` | Check for duplicates |
-| POST | `/found-items` | Report found item |
+| GET | `/lost-items/:id/matches` | Smart matching algorithm results |
+| POST | `/lost-items/check-duplicate` | Pre-submission duplicate check |
+| POST | `/found-items` | Report a found item |
 | GET | `/found-items` | Search found items |
-| POST | `/found-items/:id/images` | Upload images |
+| GET | `/found-items/:id` | Get found item detail |
+| PUT | `/found-items/:id` | Update found item |
+| POST | `/found-items/:id/images` | Upload item images |
 
 ### Claims & Verification
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/claims` | Create claim |
+| POST | `/claims` | Create ownership claim |
+| GET | `/claims/:id` | Get claim details |
 | GET | `/claims/:id/questions` | Get verification questions |
 | POST | `/claims/:id/verify` | Submit verification answers |
 | POST | `/claims/:id/handover/otp` | Generate handover OTP |
-| POST | `/claims/:id/handover/verify` | Verify OTP |
-| POST | `/claims/:id/dispute` | Open dispute |
+| POST | `/claims/:id/handover/verify` | Verify OTP at handover |
+| POST | `/claims/:id/dispute` | Open dispute on claim |
+
+### Messaging
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/messages` | Get user's conversations |
+| GET | `/messages/claim/:claimId` | Get messages for a claim |
+| POST | `/messages` | Send a message |
 
 ### Admin & Analytics
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/admin/stats` | Dashboard statistics |
 | GET | `/admin/users` | User management |
-| GET | `/admin/fraud/flagged-users` | Fraud flagged users |
-| GET | `/cooperatives/leaderboard` | Cooperative rankings |
+| PUT | `/admin/users/:id/ban` | Ban/unban user |
+| GET | `/admin/fraud/flagged-users` | Fraud detection dashboard |
+| GET | `/admin/scam-reports` | Scam report review queue |
+| PUT | `/admin/scam-reports/:id` | Resolve scam report |
+| GET | `/cooperatives/leaderboard` | Cooperative performance rankings |
+
+Full interactive documentation available at `/api-docs` (Swagger UI).
 
 ---
 
-## 🧪 Testing
+## Testing
 
 ```bash
+# ── Backend ──
 cd backend
 
-# Run all tests
-npm test
+npm test                     # Run all tests
+npm run test:unit            # Unit tests (matching, validation, trust, utils, middleware, novel features)
+npm run test:integration     # Integration tests (full API endpoints, requires PostgreSQL)
+npm run test:coverage        # Generate coverage report
 
-# Unit tests only
-npm run test:unit
+# ── Frontend ──
+cd frontend
 
-# Integration tests (requires PostgreSQL)
-npm run test:integration
+npm test                     # Run all component tests
+npm run test:coverage        # Generate coverage report
 
-# With coverage
-npm run test:coverage
+# ── Performance ──
+cd backend
+npx ts-node tests/performance/load-test.ts    # Load testing (100+ concurrent requests)
+```
+
+### Test Suites
+
+| Suite | Scope | Key Areas |
+|-------|-------|-----------|
+| **Unit (6 suites)** | Backend services & utilities | Matching algorithm, validation logic, trust scoring, utilities, middleware, novel features |
+| **Integration** | Full API with database | Authentication flow, CRUD operations, claim lifecycle, authorization |
+| **Frontend** | React components | Rendering, form validation, trust score display, category handling |
+| **Performance** | Load testing | Concurrent request handling, p95 response times |
+
+---
+
+## CI/CD Pipeline
+
+The project uses GitHub Actions for continuous integration and deployment. The workflow file is located at `.github/workflows/ci-cd.yml`.
+
+```
+Push to main/develop
+        │
+        ├── Backend: Lint & Type Check
+        ├── Frontend: Lint & Build
+        ├── Backend: Unit Tests
+        ├── Frontend: Unit Tests
+        ├── Backend: Integration Tests (with PostgreSQL service)
+        ├── Backend: Coverage Report
+        │
+        └── [main branch only] Deploy to Render ──▶ Production
+```
+
+All jobs run in parallel where possible. The deploy job only triggers on push to `main` after all checks pass.
+
+**GitHub Secrets required for deployment:**
+
+| Secret | Description |
+|--------|-------------|
+| `RENDER_DEPLOY_HOOK` | Render deploy hook URL (from Render dashboard → Settings → Deploy Hook) |
+
+---
+
+## Project Structure
+
+```
+byaboneka-plus/
+├── .github/
+│   └── workflows/
+│       ├── ci.yml                 # CI/CD pipeline (lint, test, build, deploy)
+│       ├── cd.yml                 # CI/CD pipeline (lint, test, build, deploy)
+│
+├── backend/                           # Express.js API server
+│   ├── src/
+│   │   ├── config/                   # Database pool & Swagger config
+│   │   ├── controllers/              # 8 route handlers
+│   │   │   ├── authController.ts     #   Registration, login, JWT, password reset, email verify
+│   │   │   ├── lostItemsController.ts#   Lost item CRUD + duplicate check
+│   │   │   ├── foundItemsController.ts#  Found item CRUD + image upload
+│   │   │   ├── claimsController.ts   #   Claim lifecycle, verification, OTP handover
+│   │   │   ├── messagesController.ts #   Claim-based messaging
+│   │   │   ├── adminController.ts    #   Stats, user management, fraud dashboard
+│   │   │   ├── cooperativesController.ts # Leaderboard, cooperative management
+│   │   │   └── accountController.ts  #   Account settings, deletion
+│   │   ├── middleware/               # 8 middleware layers
+│   │   │   ├── auth.ts              #   JWT verification + role-based access
+│   │   │   ├── validation.ts        #   Zod schema validation
+│   │   │   ├── rateLimiter.ts       #   Rate limiting (general + auth-specific)
+│   │   │   ├── recaptcha.ts         #   Google reCAPTCHA v3 (graceful degradation)
+│   │   │   ├── csrf.ts             #   CSRF token protection
+│   │   │   ├── consent.ts          #   Terms acceptance check
+│   │   │   ├── emailVerification.ts #   Email verification gate
+│   │   │   └── errorHandler.ts     #   Global error handling
+│   │   ├── migrations/              # 6 idempotent SQL migrations (24 tables)
+│   │   ├── routes/                  # Route definitions (core, enhanced, novel)
+│   │   ├── seeds/                   # Demo data with realistic Rwandan context
+│   │   ├── services/               # 17 business logic services
+│   │   │   ├── matchingService.ts          # Multi-dimensional item matching
+│   │   │   ├── trustService.ts             # Trust score calculation
+│   │   │   ├── fraudDetectionService.ts    # Behavioral fraud analysis
+│   │   │   ├── otpService.ts               # OTP generation & verification
+│   │   │   ├── emailService.ts             # Brevo SMTP transactional emails
+│   │   │   ├── disputeService.ts           # Dispute resolution workflow
+│   │   │   ├── duplicateDetectionService.ts# Pre-submission duplicate check
+│   │   │   ├── sensitiveRedactionService.ts# PII auto-redaction
+│   │   │   ├── cooperativeAccountabilityService.ts # Leaderboard scoring
+│   │   │   ├── verificationStrengthService.ts     # Question quality analysis
+│   │   │   ├── auditService.ts             # Action audit logging
+│   │   │   ├── dataRetentionService.ts     # GDPR-style data cleanup
+│   │   │   ├── expiryService.ts            # Cron-based item expiry
+│   │   │   └── ...
+│   │   ├── types/                  # TypeScript type definitions
+│   │   └── utils/                  # JWT helpers, hashing, formatting
+│   ├── tests/
+│   │   ├── unit/                   # 6 unit test suites
+│   │   ├── integration/            # API integration tests
+│   │   └── performance/            # Load testing
+│   └── package.json
+│
+├── frontend/                          # React SPA
+│   ├── src/
+│   │   ├── __tests__/              # Component tests (Vitest + Testing Library)
+│   │   ├── components/             # 15 reusable UI components + layout
+│   │   │   ├── HandoverOTPPanel.tsx         # OTP handover interface
+│   │   │   ├── VerificationStrengthIndicator.tsx # Question quality meter
+│   │   │   ├── CooperativeLeaderboard.tsx   # Accountability rankings
+│   │   │   ├── DuplicateWarning.tsx         # Duplicate detection alerts
+│   │   │   ├── ScamReportButton.tsx         # Fraud reporting
+│   │   │   ├── DisputeForm.tsx              # Dispute submission
+│   │   │   ├── SafeHandoverLocationPicker.tsx# Safe meetup suggestions
+│   │   │   ├── SafetyWarningBanner.tsx      # Safety tips
+│   │   │   ├── CookieConsentBanner.tsx      # GDPR consent
+│   │   │   ├── LanguageSwitcher.tsx         # EN/FR/RW toggle
+│   │   │   └── ...
+│   │   ├── pages/                  # 27 page components
+│   │   ├── hooks/                  # Custom hooks (accessibility, reCAPTCHA)
+│   │   ├── i18n/                   # Trilingual support (EN/FR/RW — 617 keys each)
+│   │   ├── services/              # Axios API client with JWT interceptors
+│   │   ├── store/                 # Zustand auth store (persisted)
+│   │   └── utils/                 # Date formatting, helpers
+│   └── package.json
+│
+├── docs/                             # Documentation
+│   ├── API.md                       # API endpoint reference
+│   └── TECHNICAL_DOCUMENTATION.md   # Full architecture, DB schema, deployment runbook
+│
+├── render.yaml                       # Render Blueprint (auto-deploy)
+└── .env.example                      # Environment variable template
 ```
 
 ---
 
-## 🌍 Deployment
+## Database Schema
 
-### Vercel (Frontend)
-1. Connect GitHub repo to Vercel
-2. Set root directory to `frontend`
-3. Set environment variable: `VITE_API_URL=https://your-api-url/api/v1`
-4. Deploy automatically on push to `main`
+The application uses **24 tables** across 6 idempotent migrations:
 
-### Render (Backend)
-1. Create a new Web Service from GitHub
-2. Set root directory to `backend`
-3. Build command: `npm ci && npm run build`
-4. Start command: `node dist/index.js`
-5. Add environment variables from `.env.example`
-6. Add a PostgreSQL database and link it
+| Table Group | Tables | Purpose |
+|-------------|--------|---------|
+| **Core** | `users`, `lost_items`, `found_items`, `verification_secrets`, `claims`, `handover_confirmations`, `messages` | Primary lost & found workflow |
+| **Security** | `refresh_tokens`, `password_reset_tokens`, `email_verification_tokens`, `scam_reports`, `disputes` | Authentication & fraud prevention |
+| **Organization** | `cooperatives` | Transport cooperative management |
+| **System** | `audit_logs`, `notification_preferences`, `matches` | Logging, preferences, match tracking |
 
-### Docker Self-Hosted
-```bash
-cp .env.example .env
-# Edit .env with production values
-docker compose -f docker-compose.production.yml up -d
-```
+See [`docs/TECHNICAL_DOCUMENTATION.md`](docs/TECHNICAL_DOCUMENTATION.md) for the full entity relationship diagram.
 
 ---
 
-## 📋 Demo Accounts (after seeding)
+## Security Layers
 
-| Role | Email | Password |
-|------|-------|----------|
-| Admin | admin@byaboneka.rw | Admin123! |
-| Citizen | jean@example.com | Password123! |
-| Coop Staff | staff@kbs.rw | Password123! |
+The application implements 7 security layers:
+
+1. **JWT Authentication** — Access tokens (15min) + refresh tokens (7d) with rotation
+2. **Password Security** — bcrypt hashing with 10 salt rounds, account lockout after failed attempts
+3. **Input Validation** — Zod schemas on all endpoints, parameterized SQL queries (no raw string interpolation)
+4. **Rate Limiting** — General API limits + stricter limits on auth endpoints
+5. **reCAPTCHA v3** — Invisible bot prevention on registration and login (graceful degradation if unconfigured)
+6. **CSRF Protection** — Token-based CSRF prevention on state-changing operations
+7. **HTTP Security Headers** — Helmet.js defaults + custom Content-Security-Policy via nginx
 
 ---
 
-## 📄 License
+## Internationalization
 
-MIT — MAYALA Plamedi, African Leadership University
+Three languages with 617 translation keys each, switchable via the navigation bar:
+
+| Language | Code | Coverage |
+|----------|------|----------|
+| 🇬🇧 English | `en` | Full (default) |
+| 🇫🇷 French | `fr` | Full |
+| 🇷🇼 Kinyarwanda | `rw` | Full |
+
+Translations cover all UI elements, form labels, error messages, email templates, and system notifications.
+
+---
+
+## Deployment Options
+
+### Render + Vercel (Recommended for Demo)
+
+Deploy the backend to Render (with managed PostgreSQL) and the frontend to Vercel. See [`DEPLOYMENT.md`](DEPLOYMENT.md) for step-by-step instructions.
+
+
+## Email Configuration (Brevo SMTP)
+
+The application uses [Brevo](https://www.brevo.com) for transactional emails. Free tier provides 300 emails/day.
+
+**Emails sent by the platform:**
+
+| Trigger | Type | Recipient |
+|---------|------|-----------|
+| User registers | Welcome email | New user |
+| Verification requested | Email verification link | User |
+| Forgot password | Password reset link | User |
+| Claim created | New claim notification | Item owner |
+| Verification complete | Claim result (pass/fail) | Claimant |
+| OTP verified | Handover confirmation | Both parties |
+| Item expiring | Expiry warning (7 days) | Item reporter |
+| Dispute opened | Dispute notification | Both parties |
+
+> If `BREVO_SMTP_USER` is not set, the app still works — emails are logged to console instead of being sent.
+
+---
+
+## Environment Variables
+
+See [`.env.example`](.env.example) for the complete template. Key variables:
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `DB_PASSWORD` | Yes | PostgreSQL password |
+| `JWT_SECRET` | Yes | JWT signing key (min 32 chars) |
+| `JWT_REFRESH_SECRET` | Yes | Refresh token signing key (min 32 chars) |
+| `DATABASE_URL` | Backend | Full PostgreSQL connection string |
+| `CORS_ORIGIN` | Backend | Allowed frontend origin(s) |
+| `BREVO_SMTP_USER` | No | Brevo SMTP login (emails disabled if unset) |
+| `BREVO_SMTP_KEY` | No | Brevo SMTP master password |
+| `RECAPTCHA_SECRET_KEY` | No | reCAPTCHA v3 secret (disabled if unset) |
+| `VITE_API_URL` | Frontend | API base URL from browser perspective |
+
+---
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| CORS errors | Verify `CORS_ORIGIN` includes the exact frontend URL |
+| Database connection failed | Check `DATABASE_URL` format and that PostgreSQL is running |
+| 401 errors after restart | JWT secrets must be consistent across restarts |
+| Blank page on frontend | Verify `VITE_API_URL` is set correctly |
+| Slow initial load on Render | Free tier cold starts are normal (~30s) |
+| Emails not sending | Check `BREVO_SMTP_USER` and `BREVO_SMTP_KEY` are set |
+| CI/CD deploy not running | Ensure `RENDER_DEPLOY_HOOK` secret is set in GitHub repo |
+| CI workflow not detected | Workflow must be at `.github/workflows/` in repo root, not inside `backend/` |
+
+---
+
+## License
+
+MIT — MAYALA Plamedi, African Leadership University, 2026

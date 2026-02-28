@@ -204,7 +204,7 @@ export const authApi = {
 };
 
 // ============================================
-// EMAIL VERIFICATION API (FIX #10 - was missing)
+// EMAIL VERIFICATION API
 // ============================================
 
 export const emailVerificationApi = {
@@ -261,6 +261,22 @@ export const lostItemsApi = {
 
   getMine: (params?: { page?: number; limit?: number }) =>
     api.get<PaginatedResponse<LostItem>>('/users/me/lost-items', { params }),
+
+  // FIX: Lost item image upload (was only on found items)
+  uploadImages: (id: number, files: FileList | File[]) => {
+    const formData = new FormData();
+    Array.from(files).forEach((file) => {
+      formData.append('images', file);
+    });
+    return api.post<ApiResponse<LostItem>>(`/lost-items/${id}/images`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      timeout: 60000,
+    });
+  },
+
+  // FIX: Dismiss match — "Not my item" (MATCH-06)
+  dismissMatch: (lostItemId: number, foundItemId: number) =>
+    api.post<ApiResponse>(`/lost-items/${lostItemId}/dismiss-match`, { found_item_id: foundItemId }),
 };
 
 // ============================================
@@ -320,7 +336,7 @@ export const foundItemsApi = {
 };
 
 // ============================================
-// DUPLICATE DETECTION API (FIX #9 - was missing)
+// DUPLICATE DETECTION API
 // ============================================
 
 export const duplicateApi = {
@@ -380,15 +396,12 @@ export const claimsApi = {
   getMine: (params?: { page?: number; limit?: number; status?: string }) =>
     api.get<PaginatedResponse<Claim>>('/users/me/claims', { params }),
 
-  // FIX #11 - Verification cooldown status
   getVerificationStatus: (claimId: number) =>
     api.get<ApiResponse>(`/claims/${claimId}/verification/status`),
 };
 
 // ============================================
-// HANDOVER API (FIX #1 - URLs were completely wrong)
-// Old: /handovers/:id/generate-otp  →  Fixed: /claims/:id/handover/otp
-// Old: /handovers/:id/confirm       →  Fixed: /claims/:id/handover/verify
+// HANDOVER API
 // ============================================
 
 export const handoverApi = {
@@ -410,7 +423,7 @@ export const handoverApi = {
 };
 
 // ============================================
-// DISPUTE API (FIX #8 - was completely missing)
+// DISPUTE API
 // ============================================
 
 export const disputeApi = {
@@ -436,7 +449,7 @@ export const disputeApi = {
 };
 
 // ============================================
-// MESSAGES API (FIX #3 - unread count key, FIX #6 - removed markAsRead)
+// MESSAGES API
 // ============================================
 
 export const messagesApi = {
@@ -445,7 +458,6 @@ export const messagesApi = {
 
   getMessages: (claimId: number, params?: { page?: number; limit?: number }) =>
     api.get<ApiResponse<Message[]>>(`/messages/threads/${claimId}`, { params }),
-    // NOTE: Backend auto-marks messages as read when fetched, no separate markAsRead needed
 
   sendMessage: (claimId: number, content: string) =>
     api.post<ApiResponse<Message>>(`/messages/threads/${claimId}`, { content }),
@@ -453,7 +465,6 @@ export const messagesApi = {
   reportScam: (messageId: number, reason: string) =>
     api.post<ApiResponse>(`/messages/${messageId}/report`, { reason }),
 
-  // FIX #3: Backend returns { unread_count: number }, NOT { count: number }
   getUnreadCount: () =>
     api.get<ApiResponse<{ unread_count: number }>>('/messages/unread-count'),
 };
@@ -478,10 +489,9 @@ export const cooperativesApi = {
 };
 
 // ============================================
-// ADMIN API (FIX #2 - AdminStats type matched to real backend response)
+// ADMIN API
 // ============================================
 
-// FIX #2: This now matches what the backend ACTUALLY returns
 export interface AdminStats {
   total_users: number;
   total_lost_items: number;
@@ -491,7 +501,6 @@ export interface AdminStats {
   pending_scam_reports: number;
 }
 
-// FIX #7: Status uses 'OPEN' not 'PENDING' to match backend
 export interface ScamReport {
   id: number;
   reporter_id: number;
@@ -551,12 +560,15 @@ export const adminApi = {
   triggerCleanup: () =>
     api.post<ApiResponse<{ message: string }>>('/admin/cleanup'),
 
-  // Admin dispute endpoints
   getDisputes: (params?: { page?: number; limit?: number; status?: string }) =>
     api.get<PaginatedResponse<any>>('/admin/disputes', { params }),
 
   resolveDispute: (disputeId: number, data: { resolution: string; resolution_notes: string }) =>
     api.post<ApiResponse>(`/admin/disputes/${disputeId}/resolve`, data),
+
+  // FIX: Admin contact messages endpoint
+  getContactMessages: (params?: { page?: number; limit?: number }) =>
+    api.get<PaginatedResponse<{ id: number; name: string; email: string; message: string; ip_address: string; read: boolean; created_at: string }>>('/admin/contact-messages', { params }),
 };
 
 // ============================================
@@ -568,4 +580,3 @@ export const healthApi = {
 };
 
 export default api;
-

@@ -125,112 +125,148 @@ const RegisterPage: React.FC = () => {
             </Alert>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+            {/* Name Field */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="register-name" className="block text-sm font-medium text-gray-700 mb-1">
                 {t('auth.fullNameLabel')} *
               </label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" aria-hidden="true" />
                 <input
+                  id="register-name"
                   type="text"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
+                  aria-invalid={!!errors.name}
+                  aria-describedby={errors.name ? 'name-error' : undefined}
                   className={`input pl-10 ${errors.name ? 'border-red-500' : ''}`}
                   placeholder={t('auth.fullNamePlaceholder')}
+                  autoComplete="name"
                   required
                 />
               </div>
-              {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name}</p>}
+              {errors.name && (
+                <p id="name-error" role="alert" className="mt-1 text-sm text-red-500">{errors.name}</p>
+              )}
             </div>
 
+            {/* Email Field */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="register-email" className="block text-sm font-medium text-gray-700 mb-1">
                 {t('auth.emailLabel')} *
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" aria-hidden="true" />
                 <input
+                  id="register-email"
                   type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
+                  aria-invalid={!!errors.email}
+                  aria-describedby={errors.email ? 'email-error' : undefined}
                   className={`input pl-10 ${errors.email ? 'border-red-500' : ''}`}
                   placeholder={t('auth.emailPlaceholder')}
+                  autoComplete="email"
                   required
                 />
               </div>
-              {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email}</p>}
+              {errors.email && (
+                <p id="email-error" role="alert" className="mt-1 text-sm text-red-500">{errors.email}</p>
+              )}
             </div>
 
+            {/* Phone Field */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="register-phone" className="block text-sm font-medium text-gray-700 mb-1">
                 {t('auth.phoneLabel')}
               </label>
               <div className="relative">
-                <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" aria-hidden="true" />
                 <input
+                  id="register-phone"
                   type="tel"
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
+                  aria-invalid={!!errors.phone}
+                  aria-describedby={errors.phone ? 'phone-error' : undefined}
                   className={`input pl-10 ${errors.phone ? 'border-red-500' : ''}`}
                   placeholder={t('auth.phonePlaceholder')}
+                  autoComplete="tel"
                 />
               </div>
-              {errors.phone && <p className="mt-1 text-sm text-red-500">{errors.phone}</p>}
+              {errors.phone && (
+                <p id="phone-error" role="alert" className="mt-1 text-sm text-red-500">{errors.phone}</p>
+              )}
             </div>
 
+            {/* Password Field */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="register-password" className="block text-sm font-medium text-gray-700 mb-1">
                 {t('auth.passwordLabel')} *
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" aria-hidden="true" />
                 <input
+                  id="register-password"
                   type={showPassword ? 'text' : 'password'}
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
+                  aria-invalid={!!errors.password}
+                  aria-describedby={errors.password ? 'password-error password-hint' : 'password-hint'}
                   className={`input pl-10 pr-10 ${errors.password ? 'border-red-500' : ''}`}
                   placeholder={t('auth.passwordPlaceholder')}
+                  autoComplete="new-password"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
-              {errors.password && <p className="mt-1 text-sm text-red-500">{errors.password}</p>}
-              <p className="mt-1 text-xs text-gray-500">
+              {errors.password && (
+                <p id="password-error" role="alert" className="mt-1 text-sm text-red-500">{errors.password}</p>
+              )}
+              <p id="password-hint" className="mt-1 text-xs text-gray-500">
                 {t('auth.passwordRequirements')}
               </p>
             </div>
 
+            {/* Confirm Password Field */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="register-confirm-password" className="block text-sm font-medium text-gray-700 mb-1">
                 {t('auth.confirmPasswordLabel')} *
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" aria-hidden="true" />
                 <input
+                  id="register-confirm-password"
                   type={showPassword ? 'text' : 'password'}
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
+                  aria-invalid={!!errors.confirmPassword}
+                  aria-describedby={errors.confirmPassword ? 'confirm-password-error' : undefined}
                   className={`input pl-10 ${errors.confirmPassword ? 'border-red-500' : ''}`}
                   placeholder={t('auth.passwordPlaceholder')}
+                  autoComplete="new-password"
                   required
                 />
               </div>
-              {errors.confirmPassword && <p className="mt-1 text-sm text-red-500">{errors.confirmPassword}</p>}
+              {errors.confirmPassword && (
+                <p id="confirm-password-error" role="alert" className="mt-1 text-sm text-red-500">{errors.confirmPassword}</p>
+              )}
             </div>
 
-            {/* CONSENT CHECKBOX — Gap Fix */}
+            {/* CONSENT CHECKBOX */}
             <div className="flex items-start">
               <input
                 type="checkbox"
@@ -242,6 +278,8 @@ const RegisterPage: React.FC = () => {
                     setErrors({ ...errors, acceptedTerms: '' });
                   }
                 }}
+                aria-invalid={!!errors.acceptedTerms}
+                aria-describedby={errors.acceptedTerms ? 'terms-error' : undefined}
                 className="mt-1 rounded border-gray-300 text-primary-500 focus:ring-primary-500"
               />
               <label htmlFor="acceptTerms" className="ml-2 text-sm text-gray-600">
@@ -256,10 +294,10 @@ const RegisterPage: React.FC = () => {
               </label>
             </div>
             {errors.acceptedTerms && (
-              <p className="text-sm text-red-500 -mt-3">{errors.acceptedTerms}</p>
+              <p id="terms-error" role="alert" className="text-sm text-red-500 -mt-3">{errors.acceptedTerms}</p>
             )}
 
-            {/* AGE CONFIRMATION — Gap Fix #16 */}
+            {/* AGE CONFIRMATION */}
             <div className="flex items-start">
               <input
                 type="checkbox"
@@ -271,6 +309,8 @@ const RegisterPage: React.FC = () => {
                     setErrors({ ...errors, confirmedAge: '' });
                   }
                 }}
+                aria-invalid={!!errors.confirmedAge}
+                aria-describedby={errors.confirmedAge ? 'age-error' : undefined}
                 className="mt-1 rounded border-gray-300 text-primary-500 focus:ring-primary-500"
               />
               <label htmlFor="confirmAge" className="ml-2 text-sm text-gray-600">
@@ -278,7 +318,7 @@ const RegisterPage: React.FC = () => {
               </label>
             </div>
             {errors.confirmedAge && (
-              <p className="text-sm text-red-500 -mt-3">{errors.confirmedAge}</p>
+              <p id="age-error" role="alert" className="text-sm text-red-500 -mt-3">{errors.confirmedAge}</p>
             )}
 
             <Button type="submit" loading={loading} className="w-full" size="lg">

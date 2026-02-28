@@ -27,7 +27,7 @@ const WEIGHTS = {
   WITHIN_72H: 2,          // Found within 72 hours
   WITHIN_7D: 1,           // Found within 7 days
   KEYWORD_MATCH: 1,       // Per matching keyword
-  SUBCATEGORY_MATCH: 2,   // Additional category specificity
+  SUBCATEGORY_MATCH: 2,   // Additional category specificity (ALGO-3.1.2)
 };
 
 const MINIMUM_SCORE = 5;  // Minimum score to show as match
@@ -49,6 +49,13 @@ export function computeMatchScore(lost: LostItem, found: FoundItem): MatchScore 
   }
   score += WEIGHTS.CATEGORY_MATCH;
   explanation.push(`Category match: ${lost.category} (+${WEIGHTS.CATEGORY_MATCH})`);
+
+  // FIX ALGO-3.1.2: Subcategory bonus (e.g. iPhone vs Android, Visa vs Mastercard)
+  if (lost.subcategory && found.subcategory &&
+      lost.subcategory.toLowerCase() === found.subcategory.toLowerCase()) {
+    score += WEIGHTS.SUBCATEGORY_MATCH;
+    explanation.push(`Subcategory match: ${lost.subcategory} (+${WEIGHTS.SUBCATEGORY_MATCH})`);
+  }
 
   // GATE 2: Location proximity
   const distance = computeLocationDistance(lost.location_area, found.location_area);
@@ -188,6 +195,27 @@ export async function findMatchesForLostItem(
     }
   }
 
+  // FIX MATCH-06: Filter out dismissed matches
+  const ownerResult = await query(
+    'SELECT user_id FROM lost_items WHERE id = $1',
+    [lostItemId]
+  );
+  if (ownerResult.rows.length > 0) {
+    const ownerId = ownerResult.rows[0].user_id;
+    const dismissedResult = await query(
+      'SELECT found_item_id FROM match_dismissals WHERE user_id = $1 AND lost_item_id = $2',
+      [ownerId, lostItemId]
+    );
+    const dismissedIds = new Set(dismissedResult.rows.map((r: any) => r.found_item_id));
+
+    // Remove dismissed matches in-place
+    for (let i = scoredMatches.length - 1; i >= 0; i--) {
+      if (dismissedIds.has(scoredMatches[i].found_item.id)) {
+        scoredMatches.splice(i, 1);
+      }
+    }
+  }
+
   // Sort by score descending and take top N
   scoredMatches.sort((a, b) => b.score - a.score);
   const topMatches = scoredMatches.slice(0, MAX_MATCHES);
@@ -322,4 +350,3 @@ export async function clearStaleMatches(): Promise<number> {
   );
   return result.rowCount || 0;
 }
-

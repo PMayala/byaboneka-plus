@@ -31,10 +31,10 @@ export async function createLostItem(req: Request, res: Response): Promise<void>
     const result = await transaction(async (client) => {
       // Create lost item
       const itemResult = await client.query(
-        `INSERT INTO lost_items (user_id, category, title, description, location_area, location_hint, lost_date, keywords, photo_url)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        `INSERT INTO lost_items (user_id, category, title, description, location_area, location_hint, lost_date, keywords, photo_url, image_urls)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
          RETURNING *`,
-        [userId, category, title, description, location_area, location_hint || null, lost_date, keywords, photo_url || null]
+        [userId, category, title, description, location_area, location_hint || null, lost_date, keywords, photo_url || null, []]
       );
 
       const lostItem = itemResult.rows[0];
@@ -80,6 +80,7 @@ export async function createLostItem(req: Request, res: Response): Promise<void>
         lost_date: result.lost_date,
         status: result.status,
         photo_url: result.photo_url,
+        image_urls: result.image_urls || [],
         created_at: result.created_at
       },
       message: 'Lost item report created successfully'
@@ -90,6 +91,43 @@ export async function createLostItem(req: Request, res: Response): Promise<void>
       success: false,
       message: 'Failed to create lost item report'
     });
+  }
+}
+
+// Upload images for lost items (NEW — gap fix)
+export async function uploadLostItemImages(req: Request, res: Response): Promise<void> {
+  try {
+    const { id } = req.params;
+    const userId = req.user!.userId;
+
+    const existing = await query(
+      'SELECT * FROM lost_items WHERE id = $1 AND user_id = $2',
+      [id, userId]
+    );
+
+    if (existing.rows.length === 0) {
+      res.status(404).json({ success: false, message: 'Lost item not found or no permission' });
+      return;
+    }
+
+    if (!req.files || !Array.isArray(req.files) || req.files.length === 0) {
+      res.status(400).json({ success: false, message: 'No images uploaded' });
+      return;
+    }
+
+    const newImageUrls = (req.files as Express.Multer.File[]).map(file => `/uploads/${file.filename}`);
+    const currentImages = existing.rows[0].image_urls || [];
+    const allImages = [...currentImages, ...newImageUrls].slice(0, 5);
+
+    const result = await query(
+      'UPDATE lost_items SET image_urls = $1 WHERE id = $2 RETURNING *',
+      [allImages, id]
+    );
+
+    res.json({ success: true, data: result.rows[0], message: 'Images uploaded successfully' });
+  } catch (error) {
+    console.error('Upload lost item images error:', error);
+    res.status(500).json({ success: false, message: 'Failed to upload images' });
   }
 }
 
@@ -165,7 +203,7 @@ export async function getLostItems(req: Request, res: Response): Promise<void> {
     // Get items with user info
     const result = await query(
       `SELECT l.id, l.category, l.title, l.description, l.location_area, 
-              l.location_hint, l.lost_date, l.status, l.photo_url, l.created_at,
+              l.location_hint, l.lost_date, l.status, l.photo_url, l.image_urls, l.created_at,
               u.name as user_name
        FROM lost_items l
        JOIN users u ON l.user_id = u.id
@@ -415,6 +453,39 @@ export async function getLostItemMatches(req: Request, res: Response): Promise<v
       success: false,
       message: 'Failed to get matches'
     });
+  }
+}
+
+// Dismiss a match suggestion (NEW — MATCH-06 gap fix)
+export async function dismissMatch(req: Request, res: Response): Promise<void> {
+  try {
+    const userId = req.user!.userId;
+    const { id } = req.params; // lost item id
+    const { found_item_id } = req.body;
+
+    if (!found_item_id) {
+      res.status(400).json({ success: false, message: 'found_item_id is required' });
+      return;
+    }
+
+    // Verify ownership of lost item
+    const item = await query('SELECT id FROM lost_items WHERE id = $1 AND user_id = $2', [id, userId]);
+    if (item.rows.length === 0) {
+      res.status(403).json({ success: false, message: 'Not your item' });
+      return;
+    }
+
+    await query(
+      `INSERT INTO match_dismissals (user_id, lost_item_id, found_item_id)
+       VALUES ($1, $2, $3)
+       ON CONFLICT (user_id, lost_item_id, found_item_id) DO NOTHING`,
+      [userId, id, found_item_id]
+    );
+
+    res.json({ success: true, message: 'Match dismissed' });
+  } catch (error) {
+    console.error('Dismiss match error:', error);
+    res.status(500).json({ success: false, message: 'Failed to dismiss match' });
   }
 }
 

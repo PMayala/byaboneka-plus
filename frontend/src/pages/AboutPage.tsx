@@ -159,7 +159,7 @@ const AboutPage: React.FC = () => {
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">Built With</h2>
           <p className="text-gray-600 mb-8">Modern, production-grade technology stack</p>
           <div className="flex flex-wrap justify-center gap-3">
-            {['React', 'TypeScript', 'Tailwind CSS', 'Node.js', 'Express', 'PostgreSQL', 'JWT Auth', 'Zustand', 'Zod', 'Docker', 'Swagger'].map((tech) => (
+            {['React', 'TypeScript', 'Tailwind CSS', 'Node.js', 'Express', 'PostgreSQL', 'JWT Auth', 'Zustand', 'Zod', 'Swagger'].map((tech) => (
               <span key={tech} className="px-4 py-2 bg-white rounded-full text-sm font-medium text-gray-700 border border-gray-200">
                 {tech}
               </span>

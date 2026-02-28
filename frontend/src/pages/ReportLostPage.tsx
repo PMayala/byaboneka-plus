@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, ArrowRight, Check, Smartphone, CreditCard, 
   Wallet, Briefcase, Key, Package, MapPin, Calendar,
-  HelpCircle, Shield, AlertCircle
+  HelpCircle, Shield, AlertCircle, Camera, Upload, X
 } from 'lucide-react';
 import { Button, Card, Input, Textarea, Select, Alert } from '../components/ui';
 import { lostItemsApi, duplicateApi } from '../services/api';
@@ -13,6 +13,7 @@ import { useRecaptcha } from '../hooks/useRecaptcha';
 import toast from 'react-hot-toast';
 import VerificationStrengthIndicator from '../components/VerificationStrengthIndicator';
 import { useTranslation } from 'react-i18next';
+
 const CATEGORY_OPTIONS = Object.entries(CATEGORY_INFO).map(([value, info]) => ({
   value,
   label: info.label,
@@ -26,6 +27,7 @@ const CATEGORY_ICONS: Record<ItemCategory, React.ReactNode> = {
   [ItemCategory.KEYS]: <Key className="w-8 h-8" />,
   [ItemCategory.OTHER]: <Package className="w-8 h-8" />,
 };
+
 interface FormData {
   category: ItemCategory | '';
   title: string;
@@ -35,15 +37,22 @@ interface FormData {
   lost_date: string;
   verification_questions: VerificationQuestion[];
 }
+
 const ReportLostPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { executeRecaptcha } = useRecaptcha();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [duplicateCandidates, setDuplicateCandidates] = useState<any[]>([]);
   const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
+
+  // Image upload state (NEW — gap fix)
+  const [images, setImages] = useState<File[]>([]);
+  const [imagesPreviews, setImagesPreviews] = useState<string[]>([]);
+
   const [formData, setFormData] = useState<FormData>({
     category: '',
     title: '',
@@ -57,6 +66,35 @@ const ReportLostPage: React.FC = () => {
       { question: '', answer: '' },
     ],
   });
+
+  // Image handling (NEW)
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+    const newFiles = Array.from(files).slice(0, 5 - images.length);
+    
+    for (const file of newFiles) {
+      if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+        toast.error('Invalid file type. Only JPEG, PNG, and WebP are allowed.');
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error('File too large. Maximum size is 5MB.');
+        return;
+      }
+    }
+    
+    const previews = newFiles.map((file) => URL.createObjectURL(file));
+    setImages([...images, ...newFiles]);
+    setImagesPreviews([...imagesPreviews, ...previews]);
+  };
+
+  const removeImage = (index: number) => {
+    URL.revokeObjectURL(imagesPreviews[index]);
+    setImages(images.filter((_, i) => i !== index));
+    setImagesPreviews(imagesPreviews.filter((_, i) => i !== index));
+  };
+
   const validateStep = (currentStep: number): boolean => {
     const newErrors: Record<string, string> = {};
     if (currentStep === 1) {
@@ -83,16 +121,19 @@ const ReportLostPage: React.FC = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
   const handleNext = () => {
     if (validateStep(step)) {
       setStep(step + 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
+
   const handleBack = () => {
     setStep(step - 1);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
   const handleSubmit = async () => {
     if (!validateStep(3)) return;
     // Check for duplicates first
@@ -116,6 +157,7 @@ const ReportLostPage: React.FC = () => {
     }
     await submitLostItem();
   };
+
   const submitLostItem = async () => {
     setShowDuplicateWarning(false);
     setLoading(true);
@@ -129,8 +171,23 @@ const ReportLostPage: React.FC = () => {
         })),
         ...(recaptchaToken && { recaptchaToken }),
       } as any);
+
+      const itemId = response.data.data.id;
+
+      // Upload images if any (NEW — gap fix)
+      if (images.length > 0) {
+        try {
+          const fileList = new DataTransfer();
+          images.forEach((file) => fileList.items.add(file));
+          await lostItemsApi.uploadImages(itemId, fileList.files);
+        } catch (imgError) {
+          console.warn('Image upload failed, item was created:', imgError);
+          toast.error('Item created but image upload failed. You can add images later.');
+        }
+      }
+
       toast.success(t('reportLost.reportSuccess'));
-      navigate(`/lost-items/${response.data.data.id}`);
+      navigate(`/lost-items/${itemId}`);
     } catch (error: any) {
       const message = error.response?.data?.message || 'Failed to submit report';
       toast.error(message);
@@ -138,14 +195,17 @@ const ReportLostPage: React.FC = () => {
       setLoading(false);
     }
   };
+
   const updateQuestion = (index: number, field: 'question' | 'answer', value: string) => {
     const updated = [...formData.verification_questions];
     updated[index] = { ...updated[index], [field]: value };
     setFormData({ ...formData, verification_questions: updated });
   };
+
   const suggestedQuestions = formData.category 
     ? QUESTION_TEMPLATES[formData.category as ItemCategory] || []
     : [];
+
   return (
     <>
       {showDuplicateWarning && (
@@ -165,6 +225,7 @@ const ReportLostPage: React.FC = () => {
           Provide details about your lost item to help us match it with found items
         </p>
       </div>
+
       {/* Progress Steps */}
       <div className="flex items-center justify-between mb-8">
         {[1, 2, 3].map((s) => (
@@ -189,6 +250,7 @@ const ReportLostPage: React.FC = () => {
           </React.Fragment>
         ))}
       </div>
+
       {/* Step 1: Item Details */}
       {step === 1 && (
         <Card className="p-6 animate-fade-in">
@@ -217,7 +279,7 @@ const ReportLostPage: React.FC = () => {
                 </button>
               ))}
             </div>
-            {errors.category && <p className="mt-2 text-sm text-red-500">{errors.category}</p>}
+            {errors.category && <p role="alert" className="mt-2 text-sm text-red-500">{errors.category}</p>}
           </div>
           {/* Title */}
           <div className="mb-6">
@@ -241,6 +303,54 @@ const ReportLostPage: React.FC = () => {
               error={errors.description}
             />
           </div>
+
+          {/* Image Upload — NEW gap fix */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              <Camera className="w-4 h-4 inline mr-1" aria-hidden="true" />
+              Photos (Optional)
+            </label>
+            <p className="text-sm text-gray-500 mb-3">
+              Upload photos of your item if you have any. This helps finders identify it.
+            </p>
+            <div className="grid grid-cols-3 gap-3 mb-3">
+              {imagesPreviews.map((preview, index) => (
+                <div key={index} className="relative aspect-square rounded-lg overflow-hidden bg-gray-100">
+                  <img src={preview} alt="" className="w-full h-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => removeImage(index)}
+                    className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              ))}
+              {images.length < 5 && (
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="aspect-square rounded-lg border-2 border-dashed border-gray-300 hover:border-primary-400 flex flex-col items-center justify-center transition-colors"
+                >
+                  <Upload className="w-6 h-6 text-gray-400 mb-1" />
+                  <span className="text-xs text-gray-500">Add Photo</span>
+                </button>
+              )}
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              aria-label="Upload item photos"
+              accept="image/jpeg,image/png,image/webp"
+              multiple
+              onChange={handleImageSelect}
+              className="hidden"
+            />
+            <p className="text-xs text-gray-500">
+              Max 5 images, 5MB each. JPEG, PNG, or WebP.
+            </p>
+          </div>
+
           <div className="flex justify-end">
             <Button onClick={handleNext}>
               Next: Location & Date
@@ -249,19 +359,23 @@ const ReportLostPage: React.FC = () => {
           </div>
         </Card>
       )}
+
       {/* Step 2: Location & Date */}
       {step === 2 && (
         <Card className="p-6 animate-fade-in">
           <h2 className="text-lg font-semibold text-gray-900 mb-6">Where and when did you lose it?</h2>
           {/* Location */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              <MapPin className="w-4 h-4 inline mr-1" />
+            <label htmlFor="location-area" className="block text-sm font-medium text-gray-700 mb-1">
+              <MapPin className="w-4 h-4 inline mr-1" aria-hidden="true" />
               Location Area *
             </label>
             <select
+              id="location-area"
               value={formData.location_area}
               onChange={(e) => setFormData({ ...formData, location_area: e.target.value })}
+              aria-invalid={!!errors.location_area}
+              aria-describedby={errors.location_area ? 'location-area-error' : undefined}
               className={`input ${errors.location_area ? 'border-red-500' : ''}`}
             >
               <option value="">{t('items.selectLocation')}</option>
@@ -269,7 +383,7 @@ const ReportLostPage: React.FC = () => {
                 <option key={loc} value={loc}>{loc}</option>
               ))}
             </select>
-            {errors.location_area && <p className="mt-1 text-sm text-red-500">{errors.location_area}</p>}
+            {errors.location_area && <p id="location-area-error" role="alert" className="mt-1 text-sm text-red-500">{errors.location_area}</p>}
           </div>
           {/* Location Hint */}
           <div className="mb-6">
@@ -283,18 +397,21 @@ const ReportLostPage: React.FC = () => {
           </div>
           {/* Date */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              <Calendar className="w-4 h-4 inline mr-1" />
+            <label htmlFor="lost-date" className="block text-sm font-medium text-gray-700 mb-1">
+              <Calendar className="w-4 h-4 inline mr-1" aria-hidden="true" />
               Date Lost *
             </label>
             <input
+              id="lost-date"
               type="date"
               value={formData.lost_date}
               onChange={(e) => setFormData({ ...formData, lost_date: e.target.value })}
               max={new Date().toISOString().split('T')[0]}
+              aria-invalid={!!errors.lost_date}
+              aria-describedby={errors.lost_date ? 'lost-date-error' : undefined}
               className={`input ${errors.lost_date ? 'border-red-500' : ''}`}
             />
-            {errors.lost_date && <p className="mt-1 text-sm text-red-500">{errors.lost_date}</p>}
+            {errors.lost_date && <p id="lost-date-error" role="alert" className="mt-1 text-sm text-red-500">{errors.lost_date}</p>}
           </div>
           <div className="flex justify-between">
             <Button variant="secondary" onClick={handleBack}>
@@ -308,6 +425,7 @@ const ReportLostPage: React.FC = () => {
           </div>
         </Card>
       )}
+
       {/* Step 3: Verification Questions */}
       {step === 3 && (
         <Card className="p-6 animate-fade-in">
@@ -320,10 +438,12 @@ const ReportLostPage: React.FC = () => {
               </p>
             </div>
           </div>
+
           <Alert type="info" className="mb-6">
             <strong>Tips:</strong> Ask about unique details like scratches, personal photos, app layouts, 
             or things that wouldn't be visible to someone who found your item.
           </Alert>
+
           {formData.verification_questions.map((q, index) => (
             <div key={index} className="mb-6 p-4 bg-gray-50 rounded-xl">
               <div className="flex items-center gap-2 mb-3">
@@ -365,6 +485,7 @@ const ReportLostPage: React.FC = () => {
               />
             </div>
           ))}
+
           {/* NOVEL: Verification Strength Analyzer */}
           <VerificationStrengthIndicator
             questions={formData.verification_questions.map(q => q.question)}
@@ -373,11 +494,13 @@ const ReportLostPage: React.FC = () => {
             description={formData.description}
             onSelectTemplate={(index, question) => updateQuestion(index, 'question', question)}
           />
+
           <Alert type="warning" className="mb-6">
             <AlertCircle className="w-4 h-4 inline mr-2" />
             <strong>Remember your answers!</strong> You'll need them to verify ownership if someone 
             claims to have found your item. Answers are not case-sensitive.
           </Alert>
+
           <div className="flex justify-between">
             <Button variant="secondary" onClick={handleBack}>
               <ArrowLeft className="w-4 h-4 mr-2" />

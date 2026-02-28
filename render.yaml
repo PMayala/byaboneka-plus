@@ -1,8 +1,12 @@
-# Render Blueprint for Byaboneka+ Backend
+# Render Blueprint for Byaboneka+
 # https://render.com/docs/blueprint-spec
+#
+# Deploy: Connect your GitHub repo → Render detects this file → auto-deploys
+#
+# Architecture on Render:
+#   Frontend (Vercel or Render Static) → API (Render Web Service) → DB (Render PostgreSQL)
 
 databases:
-  # PostgreSQL Database
   - name: byaboneka-db
     databaseName: byaboneka_plus
     user: byaboneka
@@ -32,4 +36,47 @@ services:
       - key: JWT_REFRESH_SECRET
         generateValue: true
       - key: CORS_ORIGIN
-        value: https://byaboneka-plus.vercel.app
+        sync: false     # Set manually after frontend deploys
+      - key: FRONTEND_URL
+        sync: false     # Set manually after frontend deploys
+      - key: UPLOAD_PATH
+        value: /opt/render/project/src/uploads
+      - key: BREVO_SMTP_HOST
+        value: smtp-relay.brevo.com
+      - key: BREVO_SMTP_PORT
+        value: "587"
+      - key: BREVO_SMTP_USER
+        sync: false
+      - key: BREVO_SMTP_KEY
+        sync: false
+      - key: EMAIL_FROM
+        value: "Byaboneka+ <noreply@byaboneka.rw>"
+      - key: RECAPTCHA_SECRET_KEY
+        sync: false
+      - key: RECAPTCHA_MIN_SCORE
+        value: "0.5"
+    disk:
+      name: uploads
+      mountPath: /opt/render/project/src/uploads
+      sizeGB: 1
+
+  # Frontend (Static Site)
+  - type: web
+    name: byaboneka-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: SAMEORIGIN
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        sync: false     # Set to https://byaboneka-api.onrender.com/api/v1
+      - key: VITE_RECAPTCHA_SITE_KEY
+        sync: false

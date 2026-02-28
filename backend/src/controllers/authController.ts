@@ -7,7 +7,8 @@ import {
   generateRefreshToken,
   verifyRefreshToken,
   hashToken,
-  generateUUID
+  generateUUID,
+  generateTokenFamily
 } from '../utils';
 import { UserRole, TokenPayload } from '../types';
 import { logLogin, logAudit, extractRequestMeta } from '../services/auditService';
@@ -32,22 +33,21 @@ export async function register(req: Request, res: Response): Promise<void> {
     if (existingUser.rows.length > 0) {
       res.status(409).json({
         success: false,
-        message: 'Email is already registered'
+        message: 'An account with this email already exists'
       });
       return;
     }
 
-    // Check if phone already exists (if provided)
+    // Check phone uniqueness if provided
     if (phone) {
       const existingPhone = await query(
         'SELECT id FROM users WHERE phone = $1',
         [phone]
       );
-
       if (existingPhone.rows.length > 0) {
         res.status(409).json({
           success: false,
-          message: 'Phone number is already registered'
+          message: 'An account with this phone number already exists'
         });
         return;
       }
@@ -56,17 +56,23 @@ export async function register(req: Request, res: Response): Promise<void> {
     // Hash password
     const passwordHash = await hashPassword(password);
 
-    // Create user
+    // Create user with consent tracking
     const result = await query(
-      `INSERT INTO users (email, password_hash, name, phone, role, trust_score, accepted_terms_at)
-      VALUES ($1, $2, $3, $4, $5, $6, NOW())
+      `INSERT INTO users (email, password_hash, name, phone, role, trust_score, accepted_terms_at, accepted_privacy_at, age_confirmed)
+      VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW(), true)
       RETURNING id, email, name, phone, role, trust_score, email_verified, phone_verified, created_at`,
       [email.toLowerCase(), passwordHash, name, phone || null, UserRole.CITIZEN, 0]
     );
 
     const user = result.rows[0];
 
-    // Generate tokens
+    // Create default notification preferences
+    await query(
+      `INSERT INTO notification_preferences (user_id) VALUES ($1) ON CONFLICT (user_id) DO NOTHING`,
+      [user.id]
+    ).catch(() => { /* table might not exist yet */ });
+
+    // Generate tokens with token family for rotation
     const tokenPayload: TokenPayload = {
       userId: user.id,
       email: user.email,
@@ -75,12 +81,13 @@ export async function register(req: Request, res: Response): Promise<void> {
 
     const accessToken = generateAccessToken(tokenPayload);
     const refreshToken = generateRefreshToken(tokenPayload);
+    const tokenFamily = generateTokenFamily();
 
-    // Store refresh token
+    // Store refresh token with family tracking
     await query(
-      `INSERT INTO refresh_tokens (user_id, token_hash, expires_at)
-       VALUES ($1, $2, NOW() + INTERVAL '7 days')`,
-      [user.id, hashToken(refreshToken)]
+      `INSERT INTO refresh_tokens (user_id, token_hash, token_family, expires_at)
+       VALUES ($1, $2, $3, NOW() + INTERVAL '7 days')`,
+      [user.id, hashToken(refreshToken), tokenFamily]
     );
 
     // Log the registration
@@ -96,11 +103,10 @@ export async function register(req: Request, res: Response): Promise<void> {
     });
 
     // Send welcome email (async, don't block registration)
-    sendWelcomeEmail(user.email, user.name).catch(err => 
+    sendWelcomeEmail(user.email, user.name).catch(err =>
       console.error('Welcome email failed:', err.message)
     );
 
-    // FIX #5: Include email_verified and phone_verified in response
     res.status(201).json({
       success: true,
       data: {
@@ -146,7 +152,7 @@ export async function login(req: Request, res: Response): Promise<void> {
       return;
     }
 
-    // FIX #5 & #17: Include email_verified, phone_verified, cooperative fields in login query
+    // Include all needed fields
     const result = await query(
       `SELECT u.id, u.email, u.password_hash, u.name, u.phone, u.role, u.trust_score,
               u.is_banned, u.ban_reason, u.email_verified, u.phone_verified,
@@ -171,8 +177,7 @@ export async function login(req: Request, res: Response): Promise<void> {
     if (user.is_banned) {
       res.status(403).json({
         success: false,
-        message: 'Account has been suspended',
-        reason: user.ban_reason
+        message: `Account suspended: ${user.ban_reason || 'Contact support for details'}`
       });
       return;
     }
@@ -181,6 +186,7 @@ export async function login(req: Request, res: Response): Promise<void> {
     const isValidPassword = await verifyPassword(password, user.password_hash);
 
     if (!isValidPassword) {
+      // Record failed login attempt (brute-force protection)
       await recordFailedLogin(email);
       res.status(401).json({
         success: false,
@@ -189,10 +195,10 @@ export async function login(req: Request, res: Response): Promise<void> {
       return;
     }
 
-    // Reset failed login counter on successful auth
+    // Reset failed login counter on success
     await resetFailedLogins(email);
 
-    // Generate tokens
+    // Generate tokens with family for rotation
     const tokenPayload: TokenPayload = {
       userId: user.id,
       email: user.email,
@@ -201,18 +207,18 @@ export async function login(req: Request, res: Response): Promise<void> {
 
     const accessToken = generateAccessToken(tokenPayload);
     const refreshToken = generateRefreshToken(tokenPayload);
+    const tokenFamily = generateTokenFamily();
 
-    // Store refresh token
+    // Store refresh token with family
     await query(
-      `INSERT INTO refresh_tokens (user_id, token_hash, expires_at)
-       VALUES ($1, $2, NOW() + INTERVAL '7 days')`,
-      [user.id, hashToken(refreshToken)]
+      `INSERT INTO refresh_tokens (user_id, token_hash, token_family, expires_at)
+       VALUES ($1, $2, $3, NOW() + INTERVAL '7 days')`,
+      [user.id, hashToken(refreshToken), tokenFamily]
     );
 
     // Log login
     await logLogin(req, user.id);
 
-    // FIX #5 & #17: Include all fields frontend expects
     res.json({
       success: true,
       data: {
@@ -225,15 +231,16 @@ export async function login(req: Request, res: Response): Promise<void> {
           trust_score: user.trust_score,
           email_verified: user.email_verified || false,
           phone_verified: user.phone_verified || false,
-          cooperative_id: user.cooperative_id || undefined,
-          cooperative_name: user.cooperative_name || undefined,
+          cooperative_id: user.cooperative_id,
+          cooperative_name: user.cooperative_name,
           created_at: user.created_at
         },
         tokens: {
           accessToken,
           refreshToken
         }
-      }
+      },
+      message: 'Login successful'
     });
   } catch (error) {
     console.error('Login error:', error);
@@ -244,46 +251,73 @@ export async function login(req: Request, res: Response): Promise<void> {
   }
 }
 
-// Refresh token
+// Refresh Token — WITH ROTATION (security fix)
 export async function refreshToken(req: Request, res: Response): Promise<void> {
   try {
     const { refreshToken: token } = req.body;
 
-    // Verify token
+    if (!token) {
+      res.status(400).json({
+        success: false,
+        message: 'Refresh token is required'
+      });
+      return;
+    }
+
+    // Verify JWT
     let payload: TokenPayload;
     try {
       payload = verifyRefreshToken(token);
-    } catch (error) {
+    } catch (err) {
       res.status(401).json({
         success: false,
-        message: 'Invalid refresh token'
+        message: 'Invalid or expired refresh token'
       });
       return;
     }
 
-    // Check if token exists in database and is not revoked
     const tokenHash = hashToken(token);
-    const result = await query(
-      `SELECT id FROM refresh_tokens
-       WHERE user_id = $1 AND token_hash = $2 AND revoked_at IS NULL AND expires_at > NOW()`,
-      [payload.userId, tokenHash]
+
+    // Find the token in database
+    const tokenResult = await query(
+      `SELECT id, user_id, token_family, is_revoked, revoked_at, replaced_by
+       FROM refresh_tokens
+       WHERE token_hash = $1 AND expires_at > NOW()`,
+      [tokenHash]
     );
 
-    if (result.rows.length === 0) {
-      // Token not found — possible theft (reuse of already-rotated token)
-      // Security: Revoke ALL tokens for this user as a precaution
-      await query('UPDATE refresh_tokens SET revoked_at = NOW() WHERE user_id = $1 AND revoked_at IS NULL', [payload.userId]);
+    if (tokenResult.rows.length === 0) {
       res.status(401).json({
         success: false,
-        message: 'Refresh token has been revoked. Please log in again.'
+        message: 'Refresh token not found or expired'
       });
       return;
     }
 
-    // Get current user data
+    const storedToken = tokenResult.rows[0];
+
+    // SECURITY: Detect token reuse (rotation theft detection)
+    // If this token was already replaced, someone stole the old token
+    if (storedToken.is_revoked || storedToken.replaced_by) {
+      // Revoke ALL tokens in this family (potential theft)
+      console.warn(`⚠️ Refresh token reuse detected for user ${storedToken.user_id}. Revoking token family.`);
+      await query(
+        `UPDATE refresh_tokens SET is_revoked = true, revoked_at = NOW()
+         WHERE token_family = $1`,
+        [storedToken.token_family]
+      );
+
+      res.status(401).json({
+        success: false,
+        message: 'Session invalidated due to suspected token theft. Please log in again.'
+      });
+      return;
+    }
+
+    // Get user
     const userResult = await query(
-      'SELECT id, email, role, is_banned FROM users WHERE id = $1',
-      [payload.userId]
+      `SELECT id, email, name, role, is_banned FROM users WHERE id = $1`,
+      [storedToken.user_id]
     );
 
     if (userResult.rows.length === 0 || userResult.rows[0].is_banned) {
@@ -296,7 +330,7 @@ export async function refreshToken(req: Request, res: Response): Promise<void> {
 
     const user = userResult.rows[0];
 
-    // Generate new tokens
+    // Generate new token pair
     const newPayload: TokenPayload = {
       userId: user.id,
       email: user.email,
@@ -305,29 +339,37 @@ export async function refreshToken(req: Request, res: Response): Promise<void> {
 
     const newAccessToken = generateAccessToken(newPayload);
     const newRefreshToken = generateRefreshToken(newPayload);
+    const newTokenHash = hashToken(newRefreshToken);
 
-    // Revoke old refresh token and create new one
+    // ROTATION: Mark old token as replaced, insert new one in same family
     await transaction(async (client) => {
+      // Mark old token as used/replaced
       await client.query(
-        'UPDATE refresh_tokens SET revoked_at = NOW() WHERE token_hash = $1',
-        [tokenHash]
+        `UPDATE refresh_tokens
+         SET is_revoked = true, revoked_at = NOW(), replaced_by = $1
+         WHERE id = $2`,
+        [newTokenHash, storedToken.id]
       );
+
+      // Insert new token in the same family
       await client.query(
-        `INSERT INTO refresh_tokens (user_id, token_hash, expires_at)
-         VALUES ($1, $2, NOW() + INTERVAL '7 days')`,
-        [user.id, hashToken(newRefreshToken)]
+        `INSERT INTO refresh_tokens (user_id, token_hash, token_family, expires_at)
+         VALUES ($1, $2, $3, NOW() + INTERVAL '7 days')`,
+        [user.id, newTokenHash, storedToken.token_family]
       );
     });
 
     res.json({
       success: true,
       data: {
-        accessToken: newAccessToken,
-        refreshToken: newRefreshToken
+        tokens: {
+          accessToken: newAccessToken,
+          refreshToken: newRefreshToken
+        }
       }
     });
   } catch (error) {
-    console.error('Token refresh error:', error);
+    console.error('Refresh token error:', error);
     res.status(500).json({
       success: false,
       message: 'Token refresh failed'
@@ -341,24 +383,11 @@ export async function logout(req: Request, res: Response): Promise<void> {
     const { refreshToken: token } = req.body;
 
     if (token) {
-      // Revoke refresh token
+      const tokenHash = hashToken(token);
       await query(
-        'UPDATE refresh_tokens SET revoked_at = NOW() WHERE token_hash = $1',
-        [hashToken(token)]
+        `UPDATE refresh_tokens SET revoked_at = NOW(), is_revoked = true WHERE token_hash = $1`,
+        [tokenHash]
       );
-    }
-
-    // Log logout
-    if (req.user) {
-      const { ipAddress, userAgent } = extractRequestMeta(req);
-      await logAudit({
-        actorId: req.user.userId,
-        action: 'LOGOUT',
-        resourceType: 'user',
-        resourceId: req.user.userId,
-        ipAddress,
-        userAgent
-      });
     }
 
     res.json({
@@ -367,21 +396,18 @@ export async function logout(req: Request, res: Response): Promise<void> {
     });
   } catch (error) {
     console.error('Logout error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Logout failed'
-    });
+    res.status(500).json({ success: false, message: 'Logout failed' });
   }
 }
 
-// Request password reset
+// Forgot Password — with per-email rate limiting
 export async function forgotPassword(req: Request, res: Response): Promise<void> {
   try {
     const { email } = req.body;
 
     // Find user
     const result = await query(
-      'SELECT id, email, name FROM users WHERE email = $1',
+      'SELECT id, email, name, password_reset_count, last_password_reset_request FROM users WHERE email = $1',
       [email.toLowerCase()]
     );
 
@@ -396,6 +422,38 @@ export async function forgotPassword(req: Request, res: Response): Promise<void>
 
     const user = result.rows[0];
 
+    // Per-email rate limiting: max 3 reset requests per hour (security fix)
+    if (user.last_password_reset_request) {
+      const lastRequest = new Date(user.last_password_reset_request);
+      const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+
+      if (lastRequest > oneHourAgo && (user.password_reset_count || 0) >= 3) {
+        // Don't reveal that we're rate-limiting (prevents enumeration)
+        res.json({
+          success: true,
+          message: 'If the email exists, a password reset link has been sent'
+        });
+        return;
+      }
+
+      // Reset counter if the window has passed
+      if (lastRequest <= oneHourAgo) {
+        await query(
+          `UPDATE users SET password_reset_count = 0 WHERE id = $1`,
+          [user.id]
+        );
+      }
+    }
+
+    // Increment reset request counter
+    await query(
+      `UPDATE users SET
+        password_reset_count = COALESCE(password_reset_count, 0) + 1,
+        last_password_reset_request = NOW()
+      WHERE id = $1`,
+      [user.id]
+    );
+
     // Generate reset token
     const resetToken = generateUUID();
     const tokenHash = hashToken(resetToken);
@@ -407,10 +465,8 @@ export async function forgotPassword(req: Request, res: Response): Promise<void>
       [user.id, tokenHash]
     );
 
-    // Send reset email via Brevo (log token for dev fallback)
-    console.log(`Password reset token for ${user.email}: ${resetToken}`);
-
     // Send reset email via Brevo
+    console.log(`Password reset token for ${user.email}: ${resetToken}`);
     sendPasswordResetEmail(user.email, user.name, resetToken).catch(err =>
       console.error('Password reset email failed:', err.message)
     );
@@ -459,7 +515,7 @@ export async function resetPassword(req: Request, res: Response): Promise<void> 
     // Update password and mark token as used
     await transaction(async (client) => {
       await client.query(
-        'UPDATE users SET password_hash = $1 WHERE id = $2',
+        'UPDATE users SET password_hash = $1, password_reset_count = 0 WHERE id = $2',
         [passwordHash, userId]
       );
       await client.query(
@@ -468,7 +524,7 @@ export async function resetPassword(req: Request, res: Response): Promise<void> 
       );
       // Revoke all refresh tokens for this user
       await client.query(
-        'UPDATE refresh_tokens SET revoked_at = NOW() WHERE user_id = $1',
+        `UPDATE refresh_tokens SET revoked_at = NOW(), is_revoked = true WHERE user_id = $1`,
         [userId]
       );
     });
@@ -498,15 +554,15 @@ export async function resetPassword(req: Request, res: Response): Promise<void> 
   }
 }
 
-// Get current user profile
+// Get profile
 export async function getProfile(req: Request, res: Response): Promise<void> {
   try {
     const userId = req.user!.userId;
 
     const result = await query(
-      `SELECT u.id, u.email, u.name, u.phone, u.role, u.trust_score, 
-              u.email_verified, u.phone_verified, u.created_at,
-              c.name as cooperative_name, c.id as cooperative_id
+      `SELECT u.id, u.email, u.name, u.phone, u.role, u.trust_score,
+              u.email_verified, u.phone_verified, u.cooperative_id,
+              c.name as cooperative_name, u.created_at, u.updated_at
        FROM users u
        LEFT JOIN cooperatives c ON u.cooperative_id = c.id
        WHERE u.id = $1`,
@@ -514,10 +570,7 @@ export async function getProfile(req: Request, res: Response): Promise<void> {
     );
 
     if (result.rows.length === 0) {
-      res.status(404).json({
-        success: false,
-        message: 'User not found'
-      });
+      res.status(404).json({ success: false, message: 'User not found' });
       return;
     }
 
@@ -527,10 +580,7 @@ export async function getProfile(req: Request, res: Response): Promise<void> {
     });
   } catch (error) {
     console.error('Get profile error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to get profile'
-    });
+    res.status(500).json({ success: false, message: 'Failed to get profile' });
   }
 }
 
@@ -540,29 +590,20 @@ export async function updateProfile(req: Request, res: Response): Promise<void> 
     const userId = req.user!.userId;
     const { name, phone } = req.body;
 
-    // Check if phone is already used by another user
-    if (phone) {
-      const existingPhone = await query(
-        'SELECT id FROM users WHERE phone = $1 AND id != $2',
-        [phone, userId]
-      );
-
-      if (existingPhone.rows.length > 0) {
-        res.status(409).json({
-          success: false,
-          message: 'Phone number is already in use'
-        });
-        return;
-      }
-    }
-
-    // FIX: Return all fields the frontend needs
     const result = await query(
-      `UPDATE users SET name = COALESCE($1, name), phone = COALESCE($2, phone)
-       WHERE id = $3
-       RETURNING id, email, name, phone, role, trust_score, email_verified, phone_verified, created_at`,
+      `UPDATE users SET
+        name = COALESCE($1, name),
+        phone = COALESCE($2, phone),
+        updated_at = NOW()
+      WHERE id = $3
+      RETURNING id, email, name, phone, role, trust_score, email_verified, phone_verified`,
       [name, phone, userId]
     );
+
+    if (result.rows.length === 0) {
+      res.status(404).json({ success: false, message: 'User not found' });
+      return;
+    }
 
     res.json({
       success: true,
@@ -571,20 +612,16 @@ export async function updateProfile(req: Request, res: Response): Promise<void> 
     });
   } catch (error) {
     console.error('Update profile error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to update profile'
-    });
+    res.status(500).json({ success: false, message: 'Failed to update profile' });
   }
 }
 
-// Change password (for logged-in users)
+// Change password
 export async function changePassword(req: Request, res: Response): Promise<void> {
   try {
     const userId = req.user!.userId;
     const { currentPassword, newPassword } = req.body;
 
-    // Validate input
     if (!currentPassword || !newPassword) {
       res.status(400).json({
         success: false,
@@ -593,62 +630,41 @@ export async function changePassword(req: Request, res: Response): Promise<void>
       return;
     }
 
-    if (newPassword.length < 8) {
-      res.status(400).json({
-        success: false,
-        message: 'New password must be at least 8 characters long'
-      });
-      return;
-    }
-
-    // Get current password hash
+    // Verify current password
     const userResult = await query(
       'SELECT password_hash FROM users WHERE id = $1',
       [userId]
     );
 
     if (userResult.rows.length === 0) {
-      res.status(404).json({
-        success: false,
-        message: 'User not found'
-      });
+      res.status(404).json({ success: false, message: 'User not found' });
       return;
     }
 
-    // Verify current password
-    const isValidPassword = await verifyPassword(currentPassword, userResult.rows[0].password_hash);
-
-    if (!isValidPassword) {
-      res.status(401).json({
-        success: false,
-        message: 'Current password is incorrect'
-      });
+    const isValid = await verifyPassword(currentPassword, userResult.rows[0].password_hash);
+    if (!isValid) {
+      res.status(401).json({ success: false, message: 'Current password is incorrect' });
       return;
     }
 
-    // Hash new password
-    const newPasswordHash = await hashPassword(newPassword);
+    // Hash and update new password
+    const newHash = await hashPassword(newPassword);
+    await query('UPDATE users SET password_hash = $1, updated_at = NOW() WHERE id = $2', [newHash, userId]);
 
-    // Update password
+    // Revoke all refresh tokens (force re-login)
     await query(
-      'UPDATE users SET password_hash = $1 WHERE id = $2',
-      [newPasswordHash, userId]
-    );
-
-    // Revoke all refresh tokens except current one (optional security measure)
-    await query(
-      'UPDATE refresh_tokens SET revoked_at = NOW() WHERE user_id = $1 AND revoked_at IS NULL',
+      `UPDATE refresh_tokens SET revoked_at = NOW(), is_revoked = true WHERE user_id = $1`,
       [userId]
     );
 
-    // Log the password change
+    // Log
     const { ipAddress, userAgent } = extractRequestMeta(req);
     await logAudit({
       actorId: userId,
       action: 'UPDATE',
       resourceType: 'user',
       resourceId: userId,
-      changes: { action: 'password_change' },
+      changes: { action: 'password_changed' },
       ipAddress,
       userAgent
     });
@@ -659,10 +675,6 @@ export async function changePassword(req: Request, res: Response): Promise<void>
     });
   } catch (error) {
     console.error('Change password error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to change password'
-    });
+    res.status(500).json({ success: false, message: 'Failed to change password' });
   }
 }
-

@@ -10,10 +10,10 @@ const poolConfig: PoolConfig = {
   connectionTimeoutMillis: 30000,
 };
 
-// Add SSL for production
+// Enable SSL for production (Render managed Postgres requires it)
 if (process.env.NODE_ENV === 'production') {
   poolConfig.ssl = {
-    rejectUnauthorized: false // Render managed DB uses self-signed certs
+    rejectUnauthorized: false,
   };
 }
 

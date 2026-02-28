@@ -136,6 +136,8 @@ export const Input: React.FC<InputProps> = ({
         )}
         <input
           id={inputId}
+          aria-invalid={!!error}
+          aria-describedby={error ? `${inputId}-error` : helperText ? `${inputId}-hint` : undefined}
           className={clsx(
             'w-full rounded-xl border transition-all duration-200 outline-none',
             'px-4 py-3 text-gray-900 placeholder-gray-400',
@@ -157,13 +159,13 @@ export const Input: React.FC<InputProps> = ({
         )}
       </div>
       {error && (
-        <p className="mt-1.5 text-sm text-red-600 flex items-center gap-1">
+        <p id={`${inputId}-error`} role="alert" className="mt-1.5 text-sm text-red-600 flex items-center gap-1">
           <AlertCircle className="w-4 h-4 flex-shrink-0" />
           {error}
         </p>
       )}
       {helperText && !error && (
-        <p className="mt-1.5 text-sm text-gray-500">{helperText}</p>
+        <p id={`${inputId}-hint`} className="mt-1.5 text-sm text-gray-500">{helperText}</p>
       )}
     </div>
   );
@@ -200,6 +202,8 @@ export const Textarea: React.FC<TextareaProps> = ({
       )}
       <textarea
         id={inputId}
+        aria-invalid={!!error}
+        aria-describedby={error ? `${inputId}-error` : helperText ? `${inputId}-hint` : undefined}
         className={clsx(
           'w-full rounded-xl border transition-all duration-200 outline-none resize-none',
           'px-4 py-3 text-gray-900 placeholder-gray-400',
@@ -213,13 +217,13 @@ export const Textarea: React.FC<TextareaProps> = ({
         {...props}
       />
       {error && (
-        <p className="mt-1.5 text-sm text-red-600 flex items-center gap-1">
+        <p id={`${inputId}-error`} role="alert" className="mt-1.5 text-sm text-red-600 flex items-center gap-1">
           <AlertCircle className="w-4 h-4 flex-shrink-0" />
           {error}
         </p>
       )}
       {helperText && !error && (
-        <p className="mt-1.5 text-sm text-gray-500">{helperText}</p>
+        <p id={`${inputId}-hint`} className="mt-1.5 text-sm text-gray-500">{helperText}</p>
       )}
     </div>
   );
@@ -261,6 +265,8 @@ export const Select: React.FC<SelectProps> = ({
       <div className="relative">
         <select
           id={inputId}
+          aria-invalid={!!error}
+          aria-describedby={error ? `${inputId}-error` : helperText ? `${inputId}-hint` : undefined}
           className={clsx(
             'w-full rounded-xl border transition-all duration-200 outline-none appearance-none',
             'px-4 py-3 pr-10 text-gray-900 bg-white',
@@ -288,13 +294,13 @@ export const Select: React.FC<SelectProps> = ({
         <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
       </div>
       {error && (
-        <p className="mt-1.5 text-sm text-red-600 flex items-center gap-1">
+        <p id={`${inputId}-error`} role="alert" className="mt-1.5 text-sm text-red-600 flex items-center gap-1">
           <AlertCircle className="w-4 h-4 flex-shrink-0" />
           {error}
         </p>
       )}
       {helperText && !error && (
-        <p className="mt-1.5 text-sm text-gray-500">{helperText}</p>
+        <p id={`${inputId}-hint`} className="mt-1.5 text-sm text-gray-500">{helperText}</p>
       )}
     </div>
   );

@@ -181,7 +181,7 @@ const EditLostItemPage: React.FC = () => {
               ))}
             </select>
             {errors.location_area && (
-              <p className="mt-1 text-sm text-red-500">{errors.location_area}</p>
+              <p id="edit-location-error" role="alert" className="mt-1 text-sm text-red-500">{errors.location_area}</p>
             )}
           </div>
           {/* Location Hint */}

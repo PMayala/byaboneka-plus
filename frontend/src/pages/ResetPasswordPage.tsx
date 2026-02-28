@@ -110,31 +110,35 @@ const ResetPasswordPage: React.FC = () => {
             {error}
           </Alert>
         )}
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6" noValidate>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="reset-password" className="block text-sm font-medium text-gray-700 mb-1">
               New Password
             </label>
             <Input
+              id="reset-password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder={t('auth.passwordPlaceholder')}
+              autoComplete="new-password"
               required
             />
-            <p className="text-xs text-gray-500 mt-1">
+            <p id="reset-password-hint" className="text-xs text-gray-500 mt-1">
               Min 8 characters with uppercase, lowercase, and number
             </p>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="reset-confirm-password" className="block text-sm font-medium text-gray-700 mb-1">
               Confirm Password
             </label>
             <Input
+              id="reset-confirm-password"
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder={t('auth.passwordPlaceholder')}
+              autoComplete="new-password"
               required
             />
           </div>

@@ -20,7 +20,7 @@ import { validate, registerSchema, loginSchema, refreshTokenSchema, forgotPasswo
 import { authLimiter, reportLimiter, claimLimiter, verificationLimiter, otpLimiter, messageLimiter, 
          passwordResetLimiter, searchLimiter } from '../middleware/rateLimiter';
 import { UserRole } from '../types';
-import { checkConnection } from '../config/database';
+import { checkConnection, query as dbQuery } from '../config/database';
 import { fraudCheck } from '../services/fraudDetectionService';
 import { requireRecaptcha, softRecaptcha } from '../middleware/recaptcha';
 import { checkEmailHealth, sendContactFormEmail } from '../services/emailService';
@@ -179,6 +179,19 @@ router.get('/lost-items/:id/matches',
 router.get('/users/me/lost-items',
   authenticate,
   lostItemsController.getMyLostItems
+);
+
+// FIX: Lost item image upload (was only on found items)
+router.post('/lost-items/:id/images',
+  authenticate,
+  upload.array('images', 5),
+  lostItemsController.uploadLostItemImages
+);
+
+// FIX: Match dismissal — "Not my item" (MATCH-06)
+router.post('/lost-items/:id/dismiss-match',
+  authenticate,
+  lostItemsController.dismissMatch
 );
 
 // ============================================
@@ -477,6 +490,45 @@ router.post('/admin/cleanup',
   adminController.triggerCleanup
 );
 
+// FIX: Admin — view contact form submissions (stored in DB)
+router.get('/admin/contact-messages',
+  authenticate,
+  adminOnly,
+  async (req, res) => {
+    try {
+      const page = Math.max(1, parseInt(req.query.page as string) || 1);
+      const limit = Math.min(50, Math.max(1, parseInt(req.query.limit as string) || 20));
+      const offset = (page - 1) * limit;
+
+      const countResult = await dbQuery('SELECT COUNT(*) FROM contact_messages');
+      const total = parseInt(countResult.rows[0].count);
+
+      const result = await dbQuery(
+        `SELECT * FROM contact_messages ORDER BY created_at DESC LIMIT $1 OFFSET $2`,
+        [limit, offset]
+      );
+
+      // Mark retrieved messages as read
+      if (result.rows.length > 0) {
+        const ids = result.rows.map((r: any) => r.id);
+        await dbQuery(
+          `UPDATE contact_messages SET read = true WHERE id = ANY($1)`,
+          [ids]
+        );
+      }
+
+      res.json({
+        success: true,
+        data: result.rows,
+        pagination: { page, limit, total, totalPages: Math.ceil(total / limit) }
+      });
+    } catch (error) {
+      console.error('Get contact messages error:', error);
+      res.status(500).json({ success: false, message: 'Failed to get contact messages' });
+    }
+  }
+);
+
 // ============================================
 // CONTACT FORM
 // ============================================
@@ -501,6 +553,18 @@ router.post('/contact',
       if (message.length > 5000) {
         res.status(400).json({ success: false, message: 'Message too long (max 5000 characters)' });
         return;
+      }
+
+      // FIX: Store in database (contact_messages table from migration 004)
+      try {
+        await dbQuery(
+          `INSERT INTO contact_messages (name, email, message, ip_address)
+           VALUES ($1, $2, $3, $4)`,
+          [name.trim(), email.trim(), message.trim(), req.ip || 'unknown']
+        );
+      } catch (dbErr) {
+        console.error('Failed to store contact message in DB:', dbErr);
+        // Non-fatal — continue to send email
       }
 
       const sent = await sendContactFormEmail(name.trim(), email.trim(), message.trim());
@@ -559,4 +623,3 @@ router.get('/health', async (req, res) => {
 });
 
 export default router;
-

@@ -108,7 +108,7 @@ export async function verifyOTP(otp: string, hash: string): Promise<boolean> {
 // KEYWORD EXTRACTION
 // ============================================
 
-// Common stopwords to filter out (English + Kinyarwanda)
+// Common stopwords to filter out (English + Kinyarwanda — ALGO-3.1.4 FIXED)
 const STOPWORDS = new Set([
   // English
   'the', 'a', 'an', 'in', 'on', 'at', 'to', 'for', 'of', 'and', 'or', 'is', 'it',
@@ -121,16 +121,27 @@ const STOPWORDS = new Set([
   'than', 'too', 'very', 'just', 'also', 'now', 'here', 'there', 'then', 'once',
   'with', 'about', 'after', 'before', 'above', 'below', 'between', 'into', 'through',
   'during', 'under', 'again', 'further', 'while', 'lost', 'found', 'item',
-  // Kinyarwanda common
+  // Kinyarwanda common words (Algorithm Spec ALGO-3.1.4)
   'mu', 'ku', 'ni', 'na', 'ndi', 'uri', 'ari', 'dufite', 'nta', 'hari', 'ya', 'yo',
   'by', 'bya', 'cy', 'cya', 'ry', 'rya', 'wa', 'wo', 'ba', 'bo', 'ka', 'ko', 'ha',
+  'ho', 'kuri', 'ngo', 'aho', 'ibi', 'iki', 'iri', 'uru', 'uku', 'aba', 'izi',
+  'nk', 'kuko', 'ariko', 'naho', 'none', 'ese', 'niba', 'gusa',
+  'umwe', 'bose', 'benshi', 'bike', 'bwinshi',
+  // Kinyarwanda verbs (common conjugated forms)
+  'gukora', 'kubona', 'kugenda', 'guha', 'gufata', 'kwiga', 'kubaza', 'gutanga',
+  'gutakaza', 'kubura', 'gusubiza', 'gushaka', 'kureba', 'kumva', 'kuvuga',
+  // French common (Rwanda is trilingual)
+  'le', 'la', 'les', 'un', 'une', 'des', 'du', 'de', 'et', 'est', 'en', 'au', 'aux',
+  'ce', 'qui', 'que', 'dans', 'pas', 'sur', 'pour', 'avec', 'son', 'par', 'mais',
+  'sont', 'nous', 'vous', 'ils', 'elle', 'mon', 'ton', 'ses', 'mes', 'tes',
 ]);
 
 // High-value keywords to always include if found
 const COLOR_PATTERNS = [
   'black', 'white', 'red', 'blue', 'green', 'yellow', 'orange', 'pink', 'purple',
   'brown', 'grey', 'gray', 'silver', 'gold', 'dark', 'light',
-  'umukara', 'umweru', 'umutuku', 'ubururu'
+  // Kinyarwanda colors
+  'umukara', 'umweru', 'umutuku', 'ubururu', 'icyatsi', 'umuhondo',
 ];
 
 const BRAND_PATTERNS = [
@@ -138,7 +149,9 @@ const BRAND_PATTERNS = [
   'redmi', 'oppo', 'vivo', 'nokia', 'motorola', 'pixel', 'oneplus', 'realme',
   'nike', 'adidas', 'samsonite', 'puma', 'gucci', 'louis', 'vuitton', 'zara',
   'bk', 'equity', 'kcb', 'cogebanque', 'bpr', 'i&m', 'access',
-  'toyota', 'honda', 'hp', 'dell', 'lenovo', 'asus', 'acer', 'macbook'
+  'toyota', 'honda', 'hp', 'dell', 'lenovo', 'asus', 'acer', 'macbook',
+  // Rwanda-specific
+  'mtn', 'airtel', 'tigo', 'visa', 'mastercard',
 ];
 
 export function extractKeywords(text: string): string[] {
@@ -205,18 +218,21 @@ export function getReportDailyLimit(trustLevel: TrustLevel): number {
   }
 }
 
-// Trust score changes
+// Trust score changes (complete list per spec — CLAIM-06 FIX)
 export const TRUST_CHANGES = {
   SUCCESSFUL_RETURN_FINDER: 3,
   SUCCESSFUL_RECOVERY_OWNER: 2,
-  EMAIL_VERIFIED: 1,
-  PHONE_VERIFIED: 2,
+  EMAIL_VERIFIED: 1,           // AUTH-01: +1 for email verification
+  PHONE_VERIFIED: 2,           // AUTH-01: +2 for phone verification
   FAILED_VERIFICATION: -2,
   MULTIPLE_FAILED_CLAIMS: -5,
   SCAM_REPORTED: -5,
   SCAM_CONFIRMED: -20,
-  FALSE_SCAM_REPORT: -3,
+  FALSE_SCAM_REPORT: -3,       // Spec: -3 for filing false scam report
   ACCURATE_REPORT_CONFIRMED: 1,
+  DISPUTE_LOST: -3,            // Lost a dispute as the disputer
+  DISPUTE_WON: 2,              // Won a dispute
+  ACCOUNT_AGE_BONUS: 1,        // Monthly bonus for active accounts
 };
 
 // ============================================
@@ -224,8 +240,8 @@ export const TRUST_CHANGES = {
 // ============================================
 
 const KIGALI_AREAS: { [key: string]: string[] } = {
-  'Nyarugenge': ['Gitega', 'Nyarugenge', 'Nyamirambo', 'Muhima', 'Rwezamenyo', 'Kimisagara'],
-  'Gasabo': ['Kimironko', 'Remera', 'Kacyiru', 'Gisozi', 'Kimihurura', 'Nyarutarama', 'Kibagabaga', 'Kinyinya'],
+  'Nyarugenge': ['Gitega', 'Nyarugenge', 'Nyamirambo', 'Muhima', 'Rwezamenyo', 'Kimisagara', 'Nyabugogo'],
+  'Gasabo': ['Kimironko', 'Remera', 'Kacyiru', 'Gisozi', 'Kimihurura', 'Nyarutarama', 'Kibagabaga', 'Kinyinya', 'Jabana', 'Bumbogo', 'Rutunga'],
   'Kicukiro': ['Gikondo', 'Kagarama', 'Kicukiro', 'Kanombe', 'Niboye', 'Masaka', 'Nyarugunga'],
 };
 
@@ -244,6 +260,13 @@ const ADJACENT_AREAS: { [key: string]: string[] } = {
   'nyarutarama': ['kacyiru', 'kimihurura'],
   'gikondo': ['kicukiro', 'kagarama'],
   'kagarama': ['gikondo', 'kicukiro'],
+  'kanombe': ['kicukiro', 'masaka'],
+  'niboye': ['kicukiro', 'masaka'],
+  'masaka': ['kanombe', 'niboye', 'nyarugunga'],
+  'nyarugunga': ['remera', 'kicukiro', 'masaka'],
+  'kimisagara': ['nyamirambo', 'rwezamenyo', 'muhima'],
+  'rwezamenyo': ['nyamirambo', 'kimisagara'],
+  'gitega': ['muhima', 'nyabugogo'],
 };
 
 export function computeLocationDistance(area1: string, area2: string): number {
@@ -269,40 +292,139 @@ export function computeLocationDistance(area1: string, area2: string): number {
 }
 
 // ============================================
-// FRAUD DETECTION UTILITIES
+// FRAUD DETECTION UTILITIES (COMM-05 COMPLETE FIX)
 // ============================================
 
+// Payment/money keywords (English + Kinyarwanda + French)
 const PAYMENT_KEYWORDS = [
-  'pay', 'money', 'cash', 'mtn', 'momo', 'airtel', 'transfer', 'send',
-  'price', 'reward', 'fee', 'cost', 'charge',
-  'amafaranga', 'hishyura', 'ohereze'
+  // English
+  'pay', 'money', 'cash', 'transfer', 'send', 'price', 'reward', 'fee',
+  'cost', 'charge', 'deposit', 'payment', 'wire', 'bank',
+  // MTN MoMo / Airtel Money patterns (Rwanda-specific)
+  'mtn', 'momo', 'mobile money', 'airtel money', 'tigo cash',
+  '*182*', 'ussd', 'agent',
+  // Kinyarwanda money/payment words
+  'amafaranga', 'hishyura', 'ohereze', 'ishyura', 'kwishyura',
+  'uburyo bwo kwishyura', 'kohereza',
+  // French
+  'payer', 'argent', 'frais', 'coût', 'transfert', 'virement',
 ];
 
-const CONDITIONAL_KEYWORDS = ['first', 'before'];
+// Conditional/coercion keywords
+const CONDITIONAL_KEYWORDS = [
+  // English
+  'first', 'before', 'unless', 'until', 'only if', 'won\'t', 'refuse',
+  'give back', 'return only',
+  // Kinyarwanda
+  'mbere', 'ntabwo', 'keretse', 'gusa', 'mbanziriza',
+  // French
+  'avant', 'sinon', 'sauf', 'd\'abord', 'sans',
+];
+
+// Threat/pressure keywords
+const THREAT_KEYWORDS = [
+  // English
+  'police', 'report you', 'sue', 'lawyer', 'court', 'destroy', 'throw away',
+  'sell', 'give to someone',
+  // Kinyarwanda
+  'polisi', 'reguhana', 'gucuruza', 'gutema', 'kurimbura',
+  // French
+  'jeter', 'détruire', 'vendre', 'plainte',
+];
+
+// Phone number patterns (to block sharing in messages)
+const PHONE_PATTERNS = [
+  /(?:\+?250|0)\s?7\d{2}[\s.-]?\d{3}[\s.-]?\d{3}/g,  // Rwanda: +250 7XX XXX XXX
+  /(?:\+?25[0-9])\s?\d{9}/g,                           // East Africa general
+  /\b0\d{9}\b/g,                                       // Local format
+];
+
+// Mobile money codes
+const MOMO_PATTERNS = [
+  /\*182\*\d/,           // MTN MoMo USSD
+  /\*131\*/,             // Airtel Money USSD
+  /\*909\*/,             // Tigo Cash USSD
+];
 
 export function detectExtortionKeywords(message: string): string[] {
   const lower = message.toLowerCase();
+  const detections: string[] = [];
 
   const hasPayment = PAYMENT_KEYWORDS.some(k => lower.includes(k));
   const hasCondition = CONDITIONAL_KEYWORDS.some(k => lower.includes(k));
+  const hasThreat = THREAT_KEYWORDS.some(k => lower.includes(k));
 
-  // Only flag when it sounds like “pay first / pay before…”
-  if (hasPayment && hasCondition) return ['payment_before_return'];
+  // Pattern 1: "Pay first / pay before…" (extortion)
+  if (hasPayment && hasCondition) {
+    detections.push('payment_before_return');
+  }
 
-  return [];
+  // Pattern 2: Threat + payment demand
+  if (hasPayment && hasThreat) {
+    detections.push('payment_with_threat');
+  }
+
+  // Pattern 3: Threats without payment (coercion)
+  if (hasThreat && !hasPayment) {
+    detections.push('coercive_threat');
+  }
+
+  // Pattern 4: MoMo USSD codes in messages (sending money codes)
+  if (MOMO_PATTERNS.some(p => p.test(lower))) {
+    detections.push('mobile_money_code');
+  }
+
+  // Pattern 5: Phone number sharing attempts
+  if (PHONE_PATTERNS.some(p => p.test(message))) {
+    detections.push('phone_number_shared');
+  }
+
+  return detections;
 }
 
 export function isMessageFlaggable(message: string): { flagged: boolean; reason?: string } {
   const suspicious = detectExtortionKeywords(message);
 
-  if (suspicious.length >= 1) {
+  if (suspicious.length > 0) {
+    const reasons: { [key: string]: string } = {
+      'payment_before_return': 'Message suggests payment before return',
+      'payment_with_threat': 'Message combines payment demand with threats',
+      'coercive_threat': 'Message contains threatening language',
+      'mobile_money_code': 'Message contains mobile money transaction code',
+      'phone_number_shared': 'Message contains a phone number (privacy risk)',
+    };
+
+    const reason = suspicious
+      .map(s => reasons[s] || s)
+      .join('; ');
+
     return {
       flagged: true,
-      reason: `Message suggests payment before return (${suspicious.join(', ')})`
+      reason
     };
   }
 
   return { flagged: false };
+}
+
+/**
+ * Extract and block phone numbers from message content.
+ * Returns cleaned content with phone numbers masked.
+ * (COMM-02: Phone numbers never exposed publicly)
+ */
+export function maskPhoneNumbersInContent(content: string): { masked: string; hadPhoneNumbers: boolean } {
+  let masked = content;
+  let hadPhoneNumbers = false;
+
+  for (const pattern of PHONE_PATTERNS) {
+    const regex = new RegExp(pattern.source, pattern.flags);
+    if (regex.test(masked)) {
+      hadPhoneNumbers = true;
+      masked = masked.replace(new RegExp(pattern.source, 'g'), '[phone number hidden]');
+    }
+  }
+
+  return { masked, hadPhoneNumbers };
 }
 
 
@@ -371,4 +493,11 @@ export function parsePaginationParams(
   const offset = (parsedPage - 1) * parsedLimit;
 
   return { page: parsedPage, limit: parsedLimit, offset };
+}
+
+/**
+ * Generate a token family ID for refresh token rotation.
+ */
+export function generateTokenFamily(): string {
+  return crypto.randomBytes(32).toString('hex');
 }
