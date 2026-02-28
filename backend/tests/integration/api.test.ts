@@ -32,7 +32,7 @@ describeIf('Integration: Full API Flow', () => {
 
   beforeAll(async () => {
     // Dynamic import to avoid loading DB module when skipping
-    const { default: expressApp } = await import('../../src/index');
+    const { default: expressApp } = require('../../src/index');
     app = expressApp;
     request = supertest(app);
 
@@ -41,7 +41,7 @@ describeIf('Integration: Full API Flow', () => {
   });
 
   afterAll(async () => {
-    const { closePool } = await import('../../src/config/database');
+    const { closePool } = require('../../src/config/database');
     await closePool();
   });
 
