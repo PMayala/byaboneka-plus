@@ -1,3 +1,4 @@
+import fs from 'fs';
 import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -281,7 +282,6 @@ async function startServer() {
     await runFinalProductionMigration().catch(err => console.warn('Final production migration note:', err.message));
 
     // Create uploads directory if it doesn't exist
-    const fs = await import('fs');
     if (!fs.existsSync(uploadPath)) {
       fs.mkdirSync(uploadPath, { recursive: true });
     }
