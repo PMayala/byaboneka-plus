@@ -55,6 +55,8 @@ describeIf('Integration: Full API Flow', () => {
         password: 'Citizen1Pass!',
         name: 'Test Citizen',
         phone: '+250788111111',
+        acceptedTerms: true,
+        confirmedAge: true
       });
       expect(res.status).toBe(201);
       expect(res.body.success).toBe(true);
@@ -70,6 +72,8 @@ describeIf('Integration: Full API Flow', () => {
         password: 'Finder1Pass!',
         name: 'Test Finder',
         phone: '+250788222222',
+        acceptedTerms: true,
+        confirmedAge: true
       });
       expect(res.status).toBe(201);
       finderToken = res.body.data.tokens.accessToken;
@@ -81,6 +85,8 @@ describeIf('Integration: Full API Flow', () => {
         email: 'citizen@test.com',
         password: 'Another1Pass!',
         name: 'Duplicate',
+        acceptedTerms: true,
+        confirmedAge: true
       });
       expect(res.status).toBe(409);
     });
