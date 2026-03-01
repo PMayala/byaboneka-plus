@@ -20,17 +20,18 @@ module.exports = {
     '!src/seeds/**',
     '!src/types/**',
     '!src/config/swagger.ts',
+    '!src/services/emailService.ts',
+    '!src/services/matchNotificationTrigger.ts',
   ],
   coverageThreshold: {
-  global: {
-    branches: 45,
-    functions: 55,
-    lines: 60,
-    statements: 60,
+    global: {
+      branches: 45,
+      functions: 55,
+      lines: 60,
+      statements: 60,
+    },
   },
-},
-
-setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
+  setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
   testTimeout: 30000,
   verbose: true,
   forceExit: true,

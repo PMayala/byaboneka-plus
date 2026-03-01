@@ -6,7 +6,7 @@
  * Flow tested:
  * 1. Register → Login → Get Profile
  * 2. Create Lost Item → Create Found Item → Match
- * 3. Create Claim → Verify → Generate OTP → Confirm Handover
+ * 3. Create Claim → Finder Sets Questions → Verify → Generate OTP → Confirm Handover
  * 4. Messaging → Report Scam
  * 5. Admin operations
  */
@@ -205,7 +205,8 @@ describeIf('Integration: Full API Flow', () => {
         .set('Authorization', `Bearer ${citizenToken}`)
         .send({ lost_item_id: lostItemId, found_item_id: foundItemId });
       expect(res.status).toBe(201);
-      expect(res.body.data.status).toBe('PENDING');
+      // Claim starts in PENDING_QUESTIONS — waiting for finder to set verification questions
+      expect(res.body.data.status).toBe('PENDING_QUESTIONS');
       claimId = res.body.data.id;
     });
 
@@ -214,6 +215,20 @@ describeIf('Integration: Full API Flow', () => {
         .set('Authorization', `Bearer ${citizenToken}`)
         .send({ lost_item_id: lostItemId, found_item_id: foundItemId });
       expect(res.status).toBe(409);
+    });
+
+    it('POST /claims/:id/questions — finder sets verification questions', async () => {
+      const res = await request.post(`/api/v1/claims/${claimId}/questions`)
+        .set('Authorization', `Bearer ${finderToken}`)
+        .send({
+          questions: [
+            { question: 'What is the wallpaper?', answer: 'my dog' },
+            { question: 'What color is the case?', answer: 'blue' },
+            { question: 'Lock screen PIN digits?', answer: 'six' },
+          ],
+        });
+      expect(res.status).toBe(201);
+      expect(res.body.success).toBe(true);
     });
 
     it('GET /claims/:id/questions — get verification questions', async () => {

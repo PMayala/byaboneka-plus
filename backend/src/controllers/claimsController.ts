@@ -250,8 +250,8 @@ export async function getVerificationQuestions(req: Request, res: Response): Pro
     const secrets = await query(
       `SELECT question_1_text, question_2_text, question_3_text
        FROM verification_secrets
-       WHERE lost_item_id = $1`,
-      [claim.rows[0].lost_item_id]
+       WHERE claim_id = $1`,
+      [claimId]
     );
 
     if (secrets.rows.length === 0) {
