@@ -75,7 +75,7 @@ export async function sendMessage(req: Request, res: Response): Promise<void> {
     }
 
     // Only allow messaging for verified claims
-    if (!['VERIFIED', 'PENDING'].includes(claim.status)) {
+    if (!['VERIFIED', 'PENDING', 'RETURNED'].includes(claim.status)) {
       res.status(400).json({ success: false, message: 'Messaging is not available for this claim status' });
       return;
     }
