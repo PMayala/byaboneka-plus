@@ -31,8 +31,10 @@ export enum FoundItemStatus {
   EXPIRED = 'EXPIRED'
 }
 
+// ✅ UPDATED: Claim statuses (includes NEW PENDING_QUESTIONS)
 export enum ClaimStatus {
-  PENDING = 'PENDING',
+  PENDING_QUESTIONS = 'PENDING_QUESTIONS', // NEW: Waiting for finder to set questions
+  PENDING = 'PENDING',                     // Owner needs to answer questions
   VERIFIED = 'VERIFIED',
   REJECTED = 'REJECTED',
   RETURNED = 'RETURNED',
@@ -70,7 +72,7 @@ export interface LostItem {
   status: LostItemStatus;
   keywords?: string[];
   photo_url?: string;
-  image_urls?: string[];          // Added: migration 004
+  image_urls?: string[];         // Added: migration 004
   created_at: string;
   user_name?: string;
   verification_questions?: string[];
@@ -259,19 +261,23 @@ export const CATEGORY_INFO: Record<ItemCategory, { label: string; icon: string; 
   [ItemCategory.OTHER]: { label: 'Other', icon: '📦', color: 'bg-gray-100 text-gray-800' },
 };
 
-// Status info for UI
+// ✅ UPDATED: Status info for UI (includes new claim status)
 export const STATUS_INFO: Record<string, { label: string; color: string }> = {
+  // Items
   ACTIVE: { label: 'Active', color: 'blue' },
   UNCLAIMED: { label: 'Unclaimed', color: 'blue' },
   CLAIMED: { label: 'Claimed', color: 'yellow' },
   MATCHED: { label: 'Matched', color: 'yellow' },
+
+  // Claims
+  PENDING_QUESTIONS: { label: 'Awaiting Questions', color: 'blue' },      // NEW
+  PENDING: { label: 'Awaiting Verification', color: 'yellow' },           // UPDATED label
   VERIFIED: { label: 'Verified', color: 'green' },
-  RETURNED: { label: 'Returned', color: 'green' },
-  PENDING: { label: 'Pending', color: 'yellow' },
   REJECTED: { label: 'Rejected', color: 'red' },
-  EXPIRED: { label: 'Expired', color: 'gray' },
-  CANCELLED: { label: 'Cancelled', color: 'gray' },
+  RETURNED: { label: 'Returned', color: 'green' },
   DISPUTED: { label: 'Disputed', color: 'red' },
+  CANCELLED: { label: 'Cancelled', color: 'gray' },
+  EXPIRED: { label: 'Expired', color: 'gray' },
 };
 
 // Rwanda locations
@@ -282,43 +288,3 @@ export const RWANDA_LOCATIONS = [
   'Niboye', 'Masaka', 'Nyarugunga', 'Gasabo', 'Nyarugenge', 'Huye', 'Musanze',
   'Rubavu', 'Muhanga', 'Rwamagana', 'Kayonza', 'Nyagatare'
 ];
-
-// Verification question templates
-export const QUESTION_TEMPLATES: Record<ItemCategory, string[]> = {
-  [ItemCategory.PHONE]: [
-    'What is your lockscreen wallpaper?',
-    'How many apps are in your dock?',
-    'What music app is on your home screen?',
-    'What color is your phone case?',
-    'What are the last 4 digits of your IMEI?'
-  ],
-  [ItemCategory.WALLET]: [
-    'How many cards are in the wallet?',
-    'What personal item is in the photo slot?',
-    'Approximately how much cash was inside?',
-    'What color is the inside of the wallet?',
-    'What bank cards are inside?'
-  ],
-  [ItemCategory.ID]: [
-    'What are the last 4 characters of your ID number?',
-    'What district is shown on the ID?',
-    'What is your birth year on the ID?'
-  ],
-  [ItemCategory.BAG]: [
-    'What brand is the bag?',
-    'What items were inside?',
-    'What distinctive marks or stickers are on it?',
-    'How many compartments does it have?'
-  ],
-  [ItemCategory.KEYS]: [
-    'How many keys are on the keychain?',
-    'What does the keychain look like?',
-    'What brand is the car key?',
-    'Are there any distinctive items attached?'
-  ],
-  [ItemCategory.OTHER]: [
-    'What unique features does it have?',
-    'What color is it?',
-    'What brand or make is it?'
-  ]
-};

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { query, transaction } from '../config/database';
-import { verifySecretAnswer, parsePaginationParams, generateOTP, hashOTP, verifyOTP } from '../utils';
+import { verifySecretAnswer, parsePaginationParams, generateOTP, hashOTP, verifyOTP, hashSecretAnswer } from '../utils';
 import { logClaimAttempt, logOtpAction, logAudit, extractRequestMeta } from '../services/auditService';
 import { onFailedVerification, onSuccessfulReturn, onMultipleFailedClaims } from '../services/trustService';
 import { ClaimStatus, UserRole } from '../types';
@@ -19,79 +19,63 @@ export async function createClaim(req: Request, res: Response): Promise<void> {
 
     // Verify lost item exists and belongs to claimant
     const lostItem = await query(
-      'SELECT id, user_id, status FROM lost_items WHERE id = $1',
-      [lost_item_id]
+      'SELECT id, user_id, status FROM lost_items WHERE id = $1', [lost_item_id]
     );
-
     if (lostItem.rows.length === 0) {
-      res.status(404).json({ success: false, message: 'Lost item not found' });
-      return;
+      res.status(404).json({ success: false, message: 'Lost item not found' }); return;
     }
-
     if (lostItem.rows[0].user_id !== userId) {
-      res.status(403).json({ success: false, message: 'You can only claim items for your own lost reports' });
-      return;
+      res.status(403).json({ success: false, message: 'You can only claim items for your own lost reports' }); return;
     }
-
     if (lostItem.rows[0].status !== 'ACTIVE') {
-      res.status(400).json({ success: false, message: 'This lost item is no longer active' });
-      return;
+      res.status(400).json({ success: false, message: 'This lost item is no longer active' }); return;
     }
 
     // Verify found item exists and is unclaimed
     const foundItem = await query(
-      'SELECT id, status FROM found_items WHERE id = $1',
-      [found_item_id]
+      'SELECT id, status, finder_id FROM found_items WHERE id = $1', [found_item_id]
     );
-
     if (foundItem.rows.length === 0) {
-      res.status(404).json({ success: false, message: 'Found item not found' });
-      return;
+      res.status(404).json({ success: false, message: 'Found item not found' }); return;
     }
-
     if (foundItem.rows[0].status !== 'UNCLAIMED') {
-      res.status(400).json({ success: false, message: 'This found item is no longer available' });
-      return;
+      res.status(400).json({ success: false, message: 'This found item is no longer available' }); return;
     }
 
-    // Check for existing active claim
+    // Check existing active claim
     const existingClaim = await query(
       `SELECT id FROM claims 
        WHERE lost_item_id = $1 AND found_item_id = $2 AND claimant_id = $3
        AND status NOT IN ('CANCELLED', 'REJECTED', 'EXPIRED')`,
       [lost_item_id, found_item_id, userId]
     );
-
     if (existingClaim.rows.length > 0) {
-      res.status(409).json({ 
-        success: false, 
-        message: 'You already have an active claim for this item',
-        claim_id: existingClaim.rows[0].id
-      });
-      return;
+      res.status(409).json({ success: false, message: 'You already have an active claim for this item' }); return;
     }
 
-    // Create claim
+    // Create claim with PENDING_QUESTIONS status — waiting for finder to set questions
     const result = await query(
       `INSERT INTO claims (lost_item_id, found_item_id, claimant_id, status)
-       VALUES ($1, $2, $3, 'PENDING')
+       VALUES ($1, $2, $3, 'PENDING_QUESTIONS')
        RETURNING *`,
       [lost_item_id, found_item_id, userId]
     );
 
-    // Notify the lost item owner about the new claim
+    // Notify the FINDER that someone is claiming this item
+    // The finder needs to set verification questions
     try {
-      const ownerInfo = await query(
-        `SELECT u.email, u.name, li.title 
-         FROM lost_items li JOIN users u ON li.user_id = u.id 
-         WHERE li.id = $1`,
-        [lost_item_id]
+      const finderInfo = await query(
+        `SELECT u.email, u.name, fi.title 
+         FROM found_items fi JOIN users u ON fi.finder_id = u.id 
+         WHERE fi.id = $1`,
+        [found_item_id]
       );
-      if (ownerInfo.rows[0]) {
+      if (finderInfo.rows[0]) {
+        // Send email to finder: "Someone claims this is their item. Please set verification questions."
         sendClaimNotificationEmail(
-          ownerInfo.rows[0].email,
-          ownerInfo.rows[0].name,
-          ownerInfo.rows[0].title,
+          finderInfo.rows[0].email,
+          finderInfo.rows[0].name,
+          finderInfo.rows[0].title,
           result.rows[0].id
         ).catch(err => console.error('Claim notification email failed:', err.message));
       }
@@ -102,11 +86,118 @@ export async function createClaim(req: Request, res: Response): Promise<void> {
     res.status(201).json({
       success: true,
       data: result.rows[0],
-      message: 'Claim created. Please complete verification to proceed.'
+      message: 'Claim created. The finder will be notified to set verification questions.'
     });
   } catch (error) {
     console.error('Create claim error:', error);
     res.status(500).json({ success: false, message: 'Failed to create claim' });
+  }
+}
+
+export async function setVerificationQuestions(req: Request, res: Response): Promise<void> {
+  try {
+    const { claimId } = req.params;
+    const userId = req.user!.userId;
+    const { questions } = req.body; // Array of { question, answer }
+
+    // Get claim and verify the user is the finder
+    const claimResult = await query(
+      `SELECT c.*, fi.finder_id
+       FROM claims c
+       JOIN found_items fi ON c.found_item_id = fi.id
+       WHERE c.id = $1`,
+      [claimId]
+    );
+
+    if (claimResult.rows.length === 0) {
+      res.status(404).json({ success: false, message: 'Claim not found' }); return;
+    }
+
+    const claim = claimResult.rows[0];
+
+    // Only the finder (or coop staff) can set questions
+    const isFinder = claim.finder_id === userId;
+    const isCoopStaff = req.user!.role === UserRole.COOP_STAFF;
+    if (!isFinder && !isCoopStaff) {
+      res.status(403).json({ 
+        success: false, 
+        message: 'Only the finder or cooperative staff can set verification questions' 
+      }); 
+      return;
+    }
+
+    if (claim.status !== 'PENDING_QUESTIONS') {
+      res.status(400).json({ 
+        success: false, 
+        message: 'Verification questions can only be set when claim is awaiting questions' 
+      }); 
+      return;
+    }
+
+    // Check if questions already exist for this claim
+    const existing = await query(
+      'SELECT id FROM verification_secrets WHERE claim_id = $1', [claimId]
+    );
+    if (existing.rows.length > 0) {
+      res.status(409).json({ success: false, message: 'Verification questions already set for this claim' }); return;
+    }
+
+    // Hash answers and store
+    const q1 = await hashSecretAnswer(questions[0].answer);
+    const q2 = await hashSecretAnswer(questions[1].answer);
+    const q3 = await hashSecretAnswer(questions[2].answer);
+
+    await transaction(async (client) => {
+      await client.query(
+        `INSERT INTO verification_secrets 
+         (claim_id, created_by,
+          question_1_text, answer_1_hash, answer_1_salt,
+          question_2_text, answer_2_hash, answer_2_salt,
+          question_3_text, answer_3_hash, answer_3_salt)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+        [claimId, userId,
+         questions[0].question, q1.hash, q1.salt,
+         questions[1].question, q2.hash, q2.salt,
+         questions[2].question, q3.hash, q3.salt]
+      );
+
+      // Move claim to PENDING (ready for owner to answer)
+      await client.query(
+        `UPDATE claims SET status = 'PENDING' WHERE id = $1`, [claimId]
+      );
+    });
+
+    // Notify the owner that questions are ready
+    try {
+      const ownerInfo = await query(
+        `SELECT u.email, u.name, li.title 
+         FROM claims c
+         JOIN lost_items li ON c.lost_item_id = li.id 
+         JOIN users u ON c.claimant_id = u.id 
+         WHERE c.id = $1`,
+        [claimId]
+      );
+      if (ownerInfo.rows[0]) {
+        sendClaimResultEmail(
+          ownerInfo.rows[0].email,
+          ownerInfo.rows[0].name,
+          ownerInfo.rows[0].title,
+          parseInt(claimId),
+          false, // not verified yet
+          0
+        ).catch(err => console.error('Question notification email failed:', err.message));
+      }
+    } catch (emailErr) {
+      console.error('Failed to send question notification:', emailErr);
+    }
+
+    res.status(201).json({
+      success: true,
+      message: 'Verification questions set. The owner will now be asked to verify.'
+    });
+  } catch (error) {
+    console.error('Set verification questions error:', error);
+    res.status(500).json({ success: false, message: 'Failed to set verification questions' });
   }
 }
 
@@ -236,8 +327,8 @@ export async function verifyClaim(req: Request, res: Response): Promise<void> {
 
     // Get secrets
     const secrets = await query(
-      `SELECT * FROM verification_secrets WHERE lost_item_id = $1`,
-      [claim.lost_item_id]
+      `SELECT * FROM verification_secrets WHERE claim_id = $1`,
+      [claimId]
     );
 
     if (secrets.rows.length === 0) {

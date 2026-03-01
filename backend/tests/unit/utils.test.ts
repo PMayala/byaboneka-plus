@@ -72,7 +72,7 @@ describe('JWT Tokens', () => {
     const decoded = verifyAccessToken(generateAccessToken(payload));
     expect(decoded).toHaveProperty('iat');
     expect(decoded).toHaveProperty('exp');
-    expect(decoded.exp! - decoded.iat!).toBe(900); // 15 min
+    expect(decoded.exp! - decoded.iat!).toBe(3600); // 60 min
   });
 });
 

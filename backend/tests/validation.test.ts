@@ -13,6 +13,7 @@ import {
   createClaimSchema,
   verifyClaimSchema,
   sendMessageSchema,
+  setVerificationQuestionsSchema,
 } from '../src/middleware/validation';
 import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 
@@ -152,6 +153,9 @@ describe('Validation Middleware', () => {
   describe('createLostItemSchema', () => {
     const middleware = validate(createLostItemSchema);
 
+    // After the logic refactor (migration 007), verification questions are no longer
+    // required on lost items — the finder sets them on the claim instead.
+
     it('should pass with valid lost item data', () => {
       mockRequest.body = {
         category: 'PHONE',
@@ -159,11 +163,6 @@ describe('Validation Middleware', () => {
         description: 'Black iPhone 14 Pro with blue case',
         location_area: 'Kimironko',
         lost_date: '2024-01-15',
-        verification_questions: [
-          { question: 'What is the lockscreen?', answer: 'Mountain photo' },
-          { question: 'Phone color?', answer: 'Black' },
-          { question: 'Case color?', answer: 'Blue' },
-        ],
       };
 
       middleware(mockRequest as Request, mockResponse as Response, mockNext);
@@ -175,32 +174,9 @@ describe('Validation Middleware', () => {
       mockRequest.body = {
         category: 'INVALID',
         title: 'Lost Item',
-        description: 'Description',
+        description: 'Description that is long enough',
         location_area: 'Kimironko',
         lost_date: '2024-01-15',
-        verification_questions: [
-          { question: 'Q1?', answer: 'A1' },
-          { question: 'Q2?', answer: 'A2' },
-          { question: 'Q3?', answer: 'A3' },
-        ],
-      };
-
-      middleware(mockRequest as Request, mockResponse as Response, mockNext);
-
-      expect(statusMock).toHaveBeenCalledWith(400);
-      expect(mockNext).not.toHaveBeenCalled();
-    });
-
-    it('should reject missing verification questions', () => {
-      mockRequest.body = {
-        category: 'PHONE',
-        title: 'Lost iPhone',
-        description: 'Description',
-        location_area: 'Kimironko',
-        lost_date: '2024-01-15',
-        verification_questions: [
-          { question: 'Q1?', answer: 'A1' },
-        ],
       };
 
       middleware(mockRequest as Request, mockResponse as Response, mockNext);
@@ -213,13 +189,55 @@ describe('Validation Middleware', () => {
       mockRequest.body = {
         category: 'PHONE',
         title: 'Hi',
-        description: 'Description of the item',
+        description: 'Description of the item that is long enough',
         location_area: 'Kimironko',
         lost_date: '2024-01-15',
-        verification_questions: [
-          { question: 'Q1?', answer: 'A1' },
-          { question: 'Q2?', answer: 'A2' },
-          { question: 'Q3?', answer: 'A3' },
+      };
+
+      middleware(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(statusMock).toHaveBeenCalledWith(400);
+      expect(mockNext).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('setVerificationQuestionsSchema', () => {
+    const middleware = validate(setVerificationQuestionsSchema);
+
+    it('should pass with exactly 3 valid questions', () => {
+      mockRequest.body = {
+        questions: [
+          { question: 'What is the lockscreen?', answer: 'Mountain photo' },
+          { question: 'What color is the case?', answer: 'Black' },
+          { question: 'What app is on the home screen?', answer: 'Spotify' },
+        ],
+      };
+
+      middleware(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should reject fewer than 3 questions', () => {
+      mockRequest.body = {
+        questions: [
+          { question: 'What is the lockscreen?', answer: 'Mountain photo' },
+        ],
+      };
+
+      middleware(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(statusMock).toHaveBeenCalledWith(400);
+      expect(mockNext).not.toHaveBeenCalled();
+    });
+
+    it('should reject more than 3 questions', () => {
+      mockRequest.body = {
+        questions: [
+          { question: 'What is the lockscreen?', answer: 'Mountain photo' },
+          { question: 'What color is the case?', answer: 'Black' },
+          { question: 'What app is on the home screen?', answer: 'Spotify' },
+          { question: 'What is the PIN length?', answer: 'six digits' },
         ],
       };
 

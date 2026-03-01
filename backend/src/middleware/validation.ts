@@ -89,8 +89,13 @@ export const createLostItemSchema = z.object({
   location_area: z.string().min(2, 'Location area is required').max(100),
   location_hint: z.string().max(500).optional(),
   lost_date: z.string().datetime({ offset: true }).or(z.string().regex(/^\d{4}-\d{2}-\d{2}$/)),
-  photo_url: z.string().url().optional(),
-  verification_questions: z.array(verificationQuestionSchema).length(3, 'Exactly 3 verification questions required'),
+});
+
+export const setVerificationQuestionsSchema = z.object({
+  questions: z.array(z.object({
+    question: z.string().min(5, 'Question must be at least 5 characters').max(255),
+    answer: z.string().min(1, 'Answer is required').max(255),
+  })).length(3, 'Exactly 3 verification questions required'),
 });
 
 export const updateLostItemSchema = z.object({

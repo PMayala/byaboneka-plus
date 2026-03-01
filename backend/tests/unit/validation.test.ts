@@ -1,7 +1,7 @@
 import {
   registerSchema, loginSchema, createLostItemSchema, createFoundItemSchema,
   createClaimSchema, verifyClaimSchema, verifyOtpSchema, sendMessageSchema,
-  createCooperativeSchema, banUserSchema,
+  createCooperativeSchema, banUserSchema, setVerificationQuestionsSchema,
 } from '../../src/middleware/validation';
 import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 
@@ -52,17 +52,14 @@ describe('Login Schema', () => {
 });
 
 describe('Create Lost Item Schema', () => {
+  // After the logic refactor (migration 007), verification questions are no longer
+  // part of lost item creation. The finder sets questions on the claim instead.
   const valid = {
     category: 'PHONE',
     title: 'Lost Samsung',
     description: 'Black Samsung phone with blue case found on bus',
     location_area: 'Nyabugogo',
     lost_date: '2026-02-10T14:00:00Z',
-    verification_questions: [
-      { question: 'What is the wallpaper?', answer: 'my dog' },
-      { question: 'What color is the case?', answer: 'blue' },
-      { question: 'What is the PIN?', answer: 'six' },
-    ],
   };
 
   it('should accept valid lost item', () => {
@@ -73,18 +70,14 @@ describe('Create Lost Item Schema', () => {
     expect(() => createLostItemSchema.parse({ ...valid, category: 'CAR' })).toThrow();
   });
 
-  it('should reject less than 3 questions', () => {
+  it('should ignore extra verification_questions field (stripped by schema)', () => {
+    // Schema uses z.object which strips unknown keys — this should still pass
     expect(() => createLostItemSchema.parse({
       ...valid,
-      verification_questions: valid.verification_questions.slice(0, 2),
-    })).toThrow();
-  });
-
-  it('should reject more than 3 questions', () => {
-    expect(() => createLostItemSchema.parse({
-      ...valid,
-      verification_questions: [...valid.verification_questions, { question: 'Extra?', answer: 'x' }],
-    })).toThrow();
+      verification_questions: [
+        { question: 'What is the wallpaper?', answer: 'my dog' },
+      ],
+    })).not.toThrow();
   });
 
   it('should reject short title', () => {
@@ -97,6 +90,59 @@ describe('Create Lost Item Schema', () => {
 
   it('should accept ISO date string', () => {
     expect(() => createLostItemSchema.parse({ ...valid, lost_date: '2026-02-10' })).not.toThrow();
+  });
+});
+
+describe('Set Verification Questions Schema (Finder Flow)', () => {
+  // Migration 007: Finder sets verification questions on claims
+  it('should accept exactly 3 questions', () => {
+    expect(() => setVerificationQuestionsSchema.parse({
+      questions: [
+        { question: 'What is the wallpaper?', answer: 'my dog' },
+        { question: 'What color is the case?', answer: 'blue' },
+        { question: 'What is the PIN?', answer: 'six' },
+      ],
+    })).not.toThrow();
+  });
+
+  it('should reject less than 3 questions', () => {
+    expect(() => setVerificationQuestionsSchema.parse({
+      questions: [
+        { question: 'What is the wallpaper?', answer: 'my dog' },
+        { question: 'What color is the case?', answer: 'blue' },
+      ],
+    })).toThrow();
+  });
+
+  it('should reject more than 3 questions', () => {
+    expect(() => setVerificationQuestionsSchema.parse({
+      questions: [
+        { question: 'What is the wallpaper?', answer: 'my dog' },
+        { question: 'What color is the case?', answer: 'blue' },
+        { question: 'What is the PIN?', answer: 'six' },
+        { question: 'Extra question?', answer: 'extra' },
+      ],
+    })).toThrow();
+  });
+
+  it('should reject questions with short text', () => {
+    expect(() => setVerificationQuestionsSchema.parse({
+      questions: [
+        { question: 'Hi?', answer: 'my dog' },
+        { question: 'What color is the case?', answer: 'blue' },
+        { question: 'What is the PIN?', answer: 'six' },
+      ],
+    })).toThrow();
+  });
+
+  it('should reject empty answers', () => {
+    expect(() => setVerificationQuestionsSchema.parse({
+      questions: [
+        { question: 'What is the wallpaper?', answer: '' },
+        { question: 'What color is the case?', answer: 'blue' },
+        { question: 'What is the PIN?', answer: 'six' },
+      ],
+    })).toThrow();
   });
 });
 

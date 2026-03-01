@@ -13,88 +13,32 @@ import { ItemCategory, LostItemStatus } from '../types';
 export async function createLostItem(req: Request, res: Response): Promise<void> {
   try {
     const userId = req.user!.userId;
-    const {
-      category,
-      title,
-      description,
-      location_area,
-      location_hint,
-      lost_date,
-      photo_url,
-      verification_questions
-    } = req.body;
+    const { category, title, description, location_area, location_hint, lost_date } = req.body;
 
-    // Extract keywords for matching
     const keywords = extractKeywords(`${title} ${description}`);
 
-    // Create lost item and verification secrets in transaction
-    const result = await transaction(async (client) => {
-      // Create lost item
-      const itemResult = await client.query(
-        `INSERT INTO lost_items (user_id, category, title, description, location_area, location_hint, lost_date, keywords, photo_url, image_urls)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-         RETURNING *`,
-        [userId, category, title, description, location_area, location_hint || null, lost_date, keywords, photo_url || null, []]
-      );
+    const result = await query(
+      `INSERT INTO lost_items (user_id, category, title, description, location_area, 
+       location_hint, lost_date, keywords, image_urls)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+       RETURNING *`,
+      [userId, category, title, description, location_area, 
+       location_hint || null, lost_date, keywords, []]
+    );
 
-      const lostItem = itemResult.rows[0];
-
-      // Hash verification answers
-      const q1Answer = await hashSecretAnswer(verification_questions[0].answer);
-      const q2Answer = await hashSecretAnswer(verification_questions[1].answer);
-      const q3Answer = await hashSecretAnswer(verification_questions[2].answer);
-
-      // Create verification secrets
-      await client.query(
-        `INSERT INTO verification_secrets (lost_item_id, 
-          question_1_text, answer_1_hash, answer_1_salt,
-          question_2_text, answer_2_hash, answer_2_salt,
-          question_3_text, answer_3_hash, answer_3_salt)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
-        [
-          lostItem.id,
-          verification_questions[0].question, q1Answer.hash, q1Answer.salt,
-          verification_questions[1].question, q2Answer.hash, q2Answer.salt,
-          verification_questions[2].question, q3Answer.hash, q3Answer.salt
-        ]
-      );
-
-      return lostItem;
-    });
-
-    // Log creation
-    await logCreate(req, 'lost_item', result.id, { title, category });
-
-    // Trigger matching in background
-    setImmediate(() => onItemCreated('lost', result.id));
+    await logCreate(req, 'lost_item', result.rows[0].id, { title, category });
+    setImmediate(() => onItemCreated('lost', result.rows[0].id));
 
     res.status(201).json({
       success: true,
-      data: {
-        id: result.id,
-        category: result.category,
-        title: result.title,
-        description: result.description,
-        location_area: result.location_area,
-        location_hint: result.location_hint,
-        lost_date: result.lost_date,
-        status: result.status,
-        keywords: result.keywords || [],
-        photo_url: result.photo_url,
-        image_urls: result.image_urls || [],
-        created_at: result.created_at
-      },
+      data: result.rows[0],
       message: 'Lost item report created successfully'
     });
   } catch (error) {
     console.error('Create lost item error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to create lost item report'
-    });
+    res.status(500).json({ success: false, message: 'Failed to create lost item report' });
   }
 }
-
 // Upload images for lost items (NEW — gap fix)
 export async function uploadLostItemImages(req: Request, res: Response): Promise<void> {
   try {

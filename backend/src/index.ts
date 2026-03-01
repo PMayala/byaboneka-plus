@@ -13,15 +13,19 @@ import novelFeatureRoutes from './routes/novelFeatureRoutes';
 import { checkConnection, closePool, query } from './config/database';
 import { apiLimiter } from './middleware/rateLimiter';
 import { notFoundHandler, errorHandler } from './middleware/errorHandler';
-import { runMigrations } from './migrations/001_initial';
-import { runPatchMigrations } from './migrations/002_patch';
 import { sendPendingExpiryWarnings, checkEmailHealth } from './services/emailService';
 import { swaggerSpec } from './config/swagger';
 import { csrfProtection } from './middleware/csrf';
 import { runDataRetention } from './services/dataRetentionService';
+
+import { runMigrations } from './migrations/001_initial';
+import { runPatchMigrations } from './migrations/002_patch';
 import { runGapFixMigration } from './migrations/003_gap_fixes';
 import { runComprehensiveFixMigration } from './migrations/004_comprehensive_fixes';
 import { runFinalProductionMigration } from './migrations/005_final_production_fixes';
+import { runComprehensiveBugfixMigration } from './migrations/006_comprehensive_bugfix';
+import { runLogicRefactorMigration } from './migrations/007_logic_refactor';
+
 
 // swagger-ui-express is CJS — use require for reliable loading
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -280,6 +284,8 @@ async function startServer() {
     await runGapFixMigration().catch(err => console.warn('Gap fix migration note:', err.message));
     await runComprehensiveFixMigration().catch(err => console.warn('Comprehensive fix migration note:', err.message));
     await runFinalProductionMigration().catch(err => console.warn('Final production migration note:', err.message));
+    await runComprehensiveBugfixMigration().catch(err => console.warn('Comprehensive bugfix migration note:', err.message));
+    await runLogicRefactorMigration().catch(err => console.warn('Logic refactor migration note:', err.message));
 
     // Create uploads directory if it doesn't exist
     if (!fs.existsSync(uploadPath)) {

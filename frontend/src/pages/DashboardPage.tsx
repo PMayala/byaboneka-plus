@@ -43,7 +43,7 @@ const DashboardPage: React.FC = () => {
       setStats({
         lostItems: lostRes.data.pagination?.total || 0,
         foundItems: foundRes.data.pagination?.total || 0,
-        activeClaims: (claimsRes.data.data || []).filter((c: Claim) => ['PENDING', 'VERIFIED'].includes(c.status)).length,
+        activeClaims: (claimsRes.data.data || []).filter((c: Claim) => ['PENDING_QUESTIONS', 'PENDING', 'VERIFIED'].includes(c.status)).length,
         unreadMessages: unreadCount
       });
     } catch (error) {

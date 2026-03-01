@@ -16,7 +16,7 @@ import * as cooperativesController from '../controllers/cooperativesController';
 import { authenticate, optionalAuth, adminOnly, authorize, adminOrCoopStaff } from '../middleware/auth';
 import { validate, registerSchema, loginSchema, refreshTokenSchema, forgotPasswordSchema, resetPasswordSchema,
          createLostItemSchema, updateLostItemSchema, createFoundItemSchema, updateFoundItemSchema,
-         createClaimSchema, verifyClaimSchema, verifyOtpSchema, sendMessageSchema } from '../middleware/validation';
+         createClaimSchema, verifyClaimSchema, setVerificationQuestionsSchema, verifyOtpSchema, sendMessageSchema } from '../middleware/validation';
 import { authLimiter, reportLimiter, claimLimiter, verificationLimiter, otpLimiter, messageLimiter, 
          passwordResetLimiter, searchLimiter } from '../middleware/rateLimiter';
 import { UserRole } from '../types';
@@ -284,6 +284,13 @@ router.post('/claims/:claimId/cancel',
 router.get('/users/me/claims',
   authenticate,
   claimsController.getMyClaims
+);
+
+// Finder sets verification questions for a claim
+router.post('/claims/:claimId/questions',
+  authenticate,
+  validate(setVerificationQuestionsSchema),
+  claimsController.setVerificationQuestions
 );
 
 // NOTE: Handover OTP routes are in enhancedRoutes.ts (single implementation)

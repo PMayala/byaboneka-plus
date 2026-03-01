@@ -109,7 +109,9 @@ export async function getFoundItems(req: Request, res: Response): Promise<void> 
     }
 
     if (keyword) {
-      conditions.push(`(LOWER(f.title) LIKE LOWER($${paramIndex}) OR LOWER(f.description) LIKE LOWER($${paramIndex}))`);
+      conditions.push(
+        `(LOWER(f.title) LIKE LOWER($${paramIndex}) OR LOWER(f.description) LIKE LOWER($${paramIndex}))`
+      );
       params.push(`%${keyword}%`);
       paramIndex++;
     }
@@ -133,17 +135,20 @@ export async function getFoundItems(req: Request, res: Response): Promise<void> 
       [...params, limit, offset]
     );
 
-    // THREAT-7.4: Apply sensitive content redaction to list results
     const userId = req.user?.userId;
+
+    // THREAT-7.4: Apply sensitive content redaction to list results
     const redactedItems = redactItemList(result.rows, userId);
 
-    // For ID/WALLET categories, also hide images from non-owners in list view
+    // THREAT-7.4: Hide images unless finder/coop_staff/admin (ALL categories)
     for (const item of redactedItems) {
-      if (['ID', 'WALLET'].includes(item.category)) {
-        const isOwner = userId !== undefined && item.finder_id === userId;
-        if (!isOwner) {
-          item.image_urls = []; // Hide images for sensitive categories
-        }
+      const canSeeImages =
+        (userId !== undefined && item.finder_id === userId) ||
+        req.user?.role === 'coop_staff' ||
+        req.user?.role === 'admin';
+
+      if (!canSeeImages) {
+        item.image_urls = [];
       }
     }
 
@@ -154,8 +159,8 @@ export async function getFoundItems(req: Request, res: Response): Promise<void> 
         page,
         limit,
         total,
-        totalPages: Math.ceil(total / limit)
-      }
+        totalPages: Math.ceil(total / limit),
+      },
     });
   } catch (error) {
     console.error('Get found items error:', error);
@@ -163,6 +168,7 @@ export async function getFoundItems(req: Request, res: Response): Promise<void> 
   }
 }
 
+// Get single found item — WITH REDACTION (THREAT-7.4)
 // Get single found item — WITH REDACTION (THREAT-7.4)
 export async function getFoundItem(req: Request, res: Response): Promise<void> {
   try {
@@ -183,7 +189,15 @@ export async function getFoundItem(req: Request, res: Response): Promise<void> {
     }
 
     const item = result.rows[0];
-    const isOwner = req.user?.userId === item.finder_id;
+    const userId = req.user?.userId;
+
+    const isOwner = userId === item.finder_id;
+
+    // THREAT-7.4: Only show images to finder, coop staff, or admin
+    const canSeeImages =
+      userId === item.finder_id ||
+      req.user?.role === 'coop_staff' ||
+      req.user?.role === 'admin';
 
     // THREAT-7.4: Apply redaction for non-owners
     if (!isOwner) {
@@ -197,16 +211,18 @@ export async function getFoundItem(req: Request, res: Response): Promise<void> {
 
       // Add privacy notice if redactions were applied
       if (descResult.redactions_applied.length > 0 || titleResult.redactions_applied.length > 0) {
-        item._privacy_notice = 'Some sensitive information has been redacted for privacy protection. Full details visible after ownership verification.';
-        item._redaction_count = descResult.redactions_applied.length + titleResult.redactions_applied.length;
+        item._privacy_notice =
+          'Some sensitive information has been redacted for privacy protection. Full details visible after ownership verification.';
+        item._redaction_count =
+          descResult.redactions_applied.length + titleResult.redactions_applied.length;
       }
+    }
 
-      // For ID/WALLET categories, hide images from non-owners
-      if (['ID', 'WALLET'].includes(item.category)) {
-        item.image_urls = [];
-        item._images_hidden = true;
-        item._images_note = 'Images are hidden for sensitive items. Verify ownership to see full details.';
-      }
+    // THREAT-7.4: Hide images from public unless allowed (ALL categories)
+    if (!canSeeImages) {
+      item.image_urls = [];
+      item._images_hidden = true;
+      item._images_note = 'Images are hidden for privacy. Verify ownership to see full details.';
     }
 
     res.json({ success: true, data: item });

@@ -108,7 +108,7 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       const refreshToken = useAuthStore.getState().refreshToken;
-      
+
       if (refreshToken) {
         try {
           const response = await axios.post(`${API_URL}/auth/refresh`, {
@@ -123,7 +123,7 @@ api.interceptors.response.use(
         } catch (refreshError) {
           console.error('Token refresh failed:', refreshError);
           useAuthStore.getState().logout();
-          
+
           if (typeof window !== 'undefined') {
             window.location.href = '/login?session_expired=true';
           }
@@ -385,10 +385,19 @@ export const claimsApi = {
     api.get<ApiResponse<Claim>>(`/claims/${id}`),
 
   getQuestions: (claimId: number) =>
-    api.get<ApiResponse<{ claim_id: number; questions: string[]; attempts_remaining: number }>>(`/claims/${claimId}/questions`),
+    api.get<ApiResponse<{ claim_id: number; questions: string[]; attempts_remaining: number }>>(
+      `/claims/${claimId}/questions`
+    ),
+
+  // ✅ NEW: Finder sets verification questions
+  setQuestions: (claimId: number, questions: Array<{ question: string; answer: string }>) =>
+    api.post<ApiResponse>(`/claims/${claimId}/questions`, { questions }),
 
   verify: (claimId: number, answers: string[]) =>
-    api.post<ApiResponse<{ verified: boolean; correct_count: number; attempts_remaining: number }>>(`/claims/${claimId}/verify`, { answers }),
+    api.post<ApiResponse<{ verified: boolean; correct_count: number; attempts_remaining: number }>>(
+      `/claims/${claimId}/verify`,
+      { answers }
+    ),
 
   cancel: (claimId: number) =>
     api.post<ApiResponse>(`/claims/${claimId}/cancel`),
@@ -568,7 +577,10 @@ export const adminApi = {
 
   // FIX: Admin contact messages endpoint
   getContactMessages: (params?: { page?: number; limit?: number }) =>
-    api.get<PaginatedResponse<{ id: number; name: string; email: string; message: string; ip_address: string; read: boolean; created_at: string }>>('/admin/contact-messages', { params }),
+    api.get<PaginatedResponse<{ id: number; name: string; email: string; message: string; ip_address: string; read: boolean; created_at: string }>>(
+      '/admin/contact-messages',
+      { params }
+    ),
 };
 
 // ============================================

@@ -1,18 +1,18 @@
 ╔══════════════════════════════════════════════════════════════╗
 ║  Byaboneka+ (Root Dump)                                    ║
 ║  Project Code Dump — AI Review Edition                      ║
-║  Generated: 2026-03-01T14:27:32.722Z                       ║
+║  Generated: 2026-03-01T20:32:14.789Z                       ║
 ╚══════════════════════════════════════════════════════════════╝
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   PROJECT SUMMARY
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   Root:           C:\Users\USER\Documents\byaboneka-plus
-  Files included: 171
-  Total lines:    39,296
+  Files included: 172
+  Total lines:    39,418
   Total size:     1.4 MB
   Env included:   YES (.env*)
-  Languages:      YAML (7), TypeScript (82), Text (7), Env (6), JSON (12), JavaScript (3), Markdown (5), SVG (1), TSX (46), CSS (1), HTML (1)
+  Languages:      YAML (7), TypeScript (83), Text (7), Env (6), JSON (12), JavaScript (3), Markdown (5), SVG (1), TSX (46), CSS (1), HTML (1)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   DIRECTORY STRUCTURE
@@ -27,21 +27,21 @@
   │   │   │   ├── accountController.ts (6.1 KB)
   │   │   │   ├── adminController.ts (10.1 KB)
   │   │   │   ├── authController.ts (19.3 KB)
-  │   │   │   ├── claimsController.ts (21.0 KB)
+  │   │   │   ├── claimsController.ts (24.9 KB)
   │   │   │   ├── cooperativesController.ts (10.5 KB)
-  │   │   │   ├── foundItemsController.ts (14.0 KB)
-  │   │   │   ├── lostItemsController.ts (15.6 KB)
+  │   │   │   ├── foundItemsController.ts (14.3 KB)
+  │   │   │   ├── lostItemsController.ts (13.9 KB)
   │   │   │   └── messagesController.ts (13.1 KB)
   │   │   ├── middleware/
   │   │   │   ├── auth.ts (6.1 KB)
   │   │   │   ├── consent.ts (1.7 KB)
   │   │   │   ├── csrf.ts (2.5 KB)
-  │   │   │   ├── emailVerification.ts (2.5 KB)
+  │   │   │   ├── emailVerification.ts (2.8 KB)
   │   │   │   ├── errorHandler.ts (2.2 KB)
   │   │   │   ├── index.ts (84 B)
   │   │   │   ├── rateLimiter.ts (4.3 KB)
   │   │   │   ├── recaptcha.ts (5.4 KB)
-  │   │   │   └── validation.ts (8.1 KB)
+  │   │   │   └── validation.ts (8.3 KB)
   │   │   ├── migrations/
   │   │   │   ├── 001_initial.ts (20.7 KB)
   │   │   │   ├── 002_patch.ts (3.8 KB)
@@ -49,15 +49,16 @@
   │   │   │   ├── 004_comprehensive_fixes.ts (6.9 KB)
   │   │   │   ├── 005_final_production_fixes.ts (6.3 KB)
   │   │   │   ├── 006_comprehensive_bugfix.ts (16.0 KB)
+  │   │   │   ├── 007_logic_refactor.ts (4.4 KB)
   │   │   │   ├── rollback.ts (397 B)
-  │   │   │   └── run.ts (394 B)
+  │   │   │   └── run.ts (1.4 KB)
   │   │   ├── routes/
   │   │   │   ├── accountRoutes.ts (1.5 KB)
-  │   │   │   ├── enhancedRoutes.ts (14.4 KB)
-  │   │   │   ├── index.ts (16.0 KB)
-  │   │   │   └── novelFeatureRoutes.ts (9.5 KB)
+  │   │   │   ├── enhancedRoutes.ts (15.0 KB)
+  │   │   │   ├── index.ts (16.2 KB)
+  │   │   │   └── novelFeatureRoutes.ts (10.5 KB)
   │   │   ├── seeds/
-  │   │   │   └── run.ts (50.0 KB)
+  │   │   │   └── run.ts (50.2 KB)
   │   │   ├── services/
   │   │   │   ├── accountLockoutService.ts (3.3 KB)
   │   │   │   ├── auditService.ts (6.5 KB)
@@ -83,7 +84,7 @@
   │   │   ├── utils/
   │   │   │   └── index.ts (16.9 KB)
   │   │   ├── index.swagger-patch.ts (985 B)
-  │   │   └── index.ts (11.7 KB)
+  │   │   └── index.ts (12.1 KB)
   │   ├── tests/
   │   │   ├── integration/
   │   │   │   └── api.test.ts (12.1 KB)
@@ -95,17 +96,17 @@
   │   │   │   ├── novel-features.test.ts (8.7 KB)
   │   │   │   ├── trust.test.ts (3.4 KB)
   │   │   │   ├── utils.test.ts (5.7 KB)
-  │   │   │   └── validation.test.ts (6.3 KB)
+  │   │   │   └── validation.test.ts (8.0 KB)
   │   │   ├── integration.test.ts (7.1 KB)
   │   │   ├── matching.test.ts (4.4 KB)
   │   │   ├── setup.ts (634 B)
   │   │   ├── trust.test.ts (4.8 KB)
-  │   │   ├── utils.test.ts (13.1 KB)
-  │   │   └── validation.test.ts (10.7 KB)
+  │   │   ├── utils.test.ts (5.8 KB)
+  │   │   └── validation.test.ts (11.4 KB)
   │   ├── .dockerignore (202 B)
   │   ├── .env (1.4 KB)
   │   ├── .env.example (1.1 KB)
-  │   ├── .env.production (1.2 KB)
+  │   ├── .env.production (1.3 KB)
   │   ├── Byaboneka_Plus_API.postman_collection.json (27.1 KB)
   │   ├── docker-compose.yml (1.0 KB)
   │   ├── Dockerfile (1.3 KB)
@@ -114,7 +115,7 @@
   │   ├── package.json (2.3 KB)
   │   ├── README.md (1.1 KB)
   │   ├── tsconfig.json (514 B)
-  │   └── tsconfig.test.json (499 B)
+  │   └── tsconfig.test.json (349 B)
   ├── docs/
   │   ├── postman/
   │   │   └── Byaboneka-API.postman_collection.json (22.1 KB)
@@ -157,12 +158,12 @@
   │   │   │   ├── HandoverOTPPanel.tsx (11.6 KB)
   │   │   │   ├── LanguageSwitcher.tsx (2.6 KB)
   │   │   │   ├── LoadingSplash.tsx (804 B)
-  │   │   │   ├── SafeHandoverLocationPicker.tsx (6.5 KB)
+  │   │   │   ├── SafeHandoverLocationPicker.tsx (6.8 KB)
   │   │   │   ├── SafetyWarningBanner.tsx (5.6 KB)
   │   │   │   ├── ScamReportButton.tsx (8.1 KB)
   │   │   │   ├── ScrollToTop.tsx (391 B)
   │   │   │   ├── SkipLink.tsx (854 B)
-  │   │   │   └── VerificationStrengthIndicator.tsx (9.2 KB)
+  │   │   │   └── VerificationStrengthIndicator.tsx (9.5 KB)
   │   │   ├── hooks/
   │   │   │   ├── useAccessibleRouting.ts (2.1 KB)
   │   │   │   └── useRecaptcha.ts (3.6 KB)
@@ -179,7 +180,7 @@
   │   │   │   ├── AdminFraudDashboard.tsx (7.5 KB)
   │   │   │   ├── AdminScamReportsPage.tsx (12.0 KB)
   │   │   │   ├── AdminUsersPage.tsx (12.2 KB)
-  │   │   │   ├── ClaimDetailPage.tsx (13.9 KB)
+  │   │   │   ├── ClaimDetailPage.tsx (14.0 KB)
   │   │   │   ├── ContactPage.tsx (9.6 KB)
   │   │   │   ├── CoopDashboardPage.tsx (6.1 KB)
   │   │   │   ├── DashboardPage.tsx (13.6 KB)
@@ -195,19 +196,19 @@
   │   │   │   ├── NotFoundPage.tsx (1.9 KB)
   │   │   │   ├── PrivacyPolicyPage.tsx (12.5 KB)
   │   │   │   ├── RegisterPage.tsx (14.0 KB)
-  │   │   │   ├── ReportFoundPage.tsx (15.1 KB)
-  │   │   │   ├── ReportLostPage.tsx (20.8 KB)
+  │   │   │   ├── ReportFoundPage.tsx (16.1 KB)
+  │   │   │   ├── ReportLostPage.tsx (16.3 KB)
   │   │   │   ├── ResetPasswordPage.tsx (5.7 KB)
   │   │   │   ├── SearchPage.tsx (16.7 KB)
   │   │   │   ├── SettingsPage.tsx (18.6 KB)
   │   │   │   └── TermsPage.tsx (11.8 KB)
   │   │   ├── services/
-  │   │   │   ├── api.ts (18.5 KB)
+  │   │   │   ├── api.ts (18.8 KB)
   │   │   │   └── novelFeatureApi.ts (2.5 KB)
   │   │   ├── store/
   │   │   │   └── authStore.ts (1.7 KB)
   │   │   ├── types/
-  │   │   │   └── index.ts (8.0 KB)
+  │   │   │   └── index.ts (7.2 KB)
   │   │   ├── utils/
   │   │   │   ├── dateUtils.ts (1.8 KB)
   │   │   │   └── index.ts (28 B)
@@ -251,83 +252,84 @@
       3. backend/src/controllers/accountController.ts  [182 lines | TypeScript]
       4. backend/src/controllers/adminController.ts  [308 lines | TypeScript]
       5. backend/src/controllers/authController.ts  [680 lines | TypeScript]
-      6. backend/src/controllers/claimsController.ts  [681 lines | TypeScript]
+      6. backend/src/controllers/claimsController.ts  [776 lines | TypeScript]
       7. backend/src/controllers/cooperativesController.ts  [335 lines | TypeScript]
-      8. backend/src/controllers/foundItemsController.ts  [438 lines | TypeScript]
-      9. backend/src/controllers/lostItemsController.ts  [536 lines | TypeScript]
+      8. backend/src/controllers/foundItemsController.ts  [454 lines | TypeScript]
+      9. backend/src/controllers/lostItemsController.ts  [480 lines | TypeScript]
      10. backend/src/controllers/messagesController.ts  [380 lines | TypeScript]
      11. backend/src/middleware/auth.ts  [261 lines | TypeScript]
      12. backend/src/middleware/consent.ts  [64 lines | TypeScript]
      13. backend/src/middleware/csrf.ts  [79 lines | TypeScript]
-     14. backend/src/middleware/emailVerification.ts  [101 lines | TypeScript]
+     14. backend/src/middleware/emailVerification.ts  [107 lines | TypeScript]
      15. backend/src/middleware/errorHandler.ts  [107 lines | TypeScript]
      16. backend/src/middleware/index.ts  [3 lines | TypeScript]
      17. backend/src/middleware/rateLimiter.ts  [150 lines | TypeScript]
      18. backend/src/middleware/recaptcha.ts  [191 lines | TypeScript]
-     19. backend/src/middleware/validation.ts  [226 lines | TypeScript]
+     19. backend/src/middleware/validation.ts  [231 lines | TypeScript]
      20. backend/src/migrations/001_initial.ts  [486 lines | TypeScript]
      21. backend/src/migrations/002_patch.ts  [100 lines | TypeScript]
      22. backend/src/migrations/003_gap_fixes.ts  [37 lines | TypeScript]
      23. backend/src/migrations/004_comprehensive_fixes.ts  [132 lines | TypeScript]
      24. backend/src/migrations/005_final_production_fixes.ts  [131 lines | TypeScript]
      25. backend/src/migrations/006_comprehensive_bugfix.ts  [366 lines | TypeScript]
-     26. backend/src/migrations/rollback.ts  [19 lines | TypeScript]
-     27. backend/src/migrations/run.ts  [19 lines | TypeScript]
-     28. backend/src/routes/accountRoutes.ts  [48 lines | TypeScript]
-     29. backend/src/routes/enhancedRoutes.ts  [546 lines | TypeScript]
-     30. backend/src/routes/index.ts  [625 lines | TypeScript]
-     31. backend/src/routes/novelFeatureRoutes.ts  [318 lines | TypeScript]
-     32. backend/src/seeds/run.ts  [654 lines | TypeScript]
-     33. backend/src/services/accountLockoutService.ts  [107 lines | TypeScript]
-     34. backend/src/services/auditService.ts  [271 lines | TypeScript]
-     35. backend/src/services/cooperativeAccountabilityService.ts  [322 lines | TypeScript]
-     36. backend/src/services/dataRetentionService.ts  [168 lines | TypeScript]
-     37. backend/src/services/disputeService.ts  [490 lines | TypeScript]
-     38. backend/src/services/duplicateDetectionService.ts  [342 lines | TypeScript]
-     39. backend/src/services/emailService.ts  [706 lines | TypeScript]
-     40. backend/src/services/emailVerificationService.ts  [194 lines | TypeScript]
-     41. backend/src/services/expiryService.ts  [209 lines | TypeScript]
-     42. backend/src/services/fraudDetectionService.ts  [413 lines | TypeScript]
-     43. backend/src/services/matchingService.ts  [352 lines | TypeScript]
-     44. backend/src/services/matchNotificationTrigger.ts  [85 lines | TypeScript]
-     45. backend/src/services/otpService.ts  [391 lines | TypeScript]
-     46. backend/src/services/sensitiveRedactionService.ts  [261 lines | TypeScript]
-     47. backend/src/services/trustService.ts  [286 lines | TypeScript]
-     48. backend/src/services/trustTransparencyService.ts  [124 lines | TypeScript]
-     49. backend/src/services/verificationAttemptsService.ts  [62 lines | TypeScript]
-     50. backend/src/services/verificationCooldownService.ts  [263 lines | TypeScript]
-     51. backend/src/services/verificationStrengthService.ts  [310 lines | TypeScript]
-     52. backend/src/types/index.ts  [382 lines | TypeScript]
-     53. backend/src/utils/index.ts  [503 lines | TypeScript]
-     54. backend/src/index.swagger-patch.ts  [32 lines | TypeScript]
-     55. backend/src/index.ts  [330 lines | TypeScript]
-     56. backend/tests/integration/api.test.ts  [326 lines | TypeScript]
-     57. backend/tests/performance/load-test.ts  [240 lines | TypeScript]
-     58. backend/tests/unit/matching.test.ts  [144 lines | TypeScript]
-     59. backend/tests/unit/middleware.test.ts  [131 lines | TypeScript]
-     60. backend/tests/unit/novel-features.test.ts  [262 lines | TypeScript]
-     61. backend/tests/unit/trust.test.ts  [115 lines | TypeScript]
-     62. backend/tests/unit/utils.test.ts  [168 lines | TypeScript]
-     63. backend/tests/unit/validation.test.ts  [192 lines | TypeScript]
-     64. backend/tests/integration.test.ts  [229 lines | TypeScript]
-     65. backend/tests/matching.test.ts  [127 lines | TypeScript]
-     66. backend/tests/setup.ts  [26 lines | TypeScript]
-     67. backend/tests/trust.test.ts  [143 lines | TypeScript]
-     68. backend/tests/utils.test.ts  [395 lines | TypeScript]
-     69. backend/tests/validation.test.ts  [390 lines | TypeScript]
-     70. backend/.dockerignore  [18 lines | Text]
-     71. backend/.env  [43 lines | Env]
-     72. backend/.env.example  [40 lines | Env]
-     73. backend/.env.production  [37 lines | Env]
-     74. backend/.gitignore  [106 lines | Text]
-     75. backend/Byaboneka_Plus_API.postman_collection.json  [711 lines | JSON]
-     76. backend/docker-compose.yml  [44 lines | YAML]
-     77. backend/Dockerfile  [55 lines | Text]
-     78. backend/jest.config.js  [38 lines | JavaScript]
-     79. backend/package.json  [73 lines | JSON]
-     80. backend/README.md  [46 lines | Markdown]
-     81. backend/tsconfig.json  [21 lines | JSON]
-     82. backend/tsconfig.test.json  [13 lines | JSON]
+     26. backend/src/migrations/007_logic_refactor.ts  [127 lines | TypeScript]
+     27. backend/src/migrations/rollback.ts  [19 lines | TypeScript]
+     28. backend/src/migrations/run.ts  [32 lines | TypeScript]
+     29. backend/src/routes/accountRoutes.ts  [48 lines | TypeScript]
+     30. backend/src/routes/enhancedRoutes.ts  [558 lines | TypeScript]
+     31. backend/src/routes/index.ts  [632 lines | TypeScript]
+     32. backend/src/routes/novelFeatureRoutes.ts  [342 lines | TypeScript]
+     33. backend/src/seeds/run.ts  [659 lines | TypeScript]
+     34. backend/src/services/accountLockoutService.ts  [107 lines | TypeScript]
+     35. backend/src/services/auditService.ts  [271 lines | TypeScript]
+     36. backend/src/services/cooperativeAccountabilityService.ts  [322 lines | TypeScript]
+     37. backend/src/services/dataRetentionService.ts  [168 lines | TypeScript]
+     38. backend/src/services/disputeService.ts  [490 lines | TypeScript]
+     39. backend/src/services/duplicateDetectionService.ts  [342 lines | TypeScript]
+     40. backend/src/services/emailService.ts  [706 lines | TypeScript]
+     41. backend/src/services/emailVerificationService.ts  [194 lines | TypeScript]
+     42. backend/src/services/expiryService.ts  [209 lines | TypeScript]
+     43. backend/src/services/fraudDetectionService.ts  [413 lines | TypeScript]
+     44. backend/src/services/matchingService.ts  [352 lines | TypeScript]
+     45. backend/src/services/matchNotificationTrigger.ts  [85 lines | TypeScript]
+     46. backend/src/services/otpService.ts  [391 lines | TypeScript]
+     47. backend/src/services/sensitiveRedactionService.ts  [261 lines | TypeScript]
+     48. backend/src/services/trustService.ts  [286 lines | TypeScript]
+     49. backend/src/services/trustTransparencyService.ts  [124 lines | TypeScript]
+     50. backend/src/services/verificationAttemptsService.ts  [62 lines | TypeScript]
+     51. backend/src/services/verificationCooldownService.ts  [263 lines | TypeScript]
+     52. backend/src/services/verificationStrengthService.ts  [310 lines | TypeScript]
+     53. backend/src/types/index.ts  [382 lines | TypeScript]
+     54. backend/src/utils/index.ts  [503 lines | TypeScript]
+     55. backend/src/index.swagger-patch.ts  [32 lines | TypeScript]
+     56. backend/src/index.ts  [336 lines | TypeScript]
+     57. backend/tests/integration/api.test.ts  [326 lines | TypeScript]
+     58. backend/tests/performance/load-test.ts  [240 lines | TypeScript]
+     59. backend/tests/unit/matching.test.ts  [144 lines | TypeScript]
+     60. backend/tests/unit/middleware.test.ts  [131 lines | TypeScript]
+     61. backend/tests/unit/novel-features.test.ts  [262 lines | TypeScript]
+     62. backend/tests/unit/trust.test.ts  [115 lines | TypeScript]
+     63. backend/tests/unit/utils.test.ts  [168 lines | TypeScript]
+     64. backend/tests/unit/validation.test.ts  [238 lines | TypeScript]
+     65. backend/tests/integration.test.ts  [229 lines | TypeScript]
+     66. backend/tests/matching.test.ts  [127 lines | TypeScript]
+     67. backend/tests/setup.ts  [26 lines | TypeScript]
+     68. backend/tests/trust.test.ts  [143 lines | TypeScript]
+     69. backend/tests/utils.test.ts  [169 lines | TypeScript]
+     70. backend/tests/validation.test.ts  [408 lines | TypeScript]
+     71. backend/.dockerignore  [18 lines | Text]
+     72. backend/.env  [45 lines | Env]
+     73. backend/.env.example  [40 lines | Env]
+     74. backend/.env.production  [39 lines | Env]
+     75. backend/.gitignore  [106 lines | Text]
+     76. backend/Byaboneka_Plus_API.postman_collection.json  [711 lines | JSON]
+     77. backend/docker-compose.yml  [44 lines | YAML]
+     78. backend/Dockerfile  [55 lines | Text]
+     79. backend/jest.config.js  [38 lines | JavaScript]
+     80. backend/package.json  [73 lines | JSON]
+     81. backend/README.md  [46 lines | Markdown]
+     82. backend/tsconfig.json  [21 lines | JSON]
+     83. backend/tsconfig.test.json  [15 lines | JSON]
 
   📁 docs/
       1. docs/postman/Byaboneka-API.postman_collection.json  [784 lines | JSON]
@@ -349,12 +351,12 @@
      11. frontend/src/components/HandoverOTPPanel.tsx  [289 lines | TSX]
      12. frontend/src/components/LanguageSwitcher.tsx  [71 lines | TSX]
      13. frontend/src/components/LoadingSplash.tsx  [19 lines | TSX]
-     14. frontend/src/components/SafeHandoverLocationPicker.tsx  [182 lines | TSX]
+     14. frontend/src/components/SafeHandoverLocationPicker.tsx  [188 lines | TSX]
      15. frontend/src/components/SafetyWarningBanner.tsx  [126 lines | TSX]
      16. frontend/src/components/ScamReportButton.tsx  [193 lines | TSX]
      17. frontend/src/components/ScrollToTop.tsx  [15 lines | TSX]
      18. frontend/src/components/SkipLink.tsx  [30 lines | TSX]
-     19. frontend/src/components/VerificationStrengthIndicator.tsx  [238 lines | TSX]
+     19. frontend/src/components/VerificationStrengthIndicator.tsx  [263 lines | TSX]
      20. frontend/src/hooks/useAccessibleRouting.ts  [66 lines | TypeScript]
      21. frontend/src/hooks/useRecaptcha.ts  [140 lines | TypeScript]
      22. frontend/src/i18n/locales/en.json  [751 lines | JSON]
@@ -383,16 +385,16 @@
      45. frontend/src/pages/NotFoundPage.tsx  [48 lines | TSX]
      46. frontend/src/pages/PrivacyPolicyPage.tsx  [234 lines | TSX]
      47. frontend/src/pages/RegisterPage.tsx  [341 lines | TSX]
-     48. frontend/src/pages/ReportFoundPage.tsx  [358 lines | TSX]
-     49. frontend/src/pages/ReportLostPage.tsx  [521 lines | TSX]
+     48. frontend/src/pages/ReportFoundPage.tsx  [433 lines | TSX]
+     49. frontend/src/pages/ReportLostPage.tsx  [452 lines | TSX]
      50. frontend/src/pages/ResetPasswordPage.tsx  [160 lines | TSX]
      51. frontend/src/pages/SearchPage.tsx  [403 lines | TSX]
      52. frontend/src/pages/SettingsPage.tsx  [466 lines | TSX]
      53. frontend/src/pages/TermsPage.tsx  [225 lines | TSX]
-     54. frontend/src/services/api.ts  [582 lines | TypeScript]
+     54. frontend/src/services/api.ts  [594 lines | TypeScript]
      55. frontend/src/services/novelFeatureApi.ts  [83 lines | TypeScript]
      56. frontend/src/store/authStore.ts  [69 lines | TypeScript]
-     57. frontend/src/types/index.ts  [322 lines | TypeScript]
+     57. frontend/src/types/index.ts  [291 lines | TypeScript]
      58. frontend/src/utils/dateUtils.ts  [60 lines | TypeScript]
      59. frontend/src/utils/index.ts  [1 lines | TypeScript]
      60. frontend/src/App.tsx  [332 lines | TSX]
@@ -1542,7 +1544,7 @@ docker-compose.yml
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: backend/.env
-│ Language: Env | Lines: 43 | Size: 1.4 KB
+│ Language: Env | Lines: 45 | Size: 1.4 KB
 └────────────────────────────────────────────────────────────┘
 
 # ============================================
@@ -1556,7 +1558,7 @@ DATABASE_URL=postgresql://byaboneka:TEYt33pLScaeIjhhE7R64VNGvkxpQkeE@dpg-d64abqe
 # JWT (generate your own for production: openssl rand -hex 32)
 JWT_SECRET=IfYkjGPA49Sdl6hZQUhiVt7cAbU8jfNpM8WPiEU1SlKQ1fah4fTpDOo6bZ3YzW6C
 JWT_REFRESH_SECRET=wBehaxdjzDoN85tOkqD3Pp4iuxiA2aPvTF9TfKWOdZIT20pL94h4VVdSR9eg+0Wq
-JWT_ACCESS_EXPIRY=15m
+JWT_ACCESS_EXPIRY=60m
 JWT_REFRESH_EXPIRY=7d
 
 # Server
@@ -1587,6 +1589,8 @@ FRONTEND_URL=http://localhost:3000
 # Get keys at: https://www.google.com/recaptcha/admin (choose v3)
 RECAPTCHA_SECRET_KEY=6LdKK3csAAAAAOKxGWb9pLAf-0mkxVkwIN6KMVnv
 RECAPTCHA_MIN_SCORE=0.5
+
+EMAIL_VERIFICATION_REQUIRED=false
 
 
 
@@ -1639,7 +1643,7 @@ RECAPTCHA_MIN_SCORE=0.5
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: backend/.env.production
-│ Language: Env | Lines: 37 | Size: 1.2 KB
+│ Language: Env | Lines: 39 | Size: 1.3 KB
 └────────────────────────────────────────────────────────────┘
 
 # Database
@@ -1648,7 +1652,7 @@ DATABASE_URL=postgresql://byaboneka:TEYt33pLScaeIjhhE7R64VNGvkxpQkeE@dpg-d64abqe
 # JWT Configuration (MUST MATCH YOUR RENDER ENVIRONMENT VARIABLES)
 JWT_SECRET=IfYkjGPA49Sdl6hZQUhiVt7cAbU8jfNpM8WPiEU1SlKQ1fah4fTpDOo6bZ3YzW6C
 JWT_REFRESH_SECRET=wBehaxdjzDoN85tOkqD3Pp4iuxiA2aPvTF9TfKWOdZIT20pL94h4VVdSR9eg+0Wq
-JWT_ACCESS_EXPIRY=15m
+JWT_ACCESS_EXPIRY=60m
 JWT_REFRESH_EXPIRY=7d
 
 # Server Configuration
@@ -1678,7 +1682,9 @@ FRONTEND_URL=https://byaboneka-plus.vercel.app
 # Google reCAPTCHA v3
 # Get keys at: https://www.google.com/recaptcha/admin (choose v3)
 RECAPTCHA_SECRET_KEY=6LdMfm4sAAAAAKRi2Py99ymBseSV4YNMA05EDgg2
-RECAPTCHA_MIN_SCORE=0.5
+RECAPTCHA_MIN_SCORE=0.
+
+EMAIL_VERIFICATION_REQUIRED=false
 
 
 ┌────────────────────────────────────────────────────────────┐
@@ -4289,7 +4295,7 @@ export async function exportUserData(req: Request, res: Response): Promise<void>
     const [userResult, lostItems, foundItems, claims, messages, auditLogs] = await Promise.all([
       query('SELECT id, email, name, phone, role, trust_score, email_verified, phone_verified, created_at FROM users WHERE id = $1', [userId]),
       query('SELECT id, category, title, description, location_area, location_hint, lost_date, status, created_at FROM lost_items WHERE user_id = $1 ORDER BY created_at DESC', [userId]),
-      query('SELECT id, category, title, description, location_area, location_hint, found_date, status, created_at FROM found_items WHERE user_id = $1 ORDER BY created_at DESC', [userId]),
+      query('SELECT id, category, title, description, location_area, location_hint, found_date, status, created_at FROM found_items WHERE finder_id = $1 ORDER BY created_at DESC', [userId]),
       query('SELECT id, lost_item_id, found_item_id, status, verification_score, attempts_made, created_at FROM claims WHERE claimant_id = $1 ORDER BY created_at DESC', [userId]),
       query('SELECT id, claim_id, content, is_read, created_at FROM messages WHERE sender_id = $1 ORDER BY created_at DESC', [userId]),
       query('SELECT action, resource_type, resource_id, timestamp FROM audit_logs WHERE actor_id = $1 ORDER BY timestamp DESC LIMIT 100', [userId]),
@@ -5327,12 +5333,12 @@ export async function changePassword(req: Request, res: Response): Promise<void>
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: backend/src/controllers/claimsController.ts
-│ Language: TypeScript | Lines: 681 | Size: 21.0 KB
+│ Language: TypeScript | Lines: 776 | Size: 24.9 KB
 └────────────────────────────────────────────────────────────┘
 
 import { Request, Response } from 'express';
 import { query, transaction } from '../config/database';
-import { verifySecretAnswer, parsePaginationParams, generateOTP, hashOTP, verifyOTP } from '../utils';
+import { verifySecretAnswer, parsePaginationParams, generateOTP, hashOTP, verifyOTP, hashSecretAnswer } from '../utils';
 import { logClaimAttempt, logOtpAction, logAudit, extractRequestMeta } from '../services/auditService';
 import { onFailedVerification, onSuccessfulReturn, onMultipleFailedClaims } from '../services/trustService';
 import { ClaimStatus, UserRole } from '../types';
@@ -5351,79 +5357,63 @@ export async function createClaim(req: Request, res: Response): Promise<void> {
 
     // Verify lost item exists and belongs to claimant
     const lostItem = await query(
-      'SELECT id, user_id, status FROM lost_items WHERE id = $1',
-      [lost_item_id]
+      'SELECT id, user_id, status FROM lost_items WHERE id = $1', [lost_item_id]
     );
-
     if (lostItem.rows.length === 0) {
-      res.status(404).json({ success: false, message: 'Lost item not found' });
-      return;
+      res.status(404).json({ success: false, message: 'Lost item not found' }); return;
     }
-
     if (lostItem.rows[0].user_id !== userId) {
-      res.status(403).json({ success: false, message: 'You can only claim items for your own lost reports' });
-      return;
+      res.status(403).json({ success: false, message: 'You can only claim items for your own lost reports' }); return;
     }
-
     if (lostItem.rows[0].status !== 'ACTIVE') {
-      res.status(400).json({ success: false, message: 'This lost item is no longer active' });
-      return;
+      res.status(400).json({ success: false, message: 'This lost item is no longer active' }); return;
     }
 
     // Verify found item exists and is unclaimed
     const foundItem = await query(
-      'SELECT id, status FROM found_items WHERE id = $1',
-      [found_item_id]
+      'SELECT id, status, finder_id FROM found_items WHERE id = $1', [found_item_id]
     );
-
     if (foundItem.rows.length === 0) {
-      res.status(404).json({ success: false, message: 'Found item not found' });
-      return;
+      res.status(404).json({ success: false, message: 'Found item not found' }); return;
     }
-
     if (foundItem.rows[0].status !== 'UNCLAIMED') {
-      res.status(400).json({ success: false, message: 'This found item is no longer available' });
-      return;
+      res.status(400).json({ success: false, message: 'This found item is no longer available' }); return;
     }
 
-    // Check for existing active claim
+    // Check existing active claim
     const existingClaim = await query(
       `SELECT id FROM claims 
        WHERE lost_item_id = $1 AND found_item_id = $2 AND claimant_id = $3
        AND status NOT IN ('CANCELLED', 'REJECTED', 'EXPIRED')`,
       [lost_item_id, found_item_id, userId]
     );
-
     if (existingClaim.rows.length > 0) {
-      res.status(409).json({ 
-        success: false, 
-        message: 'You already have an active claim for this item',
-        claim_id: existingClaim.rows[0].id
-      });
-      return;
+      res.status(409).json({ success: false, message: 'You already have an active claim for this item' }); return;
     }
 
-    // Create claim
+    // Create claim with PENDING_QUESTIONS status — waiting for finder to set questions
     const result = await query(
       `INSERT INTO claims (lost_item_id, found_item_id, claimant_id, status)
-       VALUES ($1, $2, $3, 'PENDING')
+       VALUES ($1, $2, $3, 'PENDING_QUESTIONS')
        RETURNING *`,
       [lost_item_id, found_item_id, userId]
     );
 
-    // Notify the lost item owner about the new claim
+    // Notify the FINDER that someone is claiming this item
+    // The finder needs to set verification questions
     try {
-      const ownerInfo = await query(
-        `SELECT u.email, u.name, li.title 
-         FROM lost_items li JOIN users u ON li.user_id = u.id 
-         WHERE li.id = $1`,
-        [lost_item_id]
+      const finderInfo = await query(
+        `SELECT u.email, u.name, fi.title 
+         FROM found_items fi JOIN users u ON fi.finder_id = u.id 
+         WHERE fi.id = $1`,
+        [found_item_id]
       );
-      if (ownerInfo.rows[0]) {
+      if (finderInfo.rows[0]) {
+        // Send email to finder: "Someone claims this is their item. Please set verification questions."
         sendClaimNotificationEmail(
-          ownerInfo.rows[0].email,
-          ownerInfo.rows[0].name,
-          ownerInfo.rows[0].title,
+          finderInfo.rows[0].email,
+          finderInfo.rows[0].name,
+          finderInfo.rows[0].title,
           result.rows[0].id
         ).catch(err => console.error('Claim notification email failed:', err.message));
       }
@@ -5434,11 +5424,118 @@ export async function createClaim(req: Request, res: Response): Promise<void> {
     res.status(201).json({
       success: true,
       data: result.rows[0],
-      message: 'Claim created. Please complete verification to proceed.'
+      message: 'Claim created. The finder will be notified to set verification questions.'
     });
   } catch (error) {
     console.error('Create claim error:', error);
     res.status(500).json({ success: false, message: 'Failed to create claim' });
+  }
+}
+
+export async function setVerificationQuestions(req: Request, res: Response): Promise<void> {
+  try {
+    const { claimId } = req.params;
+    const userId = req.user!.userId;
+    const { questions } = req.body; // Array of { question, answer }
+
+    // Get claim and verify the user is the finder
+    const claimResult = await query(
+      `SELECT c.*, fi.finder_id
+       FROM claims c
+       JOIN found_items fi ON c.found_item_id = fi.id
+       WHERE c.id = $1`,
+      [claimId]
+    );
+
+    if (claimResult.rows.length === 0) {
+      res.status(404).json({ success: false, message: 'Claim not found' }); return;
+    }
+
+    const claim = claimResult.rows[0];
+
+    // Only the finder (or coop staff) can set questions
+    const isFinder = claim.finder_id === userId;
+    const isCoopStaff = req.user!.role === UserRole.COOP_STAFF;
+    if (!isFinder && !isCoopStaff) {
+      res.status(403).json({ 
+        success: false, 
+        message: 'Only the finder or cooperative staff can set verification questions' 
+      }); 
+      return;
+    }
+
+    if (claim.status !== 'PENDING_QUESTIONS') {
+      res.status(400).json({ 
+        success: false, 
+        message: 'Verification questions can only be set when claim is awaiting questions' 
+      }); 
+      return;
+    }
+
+    // Check if questions already exist for this claim
+    const existing = await query(
+      'SELECT id FROM verification_secrets WHERE claim_id = $1', [claimId]
+    );
+    if (existing.rows.length > 0) {
+      res.status(409).json({ success: false, message: 'Verification questions already set for this claim' }); return;
+    }
+
+    // Hash answers and store
+    const q1 = await hashSecretAnswer(questions[0].answer);
+    const q2 = await hashSecretAnswer(questions[1].answer);
+    const q3 = await hashSecretAnswer(questions[2].answer);
+
+    await transaction(async (client) => {
+      await client.query(
+        `INSERT INTO verification_secrets 
+         (claim_id, created_by,
+          question_1_text, answer_1_hash, answer_1_salt,
+          question_2_text, answer_2_hash, answer_2_salt,
+          question_3_text, answer_3_hash, answer_3_salt)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+        [claimId, userId,
+         questions[0].question, q1.hash, q1.salt,
+         questions[1].question, q2.hash, q2.salt,
+         questions[2].question, q3.hash, q3.salt]
+      );
+
+      // Move claim to PENDING (ready for owner to answer)
+      await client.query(
+        `UPDATE claims SET status = 'PENDING' WHERE id = $1`, [claimId]
+      );
+    });
+
+    // Notify the owner that questions are ready
+    try {
+      const ownerInfo = await query(
+        `SELECT u.email, u.name, li.title 
+         FROM claims c
+         JOIN lost_items li ON c.lost_item_id = li.id 
+         JOIN users u ON c.claimant_id = u.id 
+         WHERE c.id = $1`,
+        [claimId]
+      );
+      if (ownerInfo.rows[0]) {
+        sendClaimResultEmail(
+          ownerInfo.rows[0].email,
+          ownerInfo.rows[0].name,
+          ownerInfo.rows[0].title,
+          parseInt(claimId),
+          false, // not verified yet
+          0
+        ).catch(err => console.error('Question notification email failed:', err.message));
+      }
+    } catch (emailErr) {
+      console.error('Failed to send question notification:', emailErr);
+    }
+
+    res.status(201).json({
+      success: true,
+      message: 'Verification questions set. The owner will now be asked to verify.'
+    });
+  } catch (error) {
+    console.error('Set verification questions error:', error);
+    res.status(500).json({ success: false, message: 'Failed to set verification questions' });
   }
 }
 
@@ -5568,8 +5665,8 @@ export async function verifyClaim(req: Request, res: Response): Promise<void> {
 
     // Get secrets
     const secrets = await query(
-      `SELECT * FROM verification_secrets WHERE lost_item_id = $1`,
-      [claim.lost_item_id]
+      `SELECT * FROM verification_secrets WHERE claim_id = $1`,
+      [claimId]
     );
 
     if (secrets.rows.length === 0) {
@@ -5898,16 +5995,18 @@ export async function getClaim(req: Request, res: Response): Promise<void> {
 
     const result = await query(
       `SELECT c.*, 
-              li.title as lost_item_title, li.category,
-              fi.title as found_item_title, fi.finder_id,
-              h.otp_expires_at, h.otp_verified,
-              u.name as claimant_name
-       FROM claims c
-       JOIN lost_items li ON c.lost_item_id = li.id
-       JOIN found_items fi ON c.found_item_id = fi.id
-       LEFT JOIN handover_confirmations h ON h.claim_id = c.id
-       JOIN users u ON c.claimant_id = u.id
-       WHERE c.id = $1`,
+                    li.title as lost_item_title, li.category,
+                    li.location_area as lost_item_area,
+                    fi.title as found_item_title, fi.finder_id,
+                    fi.location_area as found_item_area,
+                    h.otp_expires_at, h.otp_verified,
+                    u.name as claimant_name
+            FROM claims c
+            JOIN lost_items li ON c.lost_item_id = li.id
+            JOIN found_items fi ON c.found_item_id = fi.id
+            LEFT JOIN handover_confirmations h ON h.claim_id = c.id
+            JOIN users u ON c.claimant_id = u.id
+            WHERE c.id = $1`,
       [claimId]
     );
 
@@ -5950,7 +6049,9 @@ export async function getMyClaims(req: Request, res: Response): Promise<void> {
     const result = await query(
       `SELECT c.*, 
               li.title as lost_item_title, li.category,
+              li.location_area as lost_item_area,
               fi.title as found_item_title,
+              fi.location_area as found_item_area,
               h.otp_expires_at, h.otp_verified
        FROM claims c
        JOIN lost_items li ON c.lost_item_id = li.id
@@ -6357,7 +6458,7 @@ export async function getCooperativeDashboard(req: Request, res: Response): Prom
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: backend/src/controllers/foundItemsController.ts
-│ Language: TypeScript | Lines: 438 | Size: 14.0 KB
+│ Language: TypeScript | Lines: 454 | Size: 14.3 KB
 └────────────────────────────────────────────────────────────┘
 
 import { Request, Response } from 'express';
@@ -6471,7 +6572,9 @@ export async function getFoundItems(req: Request, res: Response): Promise<void> 
     }
 
     if (keyword) {
-      conditions.push(`(LOWER(f.title) LIKE LOWER($${paramIndex}) OR LOWER(f.description) LIKE LOWER($${paramIndex}))`);
+      conditions.push(
+        `(LOWER(f.title) LIKE LOWER($${paramIndex}) OR LOWER(f.description) LIKE LOWER($${paramIndex}))`
+      );
       params.push(`%${keyword}%`);
       paramIndex++;
     }
@@ -6495,17 +6598,20 @@ export async function getFoundItems(req: Request, res: Response): Promise<void> 
       [...params, limit, offset]
     );
 
-    // THREAT-7.4: Apply sensitive content redaction to list results
     const userId = req.user?.userId;
+
+    // THREAT-7.4: Apply sensitive content redaction to list results
     const redactedItems = redactItemList(result.rows, userId);
 
-    // For ID/WALLET categories, also hide images from non-owners in list view
+    // THREAT-7.4: Hide images unless finder/coop_staff/admin (ALL categories)
     for (const item of redactedItems) {
-      if (['ID', 'WALLET'].includes(item.category)) {
-        const isOwner = userId !== undefined && item.finder_id === userId;
-        if (!isOwner) {
-          item.image_urls = []; // Hide images for sensitive categories
-        }
+      const canSeeImages =
+        (userId !== undefined && item.finder_id === userId) ||
+        req.user?.role === 'coop_staff' ||
+        req.user?.role === 'admin';
+
+      if (!canSeeImages) {
+        item.image_urls = [];
       }
     }
 
@@ -6516,8 +6622,8 @@ export async function getFoundItems(req: Request, res: Response): Promise<void> 
         page,
         limit,
         total,
-        totalPages: Math.ceil(total / limit)
-      }
+        totalPages: Math.ceil(total / limit),
+      },
     });
   } catch (error) {
     console.error('Get found items error:', error);
@@ -6525,6 +6631,7 @@ export async function getFoundItems(req: Request, res: Response): Promise<void> 
   }
 }
 
+// Get single found item — WITH REDACTION (THREAT-7.4)
 // Get single found item — WITH REDACTION (THREAT-7.4)
 export async function getFoundItem(req: Request, res: Response): Promise<void> {
   try {
@@ -6545,7 +6652,15 @@ export async function getFoundItem(req: Request, res: Response): Promise<void> {
     }
 
     const item = result.rows[0];
-    const isOwner = req.user?.userId === item.finder_id;
+    const userId = req.user?.userId;
+
+    const isOwner = userId === item.finder_id;
+
+    // THREAT-7.4: Only show images to finder, coop staff, or admin
+    const canSeeImages =
+      userId === item.finder_id ||
+      req.user?.role === 'coop_staff' ||
+      req.user?.role === 'admin';
 
     // THREAT-7.4: Apply redaction for non-owners
     if (!isOwner) {
@@ -6559,16 +6674,18 @@ export async function getFoundItem(req: Request, res: Response): Promise<void> {
 
       // Add privacy notice if redactions were applied
       if (descResult.redactions_applied.length > 0 || titleResult.redactions_applied.length > 0) {
-        item._privacy_notice = 'Some sensitive information has been redacted for privacy protection. Full details visible after ownership verification.';
-        item._redaction_count = descResult.redactions_applied.length + titleResult.redactions_applied.length;
+        item._privacy_notice =
+          'Some sensitive information has been redacted for privacy protection. Full details visible after ownership verification.';
+        item._redaction_count =
+          descResult.redactions_applied.length + titleResult.redactions_applied.length;
       }
+    }
 
-      // For ID/WALLET categories, hide images from non-owners
-      if (['ID', 'WALLET'].includes(item.category)) {
-        item.image_urls = [];
-        item._images_hidden = true;
-        item._images_note = 'Images are hidden for sensitive items. Verify ownership to see full details.';
-      }
+    // THREAT-7.4: Hide images from public unless allowed (ALL categories)
+    if (!canSeeImages) {
+      item.image_urls = [];
+      item._images_hidden = true;
+      item._images_note = 'Images are hidden for privacy. Verify ownership to see full details.';
     }
 
     res.json({ success: true, data: item });
@@ -6802,7 +6919,7 @@ export async function getMyFoundItems(req: Request, res: Response): Promise<void
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: backend/src/controllers/lostItemsController.ts
-│ Language: TypeScript | Lines: 536 | Size: 15.6 KB
+│ Language: TypeScript | Lines: 480 | Size: 13.9 KB
 └────────────────────────────────────────────────────────────┘
 
 import { Request, Response } from 'express';
@@ -6820,88 +6937,32 @@ import { ItemCategory, LostItemStatus } from '../types';
 export async function createLostItem(req: Request, res: Response): Promise<void> {
   try {
     const userId = req.user!.userId;
-    const {
-      category,
-      title,
-      description,
-      location_area,
-      location_hint,
-      lost_date,
-      photo_url,
-      verification_questions
-    } = req.body;
+    const { category, title, description, location_area, location_hint, lost_date } = req.body;
 
-    // Extract keywords for matching
     const keywords = extractKeywords(`${title} ${description}`);
 
-    // Create lost item and verification secrets in transaction
-    const result = await transaction(async (client) => {
-      // Create lost item
-      const itemResult = await client.query(
-        `INSERT INTO lost_items (user_id, category, title, description, location_area, location_hint, lost_date, keywords, photo_url, image_urls)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-         RETURNING *`,
-        [userId, category, title, description, location_area, location_hint || null, lost_date, keywords, photo_url || null, []]
-      );
+    const result = await query(
+      `INSERT INTO lost_items (user_id, category, title, description, location_area, 
+       location_hint, lost_date, keywords, image_urls)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+       RETURNING *`,
+      [userId, category, title, description, location_area, 
+       location_hint || null, lost_date, keywords, []]
+    );
 
-      const lostItem = itemResult.rows[0];
-
-      // Hash verification answers
-      const q1Answer = await hashSecretAnswer(verification_questions[0].answer);
-      const q2Answer = await hashSecretAnswer(verification_questions[1].answer);
-      const q3Answer = await hashSecretAnswer(verification_questions[2].answer);
-
-      // Create verification secrets
-      await client.query(
-        `INSERT INTO verification_secrets (lost_item_id, 
-          question_1_text, answer_1_hash, answer_1_salt,
-          question_2_text, answer_2_hash, answer_2_salt,
-          question_3_text, answer_3_hash, answer_3_salt)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
-        [
-          lostItem.id,
-          verification_questions[0].question, q1Answer.hash, q1Answer.salt,
-          verification_questions[1].question, q2Answer.hash, q2Answer.salt,
-          verification_questions[2].question, q3Answer.hash, q3Answer.salt
-        ]
-      );
-
-      return lostItem;
-    });
-
-    // Log creation
-    await logCreate(req, 'lost_item', result.id, { title, category });
-
-    // Trigger matching in background
-    setImmediate(() => onItemCreated('lost', result.id));
+    await logCreate(req, 'lost_item', result.rows[0].id, { title, category });
+    setImmediate(() => onItemCreated('lost', result.rows[0].id));
 
     res.status(201).json({
       success: true,
-      data: {
-        id: result.id,
-        category: result.category,
-        title: result.title,
-        description: result.description,
-        location_area: result.location_area,
-        location_hint: result.location_hint,
-        lost_date: result.lost_date,
-        status: result.status,
-        keywords: result.keywords || [],
-        photo_url: result.photo_url,
-        image_urls: result.image_urls || [],
-        created_at: result.created_at
-      },
+      data: result.rows[0],
       message: 'Lost item report created successfully'
     });
   } catch (error) {
     console.error('Create lost item error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to create lost item report'
-    });
+    res.status(500).json({ success: false, message: 'Failed to create lost item report' });
   }
 }
-
 // Upload images for lost items (NEW — gap fix)
 export async function uploadLostItemImages(req: Request, res: Response): Promise<void> {
   try {
@@ -7771,7 +7832,7 @@ app.get('/api-docs.json', (req, res) => {
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: backend/src/index.ts
-│ Language: TypeScript | Lines: 330 | Size: 11.7 KB
+│ Language: TypeScript | Lines: 336 | Size: 12.1 KB
 └────────────────────────────────────────────────────────────┘
 
 import fs from 'fs';
@@ -7789,15 +7850,19 @@ import novelFeatureRoutes from './routes/novelFeatureRoutes';
 import { checkConnection, closePool, query } from './config/database';
 import { apiLimiter } from './middleware/rateLimiter';
 import { notFoundHandler, errorHandler } from './middleware/errorHandler';
-import { runMigrations } from './migrations/001_initial';
-import { runPatchMigrations } from './migrations/002_patch';
 import { sendPendingExpiryWarnings, checkEmailHealth } from './services/emailService';
 import { swaggerSpec } from './config/swagger';
 import { csrfProtection } from './middleware/csrf';
 import { runDataRetention } from './services/dataRetentionService';
+
+import { runMigrations } from './migrations/001_initial';
+import { runPatchMigrations } from './migrations/002_patch';
 import { runGapFixMigration } from './migrations/003_gap_fixes';
 import { runComprehensiveFixMigration } from './migrations/004_comprehensive_fixes';
 import { runFinalProductionMigration } from './migrations/005_final_production_fixes';
+import { runComprehensiveBugfixMigration } from './migrations/006_comprehensive_bugfix';
+import { runLogicRefactorMigration } from './migrations/007_logic_refactor';
+
 
 // swagger-ui-express is CJS — use require for reliable loading
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -8056,6 +8121,8 @@ async function startServer() {
     await runGapFixMigration().catch(err => console.warn('Gap fix migration note:', err.message));
     await runComprehensiveFixMigration().catch(err => console.warn('Comprehensive fix migration note:', err.message));
     await runFinalProductionMigration().catch(err => console.warn('Final production migration note:', err.message));
+    await runComprehensiveBugfixMigration().catch(err => console.warn('Comprehensive bugfix migration note:', err.message));
+    await runLogicRefactorMigration().catch(err => console.warn('Logic refactor migration note:', err.message));
 
     // Create uploads directory if it doesn't exist
     if (!fs.existsSync(uploadPath)) {
@@ -8533,7 +8600,7 @@ export function csrfProtection(allowedOrigins: string[]) {
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: backend/src/middleware/emailVerification.ts
-│ Language: TypeScript | Lines: 101 | Size: 2.5 KB
+│ Language: TypeScript | Lines: 107 | Size: 2.8 KB
 └────────────────────────────────────────────────────────────┘
 
 /**
@@ -8562,6 +8629,12 @@ export async function requireVerifiedEmail(
   // FIX BUG-02: Skip email verification in non-production environments
   // This allows the full claim → OTP → handover flow to work during development & testing
   if (process.env.NODE_ENV !== 'production') {
+    return next();
+  }
+
+  // FIX: If EMAIL_VERIFICATION_REQUIRED is explicitly set to 'false', skip check
+  // This allows production demos to work without requiring email verification
+  if (process.env.EMAIL_VERIFICATION_REQUIRED === 'false') {
     return next();
   }
 
@@ -9120,7 +9193,7 @@ export function softRecaptcha(expectedAction: string) {
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: backend/src/middleware/validation.ts
-│ Language: TypeScript | Lines: 226 | Size: 8.1 KB
+│ Language: TypeScript | Lines: 231 | Size: 8.3 KB
 └────────────────────────────────────────────────────────────┘
 
 import { Request, Response, NextFunction } from 'express';
@@ -9214,8 +9287,13 @@ export const createLostItemSchema = z.object({
   location_area: z.string().min(2, 'Location area is required').max(100),
   location_hint: z.string().max(500).optional(),
   lost_date: z.string().datetime({ offset: true }).or(z.string().regex(/^\d{4}-\d{2}-\d{2}$/)),
-  photo_url: z.string().url().optional(),
-  verification_questions: z.array(verificationQuestionSchema).length(3, 'Exactly 3 verification questions required'),
+});
+
+export const setVerificationQuestionsSchema = z.object({
+  questions: z.array(z.object({
+    question: z.string().min(5, 'Question must be at least 5 characters').max(255),
+    answer: z.string().min(1, 'Answer is required').max(255),
+  })).length(3, 'Exactly 3 verification questions required'),
 });
 
 export const updateLostItemSchema = z.object({
@@ -10646,6 +10724,140 @@ export async function runComprehensiveBugfixMigration(): Promise<void> {
 
 
 ┌────────────────────────────────────────────────────────────┐
+│ FILE: backend/src/migrations/007_logic_refactor.ts
+│ Language: TypeScript | Lines: 127 | Size: 4.4 KB
+└────────────────────────────────────────────────────────────┘
+
+import { query } from '../config/database';
+
+/**
+ * Migration 007: Logic Refactor
+ *
+ * Changes the verification flow:
+ * - Verification secrets are now linked to claims (not lost items)
+ * - Finder sets questions, owner answers them
+ * - Photos on found items are marked private
+ * - New claim statuses: PENDING_QUESTIONS, PENDING_VERIFICATION
+ */
+export async function up(): Promise<void> {
+  console.log('🚀 Running migration 007: Logic Refactor...');
+
+  // 1. Add new claim statuses
+  // PostgreSQL doesn't allow inserting enum values at specific positions in a transaction,
+  // so we use DO blocks with exception handling
+  await query(`
+    DO $$ BEGIN
+      ALTER TYPE claim_status ADD VALUE IF NOT EXISTS 'PENDING_QUESTIONS';
+    EXCEPTION WHEN duplicate_object THEN null;
+    END $$;
+  `);
+
+  // 2. Add claim_id and created_by to verification_secrets
+  console.log('  → Adding claim_id and created_by to verification_secrets...');
+  await query(
+    `ALTER TABLE verification_secrets ADD COLUMN IF NOT EXISTS claim_id INTEGER REFERENCES claims(id) ON DELETE CASCADE`
+  );
+  await query(
+    `ALTER TABLE verification_secrets ADD COLUMN IF NOT EXISTS created_by INTEGER REFERENCES users(id)`
+  );
+
+  // 3. Make lost_item_id nullable (new secrets won't have it)
+  console.log('  → Making lost_item_id nullable on verification_secrets...');
+  await query(
+    `ALTER TABLE verification_secrets ALTER COLUMN lost_item_id DROP NOT NULL`
+  );
+
+  // 4. Drop the old unique constraint on lost_item_id and add one for claim_id
+  console.log('  → Updating unique constraints...');
+  await query(`
+    DO $$ BEGIN
+      ALTER TABLE verification_secrets DROP CONSTRAINT IF EXISTS verification_secrets_lost_item_id_key;
+    EXCEPTION WHEN undefined_object THEN null;
+    END $$;
+  `);
+  // Allow one set of questions per claim
+  await query(
+    `CREATE UNIQUE INDEX IF NOT EXISTS idx_verification_secrets_claim_unique ON verification_secrets(claim_id) WHERE claim_id IS NOT NULL`
+  );
+
+  // 5. Add indexes
+  console.log('  → Creating new indexes...');
+  await query(
+    `CREATE INDEX IF NOT EXISTS idx_verification_secrets_claim ON verification_secrets(claim_id)`
+  );
+  await query(
+    `CREATE INDEX IF NOT EXISTS idx_verification_secrets_created_by ON verification_secrets(created_by)`
+  );
+
+  // 6. Add images_private flag to found_items
+  console.log('  → Adding images_private flag to found_items...');
+  await query(
+    `ALTER TABLE found_items ADD COLUMN IF NOT EXISTS images_private BOOLEAN NOT NULL DEFAULT TRUE`
+  );
+
+  // 7. Migrate existing data: link old verification_secrets to their claims where possible
+  console.log('  → Migrating existing verification secrets to claim-based...');
+  await query(`
+    UPDATE verification_secrets vs
+    SET claim_id = c.id
+    FROM claims c
+    WHERE c.lost_item_id = vs.lost_item_id
+    AND vs.claim_id IS NULL
+    AND c.status IN ('PENDING', 'VERIFIED', 'RETURNED')
+  `);
+
+  console.log('✅ Migration 007 completed successfully');
+}
+
+export async function down(): Promise<void> {
+  console.log('🔄 Rolling back migration 007...');
+
+  // Remove columns
+  await query(`ALTER TABLE verification_secrets DROP COLUMN IF EXISTS claim_id`);
+  await query(`ALTER TABLE verification_secrets DROP COLUMN IF EXISTS created_by`);
+  await query(`ALTER TABLE found_items DROP COLUMN IF EXISTS images_private`);
+
+  // Make lost_item_id NOT NULL again
+  await query(
+    `ALTER TABLE verification_secrets ALTER COLUMN lost_item_id SET NOT NULL`
+  );
+
+  // Re-add unique constraint
+  await query(`
+    DO $$ BEGIN
+      ALTER TABLE verification_secrets ADD CONSTRAINT verification_secrets_lost_item_id_key UNIQUE (lost_item_id);
+    EXCEPTION WHEN duplicate_object THEN null;
+    END $$;
+  `);
+
+  // Note: Cannot remove enum values in PostgreSQL, PENDING_QUESTIONS stays
+
+  console.log('✅ Migration 007 rolled back');
+}
+
+/**
+ * Wrapper matching the naming convention used by other migrations
+ * (imported by run.ts and index.ts as runLogicRefactorMigration)
+ */
+export async function runLogicRefactorMigration(): Promise<void> {
+  await up();
+}
+
+// Run if executed directly
+if (require.main === module) {
+  up()
+    .then(() => {
+      console.log('Done');
+      process.exit(0);
+    })
+    .catch((err) => {
+      console.error('Migration failed:', err);
+      process.exit(1);
+    });
+}
+
+
+┌────────────────────────────────────────────────────────────┐
 │ FILE: backend/src/migrations/rollback.ts
 │ Language: TypeScript | Lines: 19 | Size: 397 B
 └────────────────────────────────────────────────────────────┘
@@ -10673,18 +10885,31 @@ main();
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: backend/src/migrations/run.ts
-│ Language: TypeScript | Lines: 19 | Size: 394 B
+│ Language: TypeScript | Lines: 32 | Size: 1.4 KB
 └────────────────────────────────────────────────────────────┘
 
 import dotenv from 'dotenv';
 dotenv.config();
 
 import { runMigrations } from './001_initial';
+import { runPatchMigrations } from './002_patch';
+import { runGapFixMigration } from './003_gap_fixes';
+import { runComprehensiveFixMigration } from './004_comprehensive_fixes';
+import { runFinalProductionMigration } from './005_final_production_fixes';
+import { runComprehensiveBugfixMigration } from './006_comprehensive_bugfix';
+import { runLogicRefactorMigration } from './007_logic_refactor';
 import { closePool } from '../config/database';
 
 async function main() {
   try {
+    console.log('🚀 Running all migrations...');
     await runMigrations();
+    await runPatchMigrations();
+    await runGapFixMigration().catch(err => console.warn('Gap fix migration note:', err.message));
+    await runComprehensiveFixMigration().catch(err => console.warn('Comprehensive fix migration note:', err.message));
+    await runFinalProductionMigration().catch(err => console.warn('Final production migration note:', err.message));
+    await runComprehensiveBugfixMigration().catch(err => console.warn('Comprehensive bugfix migration note:', err.message));
+    await runLogicRefactorMigration().catch(err => console.warn('Logic refactor migration note:', err.message));
     console.log('✅ All migrations completed');
   } catch (error) {
     console.error('❌ Migration failed:', error);
@@ -10754,7 +10979,7 @@ export default router;
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: backend/src/routes/enhancedRoutes.ts
-│ Language: TypeScript | Lines: 546 | Size: 14.4 KB
+│ Language: TypeScript | Lines: 558 | Size: 15.0 KB
 └────────────────────────────────────────────────────────────┘
 
 /**
@@ -10838,9 +11063,21 @@ enhancedRouter.post('/claims/:claimId/handover/otp',
         },
         message: result.message
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Generate OTP error:', error);
-      res.status(500).json({ success: false, message: 'Failed to generate handover code' });
+      // Provide more specific error messages
+      if (error.code === '42703') {
+        // Column not found - database schema issue
+        res.status(500).json({ success: false, message: 'Database schema error. Please contact support.' });
+      } else if (error.code === '23503') {
+        // Foreign key violation
+        res.status(400).json({ success: false, message: 'Referenced record not found' });
+      } else if (error.code === '23505') {
+        // Unique violation - OTP already exists
+        res.status(409).json({ success: false, message: 'A handover code already exists for this claim' });
+      } else {
+        res.status(500).json({ success: false, message: 'Failed to generate handover code' });
+      }
     }
   }
 );
@@ -11307,7 +11544,7 @@ export default enhancedRouter;
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: backend/src/routes/index.ts
-│ Language: TypeScript | Lines: 625 | Size: 16.0 KB
+│ Language: TypeScript | Lines: 632 | Size: 16.2 KB
 └────────────────────────────────────────────────────────────┘
 
 import { Router } from 'express';
@@ -11328,7 +11565,7 @@ import * as cooperativesController from '../controllers/cooperativesController';
 import { authenticate, optionalAuth, adminOnly, authorize, adminOrCoopStaff } from '../middleware/auth';
 import { validate, registerSchema, loginSchema, refreshTokenSchema, forgotPasswordSchema, resetPasswordSchema,
          createLostItemSchema, updateLostItemSchema, createFoundItemSchema, updateFoundItemSchema,
-         createClaimSchema, verifyClaimSchema, verifyOtpSchema, sendMessageSchema } from '../middleware/validation';
+         createClaimSchema, verifyClaimSchema, setVerificationQuestionsSchema, verifyOtpSchema, sendMessageSchema } from '../middleware/validation';
 import { authLimiter, reportLimiter, claimLimiter, verificationLimiter, otpLimiter, messageLimiter, 
          passwordResetLimiter, searchLimiter } from '../middleware/rateLimiter';
 import { UserRole } from '../types';
@@ -11596,6 +11833,13 @@ router.post('/claims/:claimId/cancel',
 router.get('/users/me/claims',
   authenticate,
   claimsController.getMyClaims
+);
+
+// Finder sets verification questions for a claim
+router.post('/claims/:claimId/questions',
+  authenticate,
+  validate(setVerificationQuestionsSchema),
+  claimsController.setVerificationQuestions
 );
 
 // NOTE: Handover OTP routes are in enhancedRoutes.ts (single implementation)
@@ -11939,7 +12183,7 @@ export default router;
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: backend/src/routes/novelFeatureRoutes.ts
-│ Language: TypeScript | Lines: 318 | Size: 9.5 KB
+│ Language: TypeScript | Lines: 342 | Size: 10.5 KB
 └────────────────────────────────────────────────────────────┘
 
 import { Router, Request, Response } from 'express';
@@ -12224,20 +12468,44 @@ router.post('/privacy/preview-redaction',
 );
 
 // Safe locations
-router.get('/handover/safe-locations',
-  authenticate,
-  async (req: Request, res: Response) => {
-    res.json({ success: true, data: SAFE_HANDOVER_POINTS });
-  }
-);
-
 router.get('/handover/recommended-locations',
   authenticate,
   async (req: Request, res: Response) => {
     const { area, category } = req.query;
 
-    if (!area) {
-      res.status(400).json({ success: false, message: 'area query parameter is required' });
+    // If no area provided, return all safe locations as fallback instead of 400
+    if (!area || (typeof area === 'string' && area.trim() === '')) {
+      try {
+        const allLocations = await query(
+          `SELECT * FROM safe_handover_locations ORDER BY safety_rating DESC LIMIT 10`
+        );
+        res.json({
+          success: true,
+          data: allLocations.rows,
+          meta: {
+            search_area: 'all',
+            category: category || 'OTHER',
+            safety_note:
+              'Always meet at the recommended location during operating hours. For sensitive items (ID, wallet, phone), cooperative offices and sector offices are strongly recommended.'
+          }
+        });
+      } catch {
+        // If safe_handover_locations table doesn't exist, use the function with a default area
+        const recommendations = recommendHandoverLocations(
+          'Kigali',
+          (category as string) || 'OTHER'
+        );
+        res.json({
+          success: true,
+          data: recommendations,
+          meta: {
+            search_area: 'Kigali',
+            category: category || 'OTHER',
+            safety_note:
+              'Always meet at the recommended location during operating hours.'
+          }
+        });
+      }
       return;
     }
 
@@ -12264,7 +12532,7 @@ export default router;
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: backend/src/seeds/run.ts
-│ Language: TypeScript | Lines: 654 | Size: 50.0 KB
+│ Language: TypeScript | Lines: 659 | Size: 50.2 KB
 └────────────────────────────────────────────────────────────┘
 
 import dotenv from 'dotenv';
@@ -12286,7 +12554,12 @@ async function hashPassword(password: string): Promise<string> {
 
 async function hashAnswer(answer: string): Promise<{ hash: string; salt: string }> {
   const salt = crypto.randomBytes(16).toString('hex');
-  const normalized = answer.toLowerCase().trim();
+  // MUST match normalizeAnswer() in utils/index.ts exactly
+  const normalized = answer
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s]/g, '')  // Remove punctuation
+    .replace(/\s+/g, ' ');    // Collapse whitespace
   const hash = await bcrypt.hash(normalized + salt, 10);
   return { hash, salt };
 }
@@ -18870,7 +19143,7 @@ function getJwtRefreshSecret(): string {
   return secret || 'dev_refresh_secret_change_in_production_min_32';
 }
 
-const ACCESS_TOKEN_EXPIRY = '15m';
+const ACCESS_TOKEN_EXPIRY = process.env.JWT_ACCESS_EXPIRY || '60m';
 const REFRESH_TOKEN_EXPIRY = '7d';
 
 export function generateAccessToken(payload: TokenPayload): string {
@@ -21203,7 +21476,7 @@ describe('JWT Tokens', () => {
     const decoded = verifyAccessToken(generateAccessToken(payload));
     expect(decoded).toHaveProperty('iat');
     expect(decoded).toHaveProperty('exp');
-    expect(decoded.exp! - decoded.iat!).toBe(900); // 15 min
+    expect(decoded.exp! - decoded.iat!).toBe(3600); // 60 min
   });
 });
 
@@ -21301,13 +21574,13 @@ describe('Utility Functions', () => {
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: backend/tests/unit/validation.test.ts
-│ Language: TypeScript | Lines: 192 | Size: 6.3 KB
+│ Language: TypeScript | Lines: 238 | Size: 8.0 KB
 └────────────────────────────────────────────────────────────┘
 
 import {
   registerSchema, loginSchema, createLostItemSchema, createFoundItemSchema,
   createClaimSchema, verifyClaimSchema, verifyOtpSchema, sendMessageSchema,
-  createCooperativeSchema, banUserSchema,
+  createCooperativeSchema, banUserSchema, setVerificationQuestionsSchema,
 } from '../../src/middleware/validation';
 import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 
@@ -21358,17 +21631,14 @@ describe('Login Schema', () => {
 });
 
 describe('Create Lost Item Schema', () => {
+  // After the logic refactor (migration 007), verification questions are no longer
+  // part of lost item creation. The finder sets questions on the claim instead.
   const valid = {
     category: 'PHONE',
     title: 'Lost Samsung',
     description: 'Black Samsung phone with blue case found on bus',
     location_area: 'Nyabugogo',
     lost_date: '2026-02-10T14:00:00Z',
-    verification_questions: [
-      { question: 'What is the wallpaper?', answer: 'my dog' },
-      { question: 'What color is the case?', answer: 'blue' },
-      { question: 'What is the PIN?', answer: 'six' },
-    ],
   };
 
   it('should accept valid lost item', () => {
@@ -21379,18 +21649,14 @@ describe('Create Lost Item Schema', () => {
     expect(() => createLostItemSchema.parse({ ...valid, category: 'CAR' })).toThrow();
   });
 
-  it('should reject less than 3 questions', () => {
+  it('should ignore extra verification_questions field (stripped by schema)', () => {
+    // Schema uses z.object which strips unknown keys — this should still pass
     expect(() => createLostItemSchema.parse({
       ...valid,
-      verification_questions: valid.verification_questions.slice(0, 2),
-    })).toThrow();
-  });
-
-  it('should reject more than 3 questions', () => {
-    expect(() => createLostItemSchema.parse({
-      ...valid,
-      verification_questions: [...valid.verification_questions, { question: 'Extra?', answer: 'x' }],
-    })).toThrow();
+      verification_questions: [
+        { question: 'What is the wallpaper?', answer: 'my dog' },
+      ],
+    })).not.toThrow();
   });
 
   it('should reject short title', () => {
@@ -21403,6 +21669,59 @@ describe('Create Lost Item Schema', () => {
 
   it('should accept ISO date string', () => {
     expect(() => createLostItemSchema.parse({ ...valid, lost_date: '2026-02-10' })).not.toThrow();
+  });
+});
+
+describe('Set Verification Questions Schema (Finder Flow)', () => {
+  // Migration 007: Finder sets verification questions on claims
+  it('should accept exactly 3 questions', () => {
+    expect(() => setVerificationQuestionsSchema.parse({
+      questions: [
+        { question: 'What is the wallpaper?', answer: 'my dog' },
+        { question: 'What color is the case?', answer: 'blue' },
+        { question: 'What is the PIN?', answer: 'six' },
+      ],
+    })).not.toThrow();
+  });
+
+  it('should reject less than 3 questions', () => {
+    expect(() => setVerificationQuestionsSchema.parse({
+      questions: [
+        { question: 'What is the wallpaper?', answer: 'my dog' },
+        { question: 'What color is the case?', answer: 'blue' },
+      ],
+    })).toThrow();
+  });
+
+  it('should reject more than 3 questions', () => {
+    expect(() => setVerificationQuestionsSchema.parse({
+      questions: [
+        { question: 'What is the wallpaper?', answer: 'my dog' },
+        { question: 'What color is the case?', answer: 'blue' },
+        { question: 'What is the PIN?', answer: 'six' },
+        { question: 'Extra question?', answer: 'extra' },
+      ],
+    })).toThrow();
+  });
+
+  it('should reject questions with short text', () => {
+    expect(() => setVerificationQuestionsSchema.parse({
+      questions: [
+        { question: 'Hi?', answer: 'my dog' },
+        { question: 'What color is the case?', answer: 'blue' },
+        { question: 'What is the PIN?', answer: 'six' },
+      ],
+    })).toThrow();
+  });
+
+  it('should reject empty answers', () => {
+    expect(() => setVerificationQuestionsSchema.parse({
+      questions: [
+        { question: 'What is the wallpaper?', answer: '' },
+        { question: 'What color is the case?', answer: 'blue' },
+        { question: 'What is the PIN?', answer: 'six' },
+      ],
+    })).toThrow();
   });
 });
 
@@ -21500,409 +21819,183 @@ describe('Ban User Schema', () => {
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: backend/tests/utils.test.ts
-│ Language: TypeScript | Lines: 395 | Size: 13.1 KB
+│ Language: TypeScript | Lines: 169 | Size: 5.8 KB
 └────────────────────────────────────────────────────────────┘
 
 import {
-  extractKeywords,
-  getTrustLevel,
-  computeLocationDistance,
-  isMessageFlaggable,
-  getHoursDifference,
-  getDaysDifference,
-  isWithinHours,
-  isValidEmail,
-  isValidPhone,
-  sanitizeInput,
-  parsePaginationParams,
-  generateOTP,
-  hashToken,
-  getClaimAttemptLimit,
-  getReportDailyLimit,
-  TRUST_CHANGES
+  hashPassword, verifyPassword, hashSecretAnswer, verifySecretAnswer,
+  generateAccessToken, generateRefreshToken, verifyAccessToken, verifyRefreshToken,
+  generateOTP, hashOTP, verifyOTP, extractKeywords, parsePaginationParams,
+  detectExtortionKeywords, hashToken, generateUUID,
 } from '../src/utils';
-import { TrustLevel } from '../src/types';
+import { UserRole } from '../src/types';
 import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 
+describe('Password Hashing', () => {
+  it('should hash and verify correctly', async () => {
+    const hash = await hashPassword('MySecure1Pass');
+    expect(hash).not.toBe('MySecure1Pass');
+    expect(await verifyPassword('MySecure1Pass', hash)).toBe(true);
+    expect(await verifyPassword('WrongPassword', hash)).toBe(false);
+  });
+
+  it('should produce unique hashes (random salt)', async () => {
+    const h1 = await hashPassword('same');
+    const h2 = await hashPassword('same');
+    expect(h1).not.toBe(h2);
+  });
+});
+
+describe('Secret Answer Hashing', () => {
+  it('should verify case-insensitively with whitespace normalization', async () => {
+    const { hash, salt } = await hashSecretAnswer('My Dog Buddy');
+    expect(await verifySecretAnswer('my dog buddy', hash, salt)).toBe(true);
+    expect(await verifySecretAnswer('MY DOG BUDDY', hash, salt)).toBe(true);
+    expect(await verifySecretAnswer('  My  Dog  Buddy  ', hash, salt)).toBe(true);
+  });
+
+  it('should reject wrong answers', async () => {
+    const { hash, salt } = await hashSecretAnswer('correct');
+    expect(await verifySecretAnswer('wrong', hash, salt)).toBe(false);
+  });
+
+  it('should strip punctuation', async () => {
+    const { hash, salt } = await hashSecretAnswer("it's blue!");
+    expect(await verifySecretAnswer('its blue', hash, salt)).toBe(true);
+  });
+});
+
+describe('JWT Tokens', () => {
+  const payload = { userId: 1, email: 'test@example.com', role: UserRole.CITIZEN };
+
+  it('should generate and verify access token', () => {
+    const token = generateAccessToken(payload);
+    expect(token.split('.')).toHaveLength(3);
+    const decoded = verifyAccessToken(token);
+    expect(decoded.userId).toBe(1);
+    expect(decoded.email).toBe('test@example.com');
+    expect(decoded.role).toBe('citizen');
+  });
+
+  it('should generate and verify refresh token', () => {
+    const token = generateRefreshToken(payload);
+    const decoded = verifyRefreshToken(token);
+    expect(decoded.userId).toBe(1);
+  });
+
+  it('should reject invalid tokens', () => {
+    expect(() => verifyAccessToken('invalid.token')).toThrow();
+  });
+
+  it('should reject tampered tokens', () => {
+    const token = generateAccessToken(payload);
+    expect(() => verifyAccessToken(token.slice(0, -3) + 'XXX')).toThrow();
+  });
+
+  it('should include iat and exp', () => {
+    const decoded = verifyAccessToken(generateAccessToken(payload));
+    expect(decoded).toHaveProperty('iat');
+    expect(decoded).toHaveProperty('exp');
+    // ACCESS_TOKEN_EXPIRY defaults to '60m' (3600s) when JWT_ACCESS_EXPIRY env var is unset
+    expect(decoded.exp! - decoded.iat!).toBe(3600); // 60 min
+  });
+});
+
+describe('OTP Generation', () => {
+  it('should generate 6-digit numeric OTP', () => {
+    expect(generateOTP()).toMatch(/^\d{6}$/);
+  });
+
+  it('should produce mostly unique values', () => {
+    const set = new Set(Array.from({ length: 100 }, generateOTP));
+    expect(set.size).toBeGreaterThan(85);
+  });
+
+  it('should hash and verify OTP', async () => {
+    const otp = '123456';
+    const hash = await hashOTP(otp);
+    expect(await verifyOTP('123456', hash)).toBe(true);
+    expect(await verifyOTP('654321', hash)).toBe(false);
+  });
+});
+
+describe('Keyword Extraction', () => {
+  it('should extract meaningful keywords', () => {
+    const kw = extractKeywords('Samsung Galaxy S23 black phone blue case');
+    expect(kw).toContain('samsung');
+    expect(kw).toContain('galaxy');
+    expect(kw).toContain('black');
+    expect(kw).toContain('blue');
+  });
+
+  it('should filter stop words', () => {
+    const kw = extractKeywords('I lost my phone on the bus');
+    expect(kw).not.toContain('i');
+    expect(kw).not.toContain('my');
+    expect(kw).not.toContain('the');
+    expect(kw).toContain('phone');
+    expect(kw).toContain('bus');
+  });
+
+  it('should handle empty input', () => {
+    expect(extractKeywords('')).toEqual([]);
+  });
+
+  it('should deduplicate', () => {
+    const kw = extractKeywords('phone phone phone');
+    expect(kw.filter(k => k === 'phone')).toHaveLength(1);
+  });
+});
+
+describe('Pagination', () => {
+  it('should parse valid params', () => {
+    const r = parsePaginationParams('3', '10');
+    expect(r).toEqual({ page: 3, limit: 10, offset: 20 });
+  });
+
+  it('should default missing values', () => {
+    const r = parsePaginationParams(undefined, undefined);
+    expect(r.page).toBe(1);
+    expect(r.limit).toBe(20);
+    expect(r.offset).toBe(0);
+  });
+
+  it('should clamp minimum page to 1', () => {
+    expect(parsePaginationParams('0', '10').page).toBe(1);
+    expect(parsePaginationParams('-1', '10').page).toBe(1);
+  });
+});
+
+describe('Extortion Detection', () => {
+  it('should detect extortion keywords', () => {
+    expect(detectExtortionKeywords('send me money first')).toHaveLength(1);
+    expect(detectExtortionKeywords('pay before I give it back')).toHaveLength(1);
+  });
+
+  it('should return empty for normal messages', () => {
+    expect(detectExtortionKeywords('Hi, when can we meet?')).toHaveLength(0);
+    expect(detectExtortionKeywords('I found your phone at KBS')).toHaveLength(0);
+  });
+});
+
 describe('Utility Functions', () => {
-  describe('extractKeywords', () => {
-    it('should extract meaningful keywords from text', () => {
-      const text = 'Lost my black iPhone 13 Pro with blue silicone case';
-      const keywords = extractKeywords(text);
-
-      expect(keywords).toContain('black');
-      expect(keywords).toContain('iphone');
-      expect(keywords).toContain('blue');
-      expect(keywords).toContain('silicone');
-    });
-
-    it('should filter out stopwords', () => {
-      const text = 'I lost my phone in the market';
-      const keywords = extractKeywords(text);
-
-      expect(keywords).not.toContain('the');
-      expect(keywords).not.toContain('in');
-      expect(keywords).not.toContain('my');
-    });
-
-    it('should normalize to lowercase', () => {
-      const text = 'BLACK IPHONE Samsung';
-      const keywords = extractKeywords(text);
-
-      expect(keywords).toContain('black');
-      expect(keywords).toContain('iphone');
-      expect(keywords).toContain('samsung');
-    });
-
-    it('should handle empty text', () => {
-      const keywords = extractKeywords('');
-      expect(keywords).toEqual([]);
-    });
-
-    it('should identify brand names', () => {
-      const text = 'Samsung Galaxy phone with Tecno charger';
-      const keywords = extractKeywords(text);
-
-      expect(keywords).toContain('samsung');
-      expect(keywords).toContain('galaxy');
-      expect(keywords).toContain('tecno');
-    });
-
-    it('should identify colors', () => {
-      const text = 'A red bag with green stripes and white logo';
-      const keywords = extractKeywords(text);
-
-      expect(keywords).toContain('red');
-      expect(keywords).toContain('green');
-      expect(keywords).toContain('white');
-    });
-
-    it('should handle special characters', () => {
-      const text = 'iPhone-14 with case @home #lost!';
-      const keywords = extractKeywords(text);
-
-      expect(keywords.some(k => k.includes('iphone'))).toBe(true);
-    });
+  it('hashToken should produce consistent SHA-256', () => {
+    const h1 = hashToken('test');
+    const h2 = hashToken('test');
+    expect(h1).toBe(h2);
+    expect(h1.length).toBe(64); // SHA-256 hex
   });
 
-  describe('getTrustLevel', () => {
-    it('should return SUSPENDED for very low scores', () => {
-      expect(getTrustLevel(-15)).toBe(TrustLevel.SUSPENDED);
-      expect(getTrustLevel(-100)).toBe(TrustLevel.SUSPENDED);
-    });
-
-    it('should return RESTRICTED for negative scores', () => {
-      expect(getTrustLevel(-5)).toBe(TrustLevel.RESTRICTED);
-      expect(getTrustLevel(-1)).toBe(TrustLevel.RESTRICTED);
-    });
-
-    it('should return NEW for low positive scores', () => {
-      expect(getTrustLevel(0)).toBe(TrustLevel.NEW);
-      expect(getTrustLevel(4)).toBe(TrustLevel.NEW);
-    });
-
-    it('should return ESTABLISHED for medium scores', () => {
-      expect(getTrustLevel(5)).toBe(TrustLevel.ESTABLISHED);
-      expect(getTrustLevel(14)).toBe(TrustLevel.ESTABLISHED);
-    });
-
-    it('should return TRUSTED for high scores', () => {
-      expect(getTrustLevel(15)).toBe(TrustLevel.TRUSTED);
-      expect(getTrustLevel(100)).toBe(TrustLevel.TRUSTED);
-    });
-  });
-
-  describe('getClaimAttemptLimit', () => {
-    it('should return 0 for SUSPENDED', () => {
-      expect(getClaimAttemptLimit(TrustLevel.SUSPENDED)).toBe(0);
-    });
-
-    it('should return 1 for RESTRICTED', () => {
-      expect(getClaimAttemptLimit(TrustLevel.RESTRICTED)).toBe(1);
-    });
-
-    it('should return 3 for NEW', () => {
-      expect(getClaimAttemptLimit(TrustLevel.NEW)).toBe(3);
-    });
-
-    it('should return 5 for ESTABLISHED', () => {
-      expect(getClaimAttemptLimit(TrustLevel.ESTABLISHED)).toBe(5);
-    });
-
-    it('should return 7 for TRUSTED', () => {
-      expect(getClaimAttemptLimit(TrustLevel.TRUSTED)).toBe(7);
-    });
-  });
-
-  describe('getReportDailyLimit', () => {
-    it('should return appropriate limits for each trust level', () => {
-      expect(getReportDailyLimit(TrustLevel.SUSPENDED)).toBe(0);
-      expect(getReportDailyLimit(TrustLevel.RESTRICTED)).toBe(1);
-      expect(getReportDailyLimit(TrustLevel.NEW)).toBe(3);
-      expect(getReportDailyLimit(TrustLevel.ESTABLISHED)).toBe(5);
-      expect(getReportDailyLimit(TrustLevel.TRUSTED)).toBe(10);
-    });
-  });
-
-  describe('computeLocationDistance', () => {
-    it('should return 0 for same location', () => {
-      expect(computeLocationDistance('Kimironko', 'Kimironko')).toBe(0);
-      expect(computeLocationDistance('KIMIRONKO', 'kimironko')).toBe(0);
-    });
-
-    it('should return 1 for adjacent locations', () => {
-      expect(computeLocationDistance('Kimironko', 'Remera')).toBe(1);
-      expect(computeLocationDistance('Remera', 'Kimironko')).toBe(1);
-      expect(computeLocationDistance('Kacyiru', 'Gisozi')).toBe(1);
-    });
-
-    it('should return 2 for same district locations', () => {
-      expect(computeLocationDistance('Kimironko', 'Kacyiru')).toBe(2);
-      expect(computeLocationDistance('Gikondo', 'Kanombe')).toBe(2);
-    });
-
-    it('should return 3 for different district locations', () => {
-      expect(computeLocationDistance('Kimironko', 'Nyamirambo')).toBe(3);
-      expect(computeLocationDistance('Remera', 'Gitega')).toBe(3);
-    });
-
-    it('should handle case insensitivity', () => {
-      expect(computeLocationDistance('REMERA', 'kimironko')).toBe(1);
-      expect(computeLocationDistance('Remera', 'KIMIRONKO')).toBe(1);
-    });
-
-    it('should handle whitespace', () => {
-      expect(computeLocationDistance(' Kimironko ', ' Remera ')).toBe(1);
-    });
-  });
-
-  describe('isMessageFlaggable', () => {
-    it('should flag messages with multiple suspicious keywords', () => {
-      const result = isMessageFlaggable('Please pay money via MTN before I return');
-      expect(result.flagged).toBe(true);
-      expect(result.reason).toBeDefined();
-    });
-
-    it('should not flag normal messages', () => {
-      const result = isMessageFlaggable('Thank you for finding my phone!');
-      expect(result.flagged).toBe(false);
-    });
-
-    it('should flag extortion attempts', () => {
-      const result = isMessageFlaggable('Send me 10000 first then I will give you');
-      expect(result.flagged).toBe(true);
-    });
-
-    it('should flag payment requests', () => {
-      const result = isMessageFlaggable('Transfer money to my account first before I return it');
-      expect(result.flagged).toBe(true);
-    });
-
-    it('should flag external meeting requests', () => {
-      const result = isMessageFlaggable('Meet me alone at night and pay money first');
-      expect(result.flagged).toBe(true);
-    });
-
-    it('should not flag single suspicious word', () => {
-      const result = isMessageFlaggable('I found your wallet with money inside');
-      expect(result.flagged).toBe(false);
-    });
-  });
-
-  describe('getHoursDifference', () => {
-    it('should calculate correct hours difference', () => {
-      const date1 = new Date('2024-01-15T10:00:00Z');
-      const date2 = new Date('2024-01-15T14:00:00Z');
-
-      expect(getHoursDifference(date1, date2)).toBe(4);
-    });
-
-    it('should return absolute difference', () => {
-      const date1 = new Date('2024-01-15T14:00:00Z');
-      const date2 = new Date('2024-01-15T10:00:00Z');
-
-      expect(getHoursDifference(date1, date2)).toBe(4);
-    });
-
-    it('should handle same time', () => {
-      const date = new Date('2024-01-15T10:00:00Z');
-      expect(getHoursDifference(date, date)).toBe(0);
-    });
-
-    it('should handle fractional hours', () => {
-      const date1 = new Date('2024-01-15T10:00:00Z');
-      const date2 = new Date('2024-01-15T10:30:00Z');
-      expect(getHoursDifference(date1, date2)).toBe(0.5);
-    });
-  });
-
-  describe('getDaysDifference', () => {
-    it('should calculate correct days difference', () => {
-      const date1 = new Date('2024-01-15T10:00:00Z');
-      const date2 = new Date('2024-01-17T10:00:00Z');
-      expect(getDaysDifference(date1, date2)).toBe(2);
-    });
-
-    it('should handle partial days', () => {
-      const date1 = new Date('2024-01-15T00:00:00Z');
-      const date2 = new Date('2024-01-15T12:00:00Z');
-      expect(getDaysDifference(date1, date2)).toBe(0.5);
-    });
-  });
-
-  describe('isWithinHours', () => {
-    it('should return true for dates within range', () => {
-      const date1 = new Date('2024-01-15T10:00:00Z');
-      const date2 = new Date('2024-01-15T12:00:00Z');
-      expect(isWithinHours(date1, date2, 3)).toBe(true);
-    });
-
-    it('should return false for dates outside range', () => {
-      const date1 = new Date('2024-01-15T10:00:00Z');
-      const date2 = new Date('2024-01-15T20:00:00Z');
-      expect(isWithinHours(date1, date2, 5)).toBe(false);
-    });
-
-    it('should handle exact boundary', () => {
-      const date1 = new Date('2024-01-15T10:00:00Z');
-      const date2 = new Date('2024-01-15T15:00:00Z');
-      expect(isWithinHours(date1, date2, 5)).toBe(true);
-    });
-  });
-
-  describe('isValidEmail', () => {
-    it('should validate correct emails', () => {
-      expect(isValidEmail('test@example.com')).toBe(true);
-      expect(isValidEmail('user.name@domain.co.rw')).toBe(true);
-      expect(isValidEmail('user+tag@gmail.com')).toBe(true);
-    });
-
-    it('should reject invalid emails', () => {
-      expect(isValidEmail('invalid')).toBe(false);
-      expect(isValidEmail('test@')).toBe(false);
-      expect(isValidEmail('@domain.com')).toBe(false);
-      expect(isValidEmail('')).toBe(false);
-      expect(isValidEmail('test @example.com')).toBe(false);
-    });
-  });
-
-  describe('isValidPhone', () => {
-    it('should validate Rwandan phone numbers', () => {
-      expect(isValidPhone('+250788123456')).toBe(true);
-      expect(isValidPhone('250788123456')).toBe(true);
-      expect(isValidPhone('+250 788 123 456')).toBe(true);
-    });
-
-    it('should reject invalid phone numbers', () => {
-      expect(isValidPhone('123456')).toBe(false);
-      expect(isValidPhone('+1234567890')).toBe(false);
-      expect(isValidPhone('abcdefghijk')).toBe(false);
-    });
-  });
-
-  describe('sanitizeInput', () => {
-    it('should remove HTML tags', () => {
-      expect(sanitizeInput('<script>alert("xss")</script>')).toBe('alert("xss")');
-      expect(sanitizeInput('<b>bold</b> text')).toBe('bold text');
-    });
-
-    it('should trim whitespace', () => {
-      expect(sanitizeInput('  hello world  ')).toBe('hello world');
-    });
-
-    it('should handle normal text', () => {
-      expect(sanitizeInput('Normal text here')).toBe('Normal text here');
-    });
-  });
-
-  describe('parsePaginationParams', () => {
-    it('should parse valid params', () => {
-      const result = parsePaginationParams(2, 20);
-      expect(result.page).toBe(2);
-      expect(result.limit).toBe(20);
-      expect(result.offset).toBe(20);
-    });
-
-    it('should use defaults for missing params', () => {
-      const result = parsePaginationParams(undefined, undefined);
-      expect(result.page).toBe(1);
-      expect(result.limit).toBe(20);
-      expect(result.offset).toBe(0);
-    });
-
-    it('should handle string params', () => {
-      const result = parsePaginationParams('3', '15');
-      expect(result.page).toBe(3);
-      expect(result.limit).toBe(15);
-    });
-
-    it('should enforce minimum page of 1', () => {
-      const result = parsePaginationParams(0, 10);
-      expect(result.page).toBe(1);
-    });
-
-    it('should enforce maximum limit of 100', () => {
-      const result = parsePaginationParams(1, 500);
-      expect(result.limit).toBe(100);
-    });
-
-    it('should enforce minimum limit of 1', () => {
-      const result = parsePaginationParams(1, -5);
-      expect(result.limit).toBe(1);
-    });
-  });
-
-  describe('generateOTP', () => {
-    it('should generate 6-digit OTP', () => {
-      const otp = generateOTP();
-      expect(otp).toMatch(/^\d{6}$/);
-    });
-
-    it('should generate different OTPs', () => {
-      const otps = new Set([generateOTP(), generateOTP(), generateOTP()]);
-      expect(otps.size).toBeGreaterThan(1);
-    });
-  });
-
-  describe('hashToken', () => {
-    it('should hash token consistently', () => {
-      const token = 'test-token-123';
-      const hash1 = hashToken(token);
-      const hash2 = hashToken(token);
-      expect(hash1).toBe(hash2);
-    });
-
-    it('should produce different hashes for different tokens', () => {
-      const hash1 = hashToken('token1');
-      const hash2 = hashToken('token2');
-      expect(hash1).not.toBe(hash2);
-    });
-
-    it('should produce hex string', () => {
-      const hash = hashToken('test');
-      expect(hash).toMatch(/^[a-f0-9]+$/);
-    });
-  });
-
-  describe('TRUST_CHANGES', () => {
-    it('should have positive values for good actions', () => {
-      expect(TRUST_CHANGES.SUCCESSFUL_RETURN_FINDER).toBeGreaterThan(0);
-      expect(TRUST_CHANGES.SUCCESSFUL_RECOVERY_OWNER).toBeGreaterThan(0);
-      expect(TRUST_CHANGES.EMAIL_VERIFIED).toBeGreaterThan(0);
-    });
-
-    it('should have negative values for bad actions', () => {
-      expect(TRUST_CHANGES.FAILED_VERIFICATION).toBeLessThan(0);
-      expect(TRUST_CHANGES.SCAM_REPORTED).toBeLessThan(0);
-      expect(TRUST_CHANGES.SCAM_CONFIRMED).toBeLessThan(0);
-    });
+  it('generateUUID should produce valid UUIDs', () => {
+    const uuid = generateUUID();
+    expect(uuid).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
   });
 });
 
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: backend/tests/validation.test.ts
-│ Language: TypeScript | Lines: 390 | Size: 10.7 KB
+│ Language: TypeScript | Lines: 408 | Size: 11.4 KB
 └────────────────────────────────────────────────────────────┘
 
 /**
@@ -21920,6 +22013,7 @@ import {
   createClaimSchema,
   verifyClaimSchema,
   sendMessageSchema,
+  setVerificationQuestionsSchema,
 } from '../src/middleware/validation';
 import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 
@@ -22059,6 +22153,9 @@ describe('Validation Middleware', () => {
   describe('createLostItemSchema', () => {
     const middleware = validate(createLostItemSchema);
 
+    // After the logic refactor (migration 007), verification questions are no longer
+    // required on lost items — the finder sets them on the claim instead.
+
     it('should pass with valid lost item data', () => {
       mockRequest.body = {
         category: 'PHONE',
@@ -22066,11 +22163,6 @@ describe('Validation Middleware', () => {
         description: 'Black iPhone 14 Pro with blue case',
         location_area: 'Kimironko',
         lost_date: '2024-01-15',
-        verification_questions: [
-          { question: 'What is the lockscreen?', answer: 'Mountain photo' },
-          { question: 'Phone color?', answer: 'Black' },
-          { question: 'Case color?', answer: 'Blue' },
-        ],
       };
 
       middleware(mockRequest as Request, mockResponse as Response, mockNext);
@@ -22082,32 +22174,9 @@ describe('Validation Middleware', () => {
       mockRequest.body = {
         category: 'INVALID',
         title: 'Lost Item',
-        description: 'Description',
+        description: 'Description that is long enough',
         location_area: 'Kimironko',
         lost_date: '2024-01-15',
-        verification_questions: [
-          { question: 'Q1?', answer: 'A1' },
-          { question: 'Q2?', answer: 'A2' },
-          { question: 'Q3?', answer: 'A3' },
-        ],
-      };
-
-      middleware(mockRequest as Request, mockResponse as Response, mockNext);
-
-      expect(statusMock).toHaveBeenCalledWith(400);
-      expect(mockNext).not.toHaveBeenCalled();
-    });
-
-    it('should reject missing verification questions', () => {
-      mockRequest.body = {
-        category: 'PHONE',
-        title: 'Lost iPhone',
-        description: 'Description',
-        location_area: 'Kimironko',
-        lost_date: '2024-01-15',
-        verification_questions: [
-          { question: 'Q1?', answer: 'A1' },
-        ],
       };
 
       middleware(mockRequest as Request, mockResponse as Response, mockNext);
@@ -22120,13 +22189,55 @@ describe('Validation Middleware', () => {
       mockRequest.body = {
         category: 'PHONE',
         title: 'Hi',
-        description: 'Description of the item',
+        description: 'Description of the item that is long enough',
         location_area: 'Kimironko',
         lost_date: '2024-01-15',
-        verification_questions: [
-          { question: 'Q1?', answer: 'A1' },
-          { question: 'Q2?', answer: 'A2' },
-          { question: 'Q3?', answer: 'A3' },
+      };
+
+      middleware(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(statusMock).toHaveBeenCalledWith(400);
+      expect(mockNext).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('setVerificationQuestionsSchema', () => {
+    const middleware = validate(setVerificationQuestionsSchema);
+
+    it('should pass with exactly 3 valid questions', () => {
+      mockRequest.body = {
+        questions: [
+          { question: 'What is the lockscreen?', answer: 'Mountain photo' },
+          { question: 'What color is the case?', answer: 'Black' },
+          { question: 'What app is on the home screen?', answer: 'Spotify' },
+        ],
+      };
+
+      middleware(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should reject fewer than 3 questions', () => {
+      mockRequest.body = {
+        questions: [
+          { question: 'What is the lockscreen?', answer: 'Mountain photo' },
+        ],
+      };
+
+      middleware(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(statusMock).toHaveBeenCalledWith(400);
+      expect(mockNext).not.toHaveBeenCalled();
+    });
+
+    it('should reject more than 3 questions', () => {
+      mockRequest.body = {
+        questions: [
+          { question: 'What is the lockscreen?', answer: 'Mountain photo' },
+          { question: 'What color is the case?', answer: 'Black' },
+          { question: 'What app is on the home screen?', answer: 'Spotify' },
+          { question: 'What is the PIN length?', answer: 'six digits' },
         ],
       };
 
@@ -22327,16 +22438,18 @@ describe('Validation Middleware', () => {
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: backend/tsconfig.test.json
-│ Language: JSON | Lines: 13 | Size: 499 B
+│ Language: JSON | Lines: 15 | Size: 349 B
 └────────────────────────────────────────────────────────────┘
 
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "rootDir": ".",  // Set to project root for tests (includes both src and tests)
-    "types": ["jest", "node"],  // Explicitly include Jest and Node types for tests
-    "noEmit": true,  // Prevent emitting JS/declarations for tests
-    "declaration": false,  // Override inherited declaration settings
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "rootDir": ".",
+    "types": ["jest", "node"],
+    "noEmit": true,
+    "declaration": false,
     "declarationMap": false,
     "sourceMap": false
   },
@@ -27574,7 +27687,7 @@ export default LoadingSplash;
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: frontend/src/components/SafeHandoverLocationPicker.tsx
-│ Language: TSX | Lines: 182 | Size: 6.5 KB
+│ Language: TSX | Lines: 188 | Size: 6.8 KB
 └────────────────────────────────────────────────────────────┘
 
 import React, { useState, useEffect } from 'react';
@@ -27613,6 +27726,12 @@ const SafeHandoverLocationPicker: React.FC<Props> = ({
   const loadRecommendations = async () => {
     try {
       setLoading(true);
+      // If area is empty, go straight to all-locations fallback
+      if (!itemArea || itemArea.trim() === '') {
+        const res = await handoverLocationsApi.getAllLocations();
+        setLocations(res.data?.data?.slice(0, 5) || []);
+        return;
+      }
       const res = await handoverLocationsApi.getRecommended(itemArea, itemCategory);
       setLocations(res.data?.data || []);
     } catch {
@@ -29037,12 +29156,26 @@ export const Progress: React.FC<ProgressProps> = ({
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: frontend/src/components/VerificationStrengthIndicator.tsx
-│ Language: TSX | Lines: 238 | Size: 9.2 KB
+│ Language: TSX | Lines: 263 | Size: 9.5 KB
 └────────────────────────────────────────────────────────────┘
+
+/**
+ * VerificationStrengthIndicator.tsx — REPURPOSED
+ * 
+ * CHANGES:
+ * - Now used by FINDERS when setting verification questions on a claim
+ * - Previously used by OWNERS when reporting lost items (which made no sense)
+ * - Same API calls, same UI, different context
+ * - Props unchanged — still accepts questions, answers, category, description
+ * 
+ * This component is now rendered in ClaimDetailPage when the finder is
+ * setting questions, not in ReportLostPage.
+ */
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { verificationStrengthApi } from '../services/novelFeatureApi';
 import { useTranslation } from 'react-i18next';
+
 // ============================================
 // TYPES
 // ============================================
@@ -29053,6 +29186,7 @@ interface QuestionAnalysis {
   issues: string[];
   suggestions: string[];
 }
+
 interface StrengthResult {
   overall_strength: 'WEAK' | 'MODERATE' | 'STRONG';
   overall_score: number;
@@ -29060,11 +29194,13 @@ interface StrengthResult {
   redundancy_warning: boolean;
   improvement_tips: string[];
 }
+
 interface QuestionTemplate {
   category: string;
   question: string;
   why_effective: string;
 }
+
 interface Props {
   questions: string[];
   answers: string[];
@@ -29072,6 +29208,7 @@ interface Props {
   description: string;
   onSelectTemplate?: (index: number, question: string) => void;
 }
+
 // ============================================
 // COMPONENT
 // ============================================
@@ -29084,6 +29221,7 @@ const VerificationStrengthIndicator: React.FC<Props> = ({
   const [showTemplates, setShowTemplates] = useState(false);
   const [loading, setLoading] = useState(false);
   const [expandedQuestion, setExpandedQuestion] = useState<number | null>(null);
+
   // Fetch templates on mount
   useEffect(() => {
     if (category) {
@@ -29092,6 +29230,7 @@ const VerificationStrengthIndicator: React.FC<Props> = ({
         .catch(() => {});
     }
   }, [category]);
+
   // Debounced analysis
   const analyzeQuestions = useCallback(async () => {
     const hasContent = questions.some(q => q.length > 3) && answers.some(a => a.length > 0);
@@ -29108,22 +29247,27 @@ const VerificationStrengthIndicator: React.FC<Props> = ({
       setLoading(false);
     }
   }, [questions, answers, category, description]);
+
   useEffect(() => {
     const timer = setTimeout(analyzeQuestions, 800);
     return () => clearTimeout(timer);
   }, [analyzeQuestions]);
+
   // ── Strength badge colors ──
   const strengthColors = {
     WEAK: { bg: '#FEE2E2', text: '#991B1B', border: '#FECACA', icon: '⚠️' },
     MODERATE: { bg: '#FEF3C7', text: '#92400E', border: '#FDE68A', icon: '⚡' },
     STRONG: { bg: '#D1FAE5', text: '#065F46', border: '#A7F3D0', icon: '✅' },
   };
+
   const getScoreBarColor = (score: number) => {
     if (score >= 65) return '#10B981';
     if (score >= 35) return '#F59E0B';
     return '#EF4444';
   };
+
   if (!analysis && !loading) return null;
+
   return (
     <div style={{ marginTop: 16, borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'hidden' }}>
       {/* Header */}
@@ -29162,6 +29306,7 @@ const VerificationStrengthIndicator: React.FC<Props> = ({
           </div>
         )}
       </div>
+
       {/* Per-question analysis */}
       {analysis && (
         <div style={{ padding: '8px 0' }}>
@@ -29186,7 +29331,6 @@ const VerificationStrengthIndicator: React.FC<Props> = ({
                   {qa.strength}
                 </span>
               </div>
-              {/* Expanded details */}
               {expandedQuestion === i && (
                 <div style={{ marginTop: 8, paddingLeft: 8 }}>
                   {qa.issues.length > 0 && (
@@ -29213,15 +29357,17 @@ const VerificationStrengthIndicator: React.FC<Props> = ({
           ))}
         </div>
       )}
+
       {/* Redundancy warning */}
       {analysis?.redundancy_warning && (
         <div style={{
           padding: '8px 16px', background: '#FEF3C7',
           fontSize: 13, color: '#92400E', borderTop: '1px solid #FDE68A'
         }}>
-          ⚠️ Your questions are too similar to each other. Use different types of questions for better security.
+          ⚠️ Your questions are too similar. Use different types of questions for better security.
         </div>
       )}
+
       {/* Templates toggle */}
       <div style={{ padding: '8px 16px', borderTop: '1px solid #E5E7EB' }}>
         <button
@@ -29254,7 +29400,6 @@ const VerificationStrengthIndicator: React.FC<Props> = ({
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      // Find next empty question slot
                       const emptyIdx = questions.findIndex(q => !q || q.length < 3);
                       if (emptyIdx >= 0) onSelectTemplate(emptyIdx, t.question);
                     }}
@@ -29277,7 +29422,6 @@ const VerificationStrengthIndicator: React.FC<Props> = ({
 };
 
 export default VerificationStrengthIndicator;
-
 
 
 ┌────────────────────────────────────────────────────────────┐
@@ -33549,7 +33693,7 @@ export default AdminUsersPage;
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: frontend/src/pages/ClaimDetailPage.tsx
-│ Language: TSX | Lines: 326 | Size: 13.9 KB
+│ Language: TSX | Lines: 326 | Size: 14.0 KB
 └────────────────────────────────────────────────────────────┘
 
 import React, { useState, useEffect } from 'react';
@@ -33766,7 +33910,7 @@ const ClaimDetailPage: React.FC = () => {
             <div className="mb-6">
               {/* NOVEL: Safe handover location recommendations */}
               <SafeHandoverLocationPicker
-                itemArea={''}
+                itemArea={claim.found_item_area || claim.lost_item_area || ''}
                 itemCategory={claim.category || 'OTHER'}
                 onSelectLocation={(loc) => console.log('Selected handover location:', loc.name)}
               />
@@ -34302,7 +34446,7 @@ const DashboardPage: React.FC = () => {
       setStats({
         lostItems: lostRes.data.pagination?.total || 0,
         foundItems: foundRes.data.pagination?.total || 0,
-        activeClaims: (claimsRes.data.data || []).filter((c: Claim) => ['PENDING', 'VERIFIED'].includes(c.status)).length,
+        activeClaims: (claimsRes.data.data || []).filter((c: Claim) => ['PENDING_QUESTIONS', 'PENDING', 'VERIFIED'].includes(c.status)).length,
         unreadMessages: unreadCount
       });
     } catch (error) {
@@ -37427,15 +37571,26 @@ export default RegisterPage;
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: frontend/src/pages/ReportFoundPage.tsx
-│ Language: TSX | Lines: 358 | Size: 15.1 KB
+│ Language: TSX | Lines: 433 | Size: 16.1 KB
 └────────────────────────────────────────────────────────────┘
 
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Camera, Upload, X, MapPin, Calendar, Check,
-  Smartphone, CreditCard, Wallet, Briefcase, Key, Package,
-  Building, AlertCircle
+import {
+  Camera,
+  Upload,
+  X,
+  MapPin,
+  Calendar,
+  Check,
+  Smartphone,
+  CreditCard,
+  Wallet,
+  Briefcase,
+  Key,
+  Package,
+  Building,
+  AlertCircle,
 } from 'lucide-react';
 import { Button, Card, Input, Textarea, Alert } from '../components/ui';
 import { foundItemsApi, duplicateApi } from '../services/api';
@@ -37445,6 +37600,7 @@ import { useAuthStore } from '../store/authStore';
 import { useRecaptcha } from '../hooks/useRecaptcha';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+
 const CATEGORY_ICONS: Record<ItemCategory, React.ReactNode> = {
   [ItemCategory.PHONE]: <Smartphone className="w-8 h-8" />,
   [ItemCategory.ID]: <CreditCard className="w-8 h-8" />,
@@ -37453,6 +37609,7 @@ const CATEGORY_ICONS: Record<ItemCategory, React.ReactNode> = {
   [ItemCategory.KEYS]: <Key className="w-8 h-8" />,
   [ItemCategory.OTHER]: <Package className="w-8 h-8" />,
 };
+
 interface FormData {
   category: ItemCategory | '';
   title: string;
@@ -37461,19 +37618,25 @@ interface FormData {
   location_hint: string;
   found_date: string;
 }
+
 const ReportFoundPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const { executeRecaptcha } = useRecaptcha();
+
   const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [loading, setLoading] = useState(false);
   const [uploadingImages, setUploadingImages] = useState(false);
+
   const [images, setImages] = useState<File[]>([]);
   const [imagesPreviews, setImagesPreviews] = useState<string[]>([]);
+
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [duplicateCandidates, setDuplicateCandidates] = useState<any[]>([]);
   const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
+
   const [formData, setFormData] = useState<FormData>({
     category: '',
     title: '',
@@ -37482,12 +37645,15 @@ const ReportFoundPage: React.FC = () => {
     location_hint: '',
     found_date: new Date().toISOString().split('T')[0],
   });
+
   const isCoopStaff = user?.role === 'coop_staff';
+
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
+
     const newFiles = Array.from(files).slice(0, 5 - images.length);
-    
+
     // Validate file types and sizes
     for (const file of newFiles) {
       if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
@@ -37499,19 +37665,23 @@ const ReportFoundPage: React.FC = () => {
         return;
       }
     }
+
     // Create previews
     const previews = newFiles.map((file) => URL.createObjectURL(file));
-    
+
     setImages([...images, ...newFiles]);
     setImagesPreviews([...imagesPreviews, ...previews]);
   };
+
   const removeImage = (index: number) => {
     URL.revokeObjectURL(imagesPreviews[index]);
     setImages(images.filter((_, i) => i !== index));
     setImagesPreviews(imagesPreviews.filter((_, i) => i !== index));
   };
+
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
+
     if (!formData.category) newErrors.category = 'Please select a category';
     if (!formData.title || formData.title.length < 3) newErrors.title = 'Title must be at least 3 characters';
     if (!formData.description || formData.description.length < 10) {
@@ -37519,13 +37689,18 @@ const ReportFoundPage: React.FC = () => {
     }
     if (!formData.location_area) newErrors.location_area = 'Please select a location';
     if (!formData.found_date) newErrors.found_date = 'Please enter the date you found the item';
-    if (images.length === 0) newErrors.images = 'Please upload at least one image';
+
+    // ✅ Images are OPTIONAL now (removed requirement)
+    // if (images.length === 0) newErrors.images = 'Please upload at least one image';
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
+
     // Check for duplicates first (if not already confirmed)
     if (!showDuplicateWarning && duplicateCandidates.length === 0) {
       try {
@@ -37536,6 +37711,7 @@ const ReportFoundPage: React.FC = () => {
           location_area: formData.location_area,
           found_date: formData.found_date,
         });
+
         if (dupRes.data.data?.has_potential_duplicates && dupRes.data.data.candidates.length > 0) {
           setDuplicateCandidates(dupRes.data.data.candidates);
           setShowDuplicateWarning(true);
@@ -37546,13 +37722,17 @@ const ReportFoundPage: React.FC = () => {
         console.warn('Duplicate check failed:', error);
       }
     }
+
     await submitFoundItem();
   };
+
   const submitFoundItem = async () => {
     setShowDuplicateWarning(false);
     setLoading(true);
+
     try {
       const recaptchaToken = await executeRecaptcha('report_found');
+
       // Create the found item first
       const createData = {
         category: formData.category,
@@ -37564,15 +37744,18 @@ const ReportFoundPage: React.FC = () => {
         cooperative_id: isCoopStaff && user?.cooperative_id ? user.cooperative_id : undefined,
         ...(recaptchaToken && { recaptchaToken }),
       };
+
       const response = await foundItemsApi.create(createData as any);
       const itemId = response.data.data.id;
-      // Upload images
+
+      // Upload images (optional)
       if (images.length > 0) {
         setUploadingImages(true);
         const fileList = new DataTransfer();
         images.forEach((file) => fileList.items.add(file));
         await foundItemsApi.uploadImages(itemId, fileList.files);
       }
+
       toast.success(t('reportFound.reportSuccess'));
       navigate(`/found-items/${itemId}`);
     } catch (error: any) {
@@ -37583,6 +37766,7 @@ const ReportFoundPage: React.FC = () => {
       setUploadingImages(false);
     }
   };
+
   return (
     <>
       {showDuplicateWarning && (
@@ -37590,199 +37774,234 @@ const ReportFoundPage: React.FC = () => {
           candidates={duplicateCandidates}
           itemType="found"
           onContinue={() => submitFoundItem()}
-          onViewDuplicate={(id, type) => navigate(`/${type === 'lost' ? 'lost-items' : 'found-items'}/${id}`)}
-          onCancel={() => { setShowDuplicateWarning(false); setDuplicateCandidates([]); }}
+          onViewDuplicate={(id, type) =>
+            navigate(`/${type === 'lost' ? 'lost-items' : 'found-items'}/${id}`)
+          }
+          onCancel={() => {
+            setShowDuplicateWarning(false);
+            setDuplicateCandidates([]);
+          }}
         />
       )}
-    <div className="max-w-2xl mx-auto px-4 py-8">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">{t('reportFound.title')}</h1>
-        <p className="text-gray-600">
-          Thank you for helping reunite someone with their belongings!
-        </p>
-      </div>
-      {isCoopStaff && (
-        <Alert type="info" className="mb-6">
-          <Building className="w-4 h-4 inline mr-2" />
-          You're reporting as a <strong>Cooperative Staff</strong>. This item will be associated 
-          with your cooperative and held for secure pickup.
-        </Alert>
-      )}
-      <form onSubmit={handleSubmit}>
-        <Card className="p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-6">Item Details</h2>
-          {/* Category Selection */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-3">Category *</label>
-            <div className="grid grid-cols-3 gap-3">
-              {Object.entries(CATEGORY_INFO).map(([key, info]) => (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => setFormData({ ...formData, category: key as ItemCategory })}
-                  className={`p-4 rounded-xl border-2 transition-all ${
-                    formData.category === key
-                      ? 'border-trust-500 bg-trust-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  <div className={`mx-auto mb-2 ${formData.category === key ? 'text-trust-500' : 'text-gray-400'}`}>
-                    {CATEGORY_ICONS[key as ItemCategory]}
-                  </div>
-                  <p className={`text-sm font-medium ${formData.category === key ? 'text-trust-500' : 'text-gray-600'}`}>
-                    {info.label}
-                  </p>
-                </button>
-              ))}
-            </div>
-            {errors.category && <p role="alert" className="mt-2 text-sm text-red-500">{errors.category}</p>}
-          </div>
-          {/* Title */}
-          <div className="mb-6">
-            <Input
-              label="Title *"
-              value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              placeholder={t('items.titlePlaceholderFound')}
-              error={errors.title}
-            />
-          </div>
-          {/* Description */}
-          <div className="mb-6">
-            <Textarea
-              label="Description *"
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder={t('items.descPlaceholderFound')}
-              rows={4}
-              error={errors.description}
-            />
-            {(formData.category === 'ID' || formData.category === 'WALLET') && (
-              <p className="mt-2 text-sm text-yellow-600">
-                <AlertCircle className="w-4 h-4 inline mr-1" />
-                Do NOT include personal information like ID numbers, names, or card details
-              </p>
-            )}
-          </div>
-        </Card>
-        <Card className="p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-6">Location & Date</h2>
-          {/* Location */}
-          <div className="mb-6">
-            <label htmlFor="found-location-area" className="block text-sm font-medium text-gray-700 mb-1">
-              <MapPin className="w-4 h-4 inline mr-1" aria-hidden="true" />
-              Where did you find it? *
-            </label>
-            <select
-              id="found-location-area"
-              value={formData.location_area}
-              onChange={(e) => setFormData({ ...formData, location_area: e.target.value })}
-              aria-invalid={!!errors.location_area}
-              aria-describedby={errors.location_area ? 'found-location-error' : undefined}
-              className={`input ${errors.location_area ? 'border-red-500' : ''}`}
-            >
-              <option value="">{t('items.selectLocation')}</option>
-              {RWANDA_LOCATIONS.map((loc) => (
-                <option key={loc} value={loc}>{loc}</option>
-              ))}
-            </select>
-            {errors.location_area && <p id="found-location-error" role="alert" className="mt-1 text-sm text-red-500">{errors.location_area}</p>}
-          </div>
-          {/* Location Hint */}
-          <div className="mb-6">
-            <Textarea
-              label="Specific Location (Optional)"
-              value={formData.location_hint}
-              onChange={(e) => setFormData({ ...formData, location_hint: e.target.value })}
-              placeholder={t('items.locationHintPlaceholderFound')}
-              rows={2}
-            />
-          </div>
-          {/* Date */}
-          <div className="mb-6">
-            <label htmlFor="found-date" className="block text-sm font-medium text-gray-700 mb-1">
-              <Calendar className="w-4 h-4 inline mr-1" aria-hidden="true" />
-              When did you find it? *
-            </label>
-            <input
-              id="found-date"
-              type="date"
-              value={formData.found_date}
-              onChange={(e) => setFormData({ ...formData, found_date: e.target.value })}
-              max={new Date().toISOString().split('T')[0]}
-              aria-invalid={!!errors.found_date}
-              aria-describedby={errors.found_date ? 'found-date-error' : undefined}
-              className={`input ${errors.found_date ? 'border-red-500' : ''}`}
-            />
-            {errors.found_date && <p id="found-date-error" role="alert" className="mt-1 text-sm text-red-500">{errors.found_date}</p>}
-          </div>
-        </Card>
-        <Card className="p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            <Camera className="w-5 h-5 inline mr-2" />
-            Photos *
-          </h2>
-          <p className="text-sm text-gray-600 mb-4">
-            Upload clear photos of the item. This helps owners identify their belongings.
-          </p>
-          {/* Image Upload Area */}
-          <div className="grid grid-cols-3 gap-4 mb-4">
-            {imagesPreviews.map((preview, index) => (
-              <div key={index} className="relative aspect-square rounded-lg overflow-hidden bg-gray-100">
-                <img src={preview} alt="" className="w-full h-full object-cover" />
-                <button
-                  type="button"
-                  onClick={() => removeImage(index)}
-                  className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            ))}
-            {images.length < 5 && (
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="aspect-square rounded-lg border-2 border-dashed border-gray-300 hover:border-primary-400 flex flex-col items-center justify-center transition-colors"
-              >
-                <Upload className="w-8 h-8 text-gray-400 mb-2" />
-                <span className="text-sm text-gray-500">Add Photo</span>
-              </button>
-            )}
-          </div>
-          <input
-            ref={fileInputRef}
-            type="file"
-            aria-label="Upload item photos"
-            accept="image/jpeg,image/png,image/webp"
-            multiple
-            onChange={handleImageSelect}
-            className="hidden"
-          />
-          {errors.images && <p role="alert" className="text-sm text-red-500">{errors.images}</p>}
-          <p className="text-xs text-gray-500 mt-2">
-            Max 5 images, 5MB each. JPEG, PNG, or WebP format.
-          </p>
-        </Card>
-        {/* Important Notice */}
-        <Alert type="warning" className="mb-6">
-          <strong>Important:</strong> Never demand payment before verification. Byaboneka+ uses 
-          secure verification to confirm ownership. Attempting to extort money is against our 
-          policies and may result in account suspension.
-        </Alert>
-        {/* Submit Button */}
-        <div className="flex justify-end gap-4">
-          <Button type="button" variant="secondary" onClick={() => navigate(-1)}>
-            Cancel
-          </Button>
-          <Button type="submit" loading={loading || uploadingImages}>
-            <Check className="w-4 h-4 mr-2" />
-            {uploadingImages ? 'Uploading Images...' : 'Submit Report'}
-          </Button>
+
+      <div className="max-w-2xl mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">{t('reportFound.title')}</h1>
+          <p className="text-gray-600">Thank you for helping reunite someone with their belongings!</p>
         </div>
-      </form>
-    </div>
+
+        {isCoopStaff && (
+          <Alert type="info" className="mb-6">
+            <Building className="w-4 h-4 inline mr-2" />
+            You're reporting as a <strong>Cooperative Staff</strong>. This item will be associated with your
+            cooperative and held for secure pickup.
+          </Alert>
+        )}
+
+        <form onSubmit={handleSubmit}>
+          <Card className="p-6 mb-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-6">Item Details</h2>
+
+            {/* Category Selection */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-3">Category *</label>
+              <div className="grid grid-cols-3 gap-3">
+                {Object.entries(CATEGORY_INFO).map(([key, info]) => (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => setFormData({ ...formData, category: key as ItemCategory })}
+                    className={`p-4 rounded-xl border-2 transition-all ${
+                      formData.category === key
+                        ? 'border-trust-500 bg-trust-50'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <div className={`mx-auto mb-2 ${formData.category === key ? 'text-trust-500' : 'text-gray-400'}`}>
+                      {CATEGORY_ICONS[key as ItemCategory]}
+                    </div>
+                    <p className={`text-sm font-medium ${formData.category === key ? 'text-trust-500' : 'text-gray-600'}`}>
+                      {info.label}
+                    </p>
+                  </button>
+                ))}
+              </div>
+              {errors.category && <p role="alert" className="mt-2 text-sm text-red-500">{errors.category}</p>}
+            </div>
+
+            {/* Title */}
+            <div className="mb-6">
+              <Input
+                label="Title *"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                placeholder={t('items.titlePlaceholderFound')}
+                error={errors.title}
+              />
+            </div>
+
+            {/* Description */}
+            <div className="mb-6">
+              <Textarea
+                label="Description *"
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                placeholder={t('items.descPlaceholderFound')}
+                rows={4}
+                error={errors.description}
+              />
+              {(formData.category === 'ID' || formData.category === 'WALLET') && (
+                <p className="mt-2 text-sm text-yellow-600">
+                  <AlertCircle className="w-4 h-4 inline mr-1" />
+                  Do NOT include personal information like ID numbers, names, or card details
+                </p>
+              )}
+            </div>
+          </Card>
+
+          <Card className="p-6 mb-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-6">Location & Date</h2>
+
+            {/* Location */}
+            <div className="mb-6">
+              <label htmlFor="found-location-area" className="block text-sm font-medium text-gray-700 mb-1">
+                <MapPin className="w-4 h-4 inline mr-1" aria-hidden="true" />
+                Where did you find it? *
+              </label>
+              <select
+                id="found-location-area"
+                value={formData.location_area}
+                onChange={(e) => setFormData({ ...formData, location_area: e.target.value })}
+                aria-invalid={!!errors.location_area}
+                aria-describedby={errors.location_area ? 'found-location-error' : undefined}
+                className={`input ${errors.location_area ? 'border-red-500' : ''}`}
+              >
+                <option value="">{t('items.selectLocation')}</option>
+                {RWANDA_LOCATIONS.map((loc) => (
+                  <option key={loc} value={loc}>{loc}</option>
+                ))}
+              </select>
+              {errors.location_area && (
+                <p id="found-location-error" role="alert" className="mt-1 text-sm text-red-500">
+                  {errors.location_area}
+                </p>
+              )}
+            </div>
+
+            {/* Location Hint */}
+            <div className="mb-6">
+              <Textarea
+                label="Specific Location (Optional)"
+                value={formData.location_hint}
+                onChange={(e) => setFormData({ ...formData, location_hint: e.target.value })}
+                placeholder={t('items.locationHintPlaceholderFound')}
+                rows={2}
+              />
+            </div>
+
+            {/* Date */}
+            <div className="mb-6">
+              <label htmlFor="found-date" className="block text-sm font-medium text-gray-700 mb-1">
+                <Calendar className="w-4 h-4 inline mr-1" aria-hidden="true" />
+                When did you find it? *
+              </label>
+              <input
+                id="found-date"
+                type="date"
+                value={formData.found_date}
+                onChange={(e) => setFormData({ ...formData, found_date: e.target.value })}
+                max={new Date().toISOString().split('T')[0]}
+                aria-invalid={!!errors.found_date}
+                aria-describedby={errors.found_date ? 'found-date-error' : undefined}
+                className={`input ${errors.found_date ? 'border-red-500' : ''}`}
+              />
+              {errors.found_date && (
+                <p id="found-date-error" role="alert" className="mt-1 text-sm text-red-500">
+                  {errors.found_date}
+                </p>
+              )}
+            </div>
+          </Card>
+
+          {/* Photos (Optional now) + Privacy note */}
+          <Card className="p-6 mb-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              <Camera className="w-5 h-5 inline mr-2" />
+              Photos (Optional)
+            </h2>
+
+            <Alert type="info" className="mb-4">
+              <strong>Privacy:</strong> Photos are stored privately as evidence and are not shown publicly.
+              They help confirm authenticity during the handover process.
+            </Alert>
+
+            <p className="text-sm text-gray-600 mb-4">
+              If you can, upload clear photos. This helps confirm the item later — but you can submit without photos.
+            </p>
+
+            {/* Image Upload Area */}
+            <div className="grid grid-cols-3 gap-4 mb-4">
+              {imagesPreviews.map((preview, index) => (
+                <div key={index} className="relative aspect-square rounded-lg overflow-hidden bg-gray-100">
+                  <img src={preview} alt="" className="w-full h-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => removeImage(index)}
+                    className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+
+              {images.length < 5 && (
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="aspect-square rounded-lg border-2 border-dashed border-gray-300 hover:border-primary-400 flex flex-col items-center justify-center transition-colors"
+                >
+                  <Upload className="w-8 h-8 text-gray-400 mb-2" />
+                  <span className="text-sm text-gray-500">Add Photo</span>
+                </button>
+              )}
+            </div>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              aria-label="Upload item photos"
+              accept="image/jpeg,image/png,image/webp"
+              multiple
+              onChange={handleImageSelect}
+              className="hidden"
+            />
+
+            {errors.images && <p role="alert" className="text-sm text-red-500">{errors.images}</p>}
+
+            <p className="text-xs text-gray-500 mt-2">
+              Max 5 images, 5MB each. JPEG, PNG, or WebP format.
+            </p>
+          </Card>
+
+          {/* Important Notice */}
+          <Alert type="warning" className="mb-6">
+            <strong>Important:</strong> Never demand payment before verification. Byaboneka+ uses secure verification
+            to confirm ownership. Attempting to extort money is against our policies and may result in account suspension.
+          </Alert>
+
+          {/* Submit Button */}
+          <div className="flex justify-end gap-4">
+            <Button type="button" variant="secondary" onClick={() => navigate(-1)}>
+              Cancel
+            </Button>
+            <Button type="submit" loading={loading || uploadingImages}>
+              <Check className="w-4 h-4 mr-2" />
+              {uploadingImages ? 'Uploading Images...' : 'Submit Report'}
+            </Button>
+          </div>
+        </form>
+      </div>
     </>
   );
 };
@@ -37792,30 +38011,35 @@ export default ReportFoundPage;
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: frontend/src/pages/ReportLostPage.tsx
-│ Language: TSX | Lines: 521 | Size: 20.8 KB
+│ Language: TSX | Lines: 452 | Size: 16.3 KB
 └────────────────────────────────────────────────────────────┘
 
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  ArrowLeft, ArrowRight, Check, Smartphone, CreditCard, 
-  Wallet, Briefcase, Key, Package, MapPin, Calendar,
-  HelpCircle, Shield, AlertCircle, Camera, Upload, X
+import {
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  Smartphone,
+  CreditCard,
+  Wallet,
+  Briefcase,
+  Key,
+  Package,
+  MapPin,
+  Calendar,
+  Camera,
+  Upload,
+  X,
 } from 'lucide-react';
-import { Button, Card, Input, Textarea, Select, Alert } from '../components/ui';
+import { Button, Card, Input, Textarea } from '../components/ui';
 import { lostItemsApi, duplicateApi } from '../services/api';
 import { DuplicateWarning } from '../components/DuplicateWarning';
-import { ItemCategory, CATEGORY_INFO, RWANDA_LOCATIONS, QUESTION_TEMPLATES, VerificationQuestion } from '../types';
+import { ItemCategory, CATEGORY_INFO, RWANDA_LOCATIONS } from '../types';
 import { useRecaptcha } from '../hooks/useRecaptcha';
 import toast from 'react-hot-toast';
-import VerificationStrengthIndicator from '../components/VerificationStrengthIndicator';
 import { useTranslation } from 'react-i18next';
 
-const CATEGORY_OPTIONS = Object.entries(CATEGORY_INFO).map(([value, info]) => ({
-  value,
-  label: info.label,
-}));
-const LOCATION_OPTIONS = RWANDA_LOCATIONS.map((loc) => ({ value: loc, label: loc }));
 const CATEGORY_ICONS: Record<ItemCategory, React.ReactNode> = {
   [ItemCategory.PHONE]: <Smartphone className="w-8 h-8" />,
   [ItemCategory.ID]: <CreditCard className="w-8 h-8" />,
@@ -37832,7 +38056,6 @@ interface FormData {
   location_area: string;
   location_hint: string;
   lost_date: string;
-  verification_questions: VerificationQuestion[];
 }
 
 const ReportLostPage: React.FC = () => {
@@ -37840,13 +38063,16 @@ const ReportLostPage: React.FC = () => {
   const navigate = useNavigate();
   const { executeRecaptcha } = useRecaptcha();
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // 2-step wizard (Item Details -> Location & Date)
   const [step, setStep] = useState(1);
+
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [duplicateCandidates, setDuplicateCandidates] = useState<any[]>([]);
   const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
 
-  // Image upload state (NEW — gap fix)
+  // Image upload state
   const [images, setImages] = useState<File[]>([]);
   const [imagesPreviews, setImagesPreviews] = useState<string[]>([]);
 
@@ -37857,19 +38083,15 @@ const ReportLostPage: React.FC = () => {
     location_area: '',
     location_hint: '',
     lost_date: new Date().toISOString().split('T')[0],
-    verification_questions: [
-      { question: '', answer: '' },
-      { question: '', answer: '' },
-      { question: '', answer: '' },
-    ],
   });
 
-  // Image handling (NEW)
+  // Image handling
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
+
     const newFiles = Array.from(files).slice(0, 5 - images.length);
-    
+
     for (const file of newFiles) {
       if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
         toast.error('Invalid file type. Only JPEG, PNG, and WebP are allowed.');
@@ -37880,7 +38102,7 @@ const ReportLostPage: React.FC = () => {
         return;
       }
     }
-    
+
     const previews = newFiles.map((file) => URL.createObjectURL(file));
     setImages([...images, ...newFiles]);
     setImagesPreviews([...imagesPreviews, ...previews]);
@@ -37894,27 +38116,22 @@ const ReportLostPage: React.FC = () => {
 
   const validateStep = (currentStep: number): boolean => {
     const newErrors: Record<string, string> = {};
+
     if (currentStep === 1) {
       if (!formData.category) newErrors.category = 'Please select a category';
-      if (!formData.title || formData.title.length < 3) newErrors.title = 'Title must be at least 3 characters';
+      if (!formData.title || formData.title.length < 3) {
+        newErrors.title = 'Title must be at least 3 characters';
+      }
       if (!formData.description || formData.description.length < 10) {
         newErrors.description = 'Description must be at least 10 characters';
       }
     }
+
     if (currentStep === 2) {
       if (!formData.location_area) newErrors.location_area = 'Please select a location';
       if (!formData.lost_date) newErrors.lost_date = 'Please enter the date you lost the item';
     }
-    if (currentStep === 3) {
-      formData.verification_questions.forEach((q, i) => {
-        if (!q.question || q.question.length < 5) {
-          newErrors[`question_${i}`] = 'Question must be at least 5 characters';
-        }
-        if (!q.answer || q.answer.length < 1) {
-          newErrors[`answer_${i}`] = 'Answer is required';
-        }
-      });
-    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -37932,7 +38149,9 @@ const ReportLostPage: React.FC = () => {
   };
 
   const handleSubmit = async () => {
-    if (!validateStep(3)) return;
+    // Final step is step 2 now
+    if (!validateStep(2)) return;
+
     // Check for duplicates first
     if (!showDuplicateWarning && duplicateCandidates.length === 0) {
       try {
@@ -37943,6 +38162,7 @@ const ReportLostPage: React.FC = () => {
           location_area: formData.location_area,
           lost_date: formData.lost_date,
         });
+
         if (dupRes.data.data?.has_potential_duplicates && dupRes.data.data.candidates.length > 0) {
           setDuplicateCandidates(dupRes.data.data.candidates);
           setShowDuplicateWarning(true);
@@ -37952,26 +38172,32 @@ const ReportLostPage: React.FC = () => {
         console.warn('Duplicate check failed:', error);
       }
     }
+
     await submitLostItem();
   };
 
   const submitLostItem = async () => {
     setShowDuplicateWarning(false);
     setLoading(true);
+
     try {
       const recaptchaToken = await executeRecaptcha('report_lost');
+
+      // Submit ONLY the required fields:
+      // category, title, description, location_area, location_hint, lost_date
       const response = await lostItemsApi.create({
-        ...formData,
-        verification_questions: formData.verification_questions.map((q) => ({
-          question: q.question,
-          answer: q.answer,
-        })),
+        category: formData.category,
+        title: formData.title,
+        description: formData.description,
+        location_area: formData.location_area,
+        location_hint: formData.location_hint,
+        lost_date: formData.lost_date,
         ...(recaptchaToken && { recaptchaToken }),
       } as any);
 
       const itemId = response.data.data.id;
 
-      // Upload images if any (NEW — gap fix)
+      // Upload images if any
       if (images.length > 0) {
         try {
           const fileList = new DataTransfer();
@@ -37993,16 +38219,6 @@ const ReportLostPage: React.FC = () => {
     }
   };
 
-  const updateQuestion = (index: number, field: 'question' | 'answer', value: string) => {
-    const updated = [...formData.verification_questions];
-    updated[index] = { ...updated[index], [field]: value };
-    setFormData({ ...formData, verification_questions: updated });
-  };
-
-  const suggestedQuestions = formData.category 
-    ? QUESTION_TEMPLATES[formData.category as ItemCategory] || []
-    : [];
-
   return (
     <>
       {showDuplicateWarning && (
@@ -38010,307 +38226,241 @@ const ReportLostPage: React.FC = () => {
           candidates={duplicateCandidates}
           itemType="lost"
           onContinue={() => submitLostItem()}
-          onViewDuplicate={(id, type) => navigate(`/${type === 'lost' ? 'lost-items' : 'found-items'}/${id}`)}
-          onCancel={() => { setShowDuplicateWarning(false); setDuplicateCandidates([]); }}
+          onViewDuplicate={(id, type) =>
+            navigate(`/${type === 'lost' ? 'lost-items' : 'found-items'}/${id}`)
+          }
+          onCancel={() => {
+            setShowDuplicateWarning(false);
+            setDuplicateCandidates([]);
+          }}
         />
       )}
-    <div className="max-w-2xl mx-auto px-4 py-8">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">{t('reportLost.title')}</h1>
-        <p className="text-gray-600">
-          Provide details about your lost item to help us match it with found items
-        </p>
-      </div>
 
-      {/* Progress Steps */}
-      <div className="flex items-center justify-between mb-8">
-        {[1, 2, 3].map((s) => (
-          <React.Fragment key={s}>
-            <div className="flex items-center">
-              <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-colors ${
-                  s < step
-                    ? 'bg-trust-500 text-white'
-                    : s === step
-                    ? 'bg-primary-500 text-white'
-                    : 'bg-gray-200 text-gray-500'
-                }`}
-              >
-                {s < step ? <Check className="w-5 h-5" /> : s}
-              </div>
-              <span className={`ml-2 text-sm font-medium ${s === step ? 'text-primary-500' : 'text-gray-500'}`}>
-                {s === 1 ? 'Item Details' : s === 2 ? 'Location & Date' : 'Verification'}
-              </span>
-            </div>
-            {s < 3 && <div className={`flex-1 h-1 mx-4 rounded ${s < step ? 'bg-trust-500' : 'bg-gray-200'}`} />}
-          </React.Fragment>
-        ))}
-      </div>
+      <div className="max-w-2xl mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">{t('reportLost.title')}</h1>
+          <p className="text-gray-600">Provide details about your lost item to help us match it with found items</p>
+        </div>
 
-      {/* Step 1: Item Details */}
-      {step === 1 && (
-        <Card className="p-6 animate-fade-in">
-          <h2 className="text-lg font-semibold text-gray-900 mb-6">What did you lose?</h2>
-          {/* Category Selection */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-3">Category *</label>
-            <div className="grid grid-cols-3 gap-3">
-              {Object.entries(CATEGORY_INFO).map(([key, info]) => (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => setFormData({ ...formData, category: key as ItemCategory })}
-                  className={`p-4 rounded-xl border-2 transition-all ${
-                    formData.category === key
-                      ? 'border-primary-500 bg-primary-50'
-                      : 'border-gray-200 hover:border-gray-300'
+        {/* Progress Steps (2 steps) */}
+        <div className="flex items-center justify-between mb-8">
+          {[1, 2].map((s) => (
+            <React.Fragment key={s}>
+              <div className="flex items-center">
+                <div
+                  className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-colors ${
+                    s < step
+                      ? 'bg-trust-500 text-white'
+                      : s === step
+                      ? 'bg-primary-500 text-white'
+                      : 'bg-gray-200 text-gray-500'
                   }`}
                 >
-                  <div className={`mx-auto mb-2 ${formData.category === key ? 'text-primary-500' : 'text-gray-400'}`}>
-                    {CATEGORY_ICONS[key as ItemCategory]}
-                  </div>
-                  <p className={`text-sm font-medium ${formData.category === key ? 'text-primary-500' : 'text-gray-600'}`}>
-                    {info.label}
-                  </p>
-                </button>
-              ))}
-            </div>
-            {errors.category && <p role="alert" className="mt-2 text-sm text-red-500">{errors.category}</p>}
-          </div>
-          {/* Title */}
-          <div className="mb-6">
-            <Input
-              label="Title *"
-              value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              placeholder={t('items.titlePlaceholderLost')}
-              error={errors.title}
-              helperText="Be specific - include color, brand, model"
-            />
-          </div>
-          {/* Description */}
-          <div className="mb-6">
-            <Textarea
-              label="Description *"
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder={t('items.descPlaceholderLost')}
-              rows={4}
-              error={errors.description}
-            />
-          </div>
-
-          {/* Image Upload — NEW gap fix */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              <Camera className="w-4 h-4 inline mr-1" aria-hidden="true" />
-              Photos (Optional)
-            </label>
-            <p className="text-sm text-gray-500 mb-3">
-              Upload photos of your item if you have any. This helps finders identify it.
-            </p>
-            <div className="grid grid-cols-3 gap-3 mb-3">
-              {imagesPreviews.map((preview, index) => (
-                <div key={index} className="relative aspect-square rounded-lg overflow-hidden bg-gray-100">
-                  <img src={preview} alt="" className="w-full h-full object-cover" />
-                  <button
-                    type="button"
-                    onClick={() => removeImage(index)}
-                    className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
+                  {s < step ? <Check className="w-5 h-5" /> : s}
                 </div>
-              ))}
-              {images.length < 5 && (
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="aspect-square rounded-lg border-2 border-dashed border-gray-300 hover:border-primary-400 flex flex-col items-center justify-center transition-colors"
-                >
-                  <Upload className="w-6 h-6 text-gray-400 mb-1" />
-                  <span className="text-xs text-gray-500">Add Photo</span>
-                </button>
+                <span className={`ml-2 text-sm font-medium ${s === step ? 'text-primary-500' : 'text-gray-500'}`}>
+                  {s === 1 ? 'Item Details' : 'Location & Date'}
+                </span>
+              </div>
+              {s < 2 && <div className={`flex-1 h-1 mx-4 rounded ${s < step ? 'bg-trust-500' : 'bg-gray-200'}`} />}
+            </React.Fragment>
+          ))}
+        </div>
+
+        {/* Step 1: Item Details */}
+        {step === 1 && (
+          <Card className="p-6 animate-fade-in">
+            <h2 className="text-lg font-semibold text-gray-900 mb-6">What did you lose?</h2>
+
+            {/* Category Selection */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-3">Category *</label>
+              <div className="grid grid-cols-3 gap-3">
+                {Object.entries(CATEGORY_INFO).map(([key, info]) => (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => setFormData({ ...formData, category: key as ItemCategory })}
+                    className={`p-4 rounded-xl border-2 transition-all ${
+                      formData.category === key ? 'border-primary-500 bg-primary-50' : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <div className={`mx-auto mb-2 ${formData.category === key ? 'text-primary-500' : 'text-gray-400'}`}>
+                      {CATEGORY_ICONS[key as ItemCategory]}
+                    </div>
+                    <p className={`text-sm font-medium ${formData.category === key ? 'text-primary-500' : 'text-gray-600'}`}>
+                      {info.label}
+                    </p>
+                  </button>
+                ))}
+              </div>
+              {errors.category && (
+                <p role="alert" className="mt-2 text-sm text-red-500">
+                  {errors.category}
+                </p>
               )}
             </div>
-            <input
-              ref={fileInputRef}
-              type="file"
-              aria-label="Upload item photos"
-              accept="image/jpeg,image/png,image/webp"
-              multiple
-              onChange={handleImageSelect}
-              className="hidden"
-            />
-            <p className="text-xs text-gray-500">
-              Max 5 images, 5MB each. JPEG, PNG, or WebP.
-            </p>
-          </div>
 
-          <div className="flex justify-end">
-            <Button onClick={handleNext}>
-              Next: Location & Date
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
-          </div>
-        </Card>
-      )}
-
-      {/* Step 2: Location & Date */}
-      {step === 2 && (
-        <Card className="p-6 animate-fade-in">
-          <h2 className="text-lg font-semibold text-gray-900 mb-6">Where and when did you lose it?</h2>
-          {/* Location */}
-          <div className="mb-6">
-            <label htmlFor="location-area" className="block text-sm font-medium text-gray-700 mb-1">
-              <MapPin className="w-4 h-4 inline mr-1" aria-hidden="true" />
-              Location Area *
-            </label>
-            <select
-              id="location-area"
-              value={formData.location_area}
-              onChange={(e) => setFormData({ ...formData, location_area: e.target.value })}
-              aria-invalid={!!errors.location_area}
-              aria-describedby={errors.location_area ? 'location-area-error' : undefined}
-              className={`input ${errors.location_area ? 'border-red-500' : ''}`}
-            >
-              <option value="">{t('items.selectLocation')}</option>
-              {RWANDA_LOCATIONS.map((loc) => (
-                <option key={loc} value={loc}>{loc}</option>
-              ))}
-            </select>
-            {errors.location_area && <p id="location-area-error" role="alert" className="mt-1 text-sm text-red-500">{errors.location_area}</p>}
-          </div>
-          {/* Location Hint */}
-          <div className="mb-6">
-            <Textarea
-              label="Location Details (Optional)"
-              value={formData.location_hint}
-              onChange={(e) => setFormData({ ...formData, location_hint: e.target.value })}
-              placeholder={t('items.locationHintPlaceholderLost')}
-              rows={2}
-            />
-          </div>
-          {/* Date */}
-          <div className="mb-6">
-            <label htmlFor="lost-date" className="block text-sm font-medium text-gray-700 mb-1">
-              <Calendar className="w-4 h-4 inline mr-1" aria-hidden="true" />
-              Date Lost *
-            </label>
-            <input
-              id="lost-date"
-              type="date"
-              value={formData.lost_date}
-              onChange={(e) => setFormData({ ...formData, lost_date: e.target.value })}
-              max={new Date().toISOString().split('T')[0]}
-              aria-invalid={!!errors.lost_date}
-              aria-describedby={errors.lost_date ? 'lost-date-error' : undefined}
-              className={`input ${errors.lost_date ? 'border-red-500' : ''}`}
-            />
-            {errors.lost_date && <p id="lost-date-error" role="alert" className="mt-1 text-sm text-red-500">{errors.lost_date}</p>}
-          </div>
-          <div className="flex justify-between">
-            <Button variant="secondary" onClick={handleBack}>
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
-            </Button>
-            <Button onClick={handleNext}>
-              Next: Verification Questions
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
-          </div>
-        </Card>
-      )}
-
-      {/* Step 3: Verification Questions */}
-      {step === 3 && (
-        <Card className="p-6 animate-fade-in">
-          <div className="flex items-start gap-3 mb-6">
-            <Shield className="w-6 h-6 text-trust-500 flex-shrink-0 mt-1" />
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900">Set Verification Questions</h2>
-              <p className="text-sm text-gray-600 mt-1">
-                Create 3 questions that only the true owner would know. These prevent fraudulent claims.
-              </p>
-            </div>
-          </div>
-
-          <Alert type="info" className="mb-6">
-            <strong>Tips:</strong> Ask about unique details like scratches, personal photos, app layouts, 
-            or things that wouldn't be visible to someone who found your item.
-          </Alert>
-
-          {formData.verification_questions.map((q, index) => (
-            <div key={index} className="mb-6 p-4 bg-gray-50 rounded-xl">
-              <div className="flex items-center gap-2 mb-3">
-                <span className="w-6 h-6 bg-primary-500 text-white rounded-full flex items-center justify-center text-sm font-medium">
-                  {index + 1}
-                </span>
-                <span className="font-medium text-gray-700">Question {index + 1}</span>
-              </div>
-              <div className="mb-3">
-                <Input
-                  value={q.question}
-                  onChange={(e) => updateQuestion(index, 'question', e.target.value)}
-                  placeholder={t('reportLost.questionPlaceholder')}
-                  error={errors[`question_${index}`]}
-                />
-                {suggestedQuestions.length > 0 && !q.question && (
-                  <div className="mt-2">
-                    <p className="text-xs text-gray-500 mb-1">Suggestions:</p>
-                    <div className="flex flex-wrap gap-1">
-                      {suggestedQuestions.slice(0, 3).map((suggestion, si) => (
-                        <button
-                          key={si}
-                          type="button"
-                          onClick={() => updateQuestion(index, 'question', suggestion)}
-                          className="text-xs px-2 py-1 bg-white border border-gray-200 rounded hover:border-primary-300 hover:bg-primary-50"
-                        >
-                          {suggestion.substring(0, 40)}...
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
+            {/* Title */}
+            <div className="mb-6">
               <Input
-                value={q.answer}
-                onChange={(e) => updateQuestion(index, 'answer', e.target.value)}
-                placeholder={t('reportLost.answerPlaceholder')}
-                error={errors[`answer_${index}`]}
+                label="Title *"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                placeholder={t('items.titlePlaceholderLost')}
+                error={errors.title}
+                helperText="Be specific - include color, brand, model"
               />
             </div>
-          ))}
 
-          {/* NOVEL: Verification Strength Analyzer */}
-          <VerificationStrengthIndicator
-            questions={formData.verification_questions.map(q => q.question)}
-            answers={formData.verification_questions.map(q => q.answer)}
-            category={formData.category}
-            description={formData.description}
-            onSelectTemplate={(index, question) => updateQuestion(index, 'question', question)}
-          />
+            {/* Description */}
+            <div className="mb-6">
+              <Textarea
+                label="Description *"
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                placeholder={t('items.descPlaceholderLost')}
+                rows={4}
+                error={errors.description}
+              />
+            </div>
 
-          <Alert type="warning" className="mb-6">
-            <AlertCircle className="w-4 h-4 inline mr-2" />
-            <strong>Remember your answers!</strong> You'll need them to verify ownership if someone 
-            claims to have found your item. Answers are not case-sensitive.
-          </Alert>
+            {/* Image Upload */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                <Camera className="w-4 h-4 inline mr-1" aria-hidden="true" />
+                Photos (Optional)
+              </label>
+              <p className="text-sm text-gray-500 mb-3">Upload photos of your item if you have any. This helps finders identify it.</p>
 
-          <div className="flex justify-between">
-            <Button variant="secondary" onClick={handleBack}>
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
-            </Button>
-            <Button onClick={handleSubmit} loading={loading}>
-              <Check className="w-4 h-4 mr-2" />
-              Submit Report
-            </Button>
-          </div>
-        </Card>
-      )}
-    </div>
+              <div className="grid grid-cols-3 gap-3 mb-3">
+                {imagesPreviews.map((preview, index) => (
+                  <div key={index} className="relative aspect-square rounded-lg overflow-hidden bg-gray-100">
+                    <img src={preview} alt="" className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(index)}
+                      className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+
+                {images.length < 5 && (
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="aspect-square rounded-lg border-2 border-dashed border-gray-300 hover:border-primary-400 flex flex-col items-center justify-center transition-colors"
+                  >
+                    <Upload className="w-6 h-6 text-gray-400 mb-1" />
+                    <span className="text-xs text-gray-500">Add Photo</span>
+                  </button>
+                )}
+              </div>
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                aria-label="Upload item photos"
+                accept="image/jpeg,image/png,image/webp"
+                multiple
+                onChange={handleImageSelect}
+                className="hidden"
+              />
+              <p className="text-xs text-gray-500">Max 5 images, 5MB each. JPEG, PNG, or WebP.</p>
+            </div>
+
+            <div className="flex justify-end">
+              <Button onClick={handleNext}>
+                Next: Location & Date
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            </div>
+          </Card>
+        )}
+
+        {/* Step 2: Location & Date */}
+        {step === 2 && (
+          <Card className="p-6 animate-fade-in">
+            <h2 className="text-lg font-semibold text-gray-900 mb-6">Where and when did you lose it?</h2>
+
+            {/* Location */}
+            <div className="mb-6">
+              <label htmlFor="location-area" className="block text-sm font-medium text-gray-700 mb-1">
+                <MapPin className="w-4 h-4 inline mr-1" aria-hidden="true" />
+                Location Area *
+              </label>
+              <select
+                id="location-area"
+                value={formData.location_area}
+                onChange={(e) => setFormData({ ...formData, location_area: e.target.value })}
+                aria-invalid={!!errors.location_area}
+                aria-describedby={errors.location_area ? 'location-area-error' : undefined}
+                className={`input ${errors.location_area ? 'border-red-500' : ''}`}
+              >
+                <option value="">{t('items.selectLocation')}</option>
+                {RWANDA_LOCATIONS.map((loc) => (
+                  <option key={loc} value={loc}>
+                    {loc}
+                  </option>
+                ))}
+              </select>
+              {errors.location_area && (
+                <p id="location-area-error" role="alert" className="mt-1 text-sm text-red-500">
+                  {errors.location_area}
+                </p>
+              )}
+            </div>
+
+            {/* Location Hint */}
+            <div className="mb-6">
+              <Textarea
+                label="Location Details (Optional)"
+                value={formData.location_hint}
+                onChange={(e) => setFormData({ ...formData, location_hint: e.target.value })}
+                placeholder={t('items.locationHintPlaceholderLost')}
+                rows={2}
+              />
+            </div>
+
+            {/* Date */}
+            <div className="mb-6">
+              <label htmlFor="lost-date" className="block text-sm font-medium text-gray-700 mb-1">
+                <Calendar className="w-4 h-4 inline mr-1" aria-hidden="true" />
+                Date Lost *
+              </label>
+              <input
+                id="lost-date"
+                type="date"
+                value={formData.lost_date}
+                onChange={(e) => setFormData({ ...formData, lost_date: e.target.value })}
+                max={new Date().toISOString().split('T')[0]}
+                aria-invalid={!!errors.lost_date}
+                aria-describedby={errors.lost_date ? 'lost-date-error' : undefined}
+                className={`input ${errors.lost_date ? 'border-red-500' : ''}`}
+              />
+              {errors.lost_date && (
+                <p id="lost-date-error" role="alert" className="mt-1 text-sm text-red-500">
+                  {errors.lost_date}
+                </p>
+              )}
+            </div>
+
+            <div className="flex justify-between">
+              <Button variant="secondary" onClick={handleBack}>
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back
+              </Button>
+              <Button onClick={handleSubmit} loading={loading}>
+                <Check className="w-4 h-4 mr-2" />
+                Submit Report
+              </Button>
+            </div>
+          </Card>
+        )}
+      </div>
     </>
   );
 };
@@ -39602,7 +39752,7 @@ export default TermsPage;
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: frontend/src/services/api.ts
-│ Language: TypeScript | Lines: 582 | Size: 18.5 KB
+│ Language: TypeScript | Lines: 594 | Size: 18.8 KB
 └────────────────────────────────────────────────────────────┘
 
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
@@ -39715,7 +39865,7 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       const refreshToken = useAuthStore.getState().refreshToken;
-      
+
       if (refreshToken) {
         try {
           const response = await axios.post(`${API_URL}/auth/refresh`, {
@@ -39730,7 +39880,7 @@ api.interceptors.response.use(
         } catch (refreshError) {
           console.error('Token refresh failed:', refreshError);
           useAuthStore.getState().logout();
-          
+
           if (typeof window !== 'undefined') {
             window.location.href = '/login?session_expired=true';
           }
@@ -39992,10 +40142,19 @@ export const claimsApi = {
     api.get<ApiResponse<Claim>>(`/claims/${id}`),
 
   getQuestions: (claimId: number) =>
-    api.get<ApiResponse<{ claim_id: number; questions: string[]; attempts_remaining: number }>>(`/claims/${claimId}/questions`),
+    api.get<ApiResponse<{ claim_id: number; questions: string[]; attempts_remaining: number }>>(
+      `/claims/${claimId}/questions`
+    ),
+
+  // ✅ NEW: Finder sets verification questions
+  setQuestions: (claimId: number, questions: Array<{ question: string; answer: string }>) =>
+    api.post<ApiResponse>(`/claims/${claimId}/questions`, { questions }),
 
   verify: (claimId: number, answers: string[]) =>
-    api.post<ApiResponse<{ verified: boolean; correct_count: number; attempts_remaining: number }>>(`/claims/${claimId}/verify`, { answers }),
+    api.post<ApiResponse<{ verified: boolean; correct_count: number; attempts_remaining: number }>>(
+      `/claims/${claimId}/verify`,
+      { answers }
+    ),
 
   cancel: (claimId: number) =>
     api.post<ApiResponse>(`/claims/${claimId}/cancel`),
@@ -40175,7 +40334,10 @@ export const adminApi = {
 
   // FIX: Admin contact messages endpoint
   getContactMessages: (params?: { page?: number; limit?: number }) =>
-    api.get<PaginatedResponse<{ id: number; name: string; email: string; message: string; ip_address: string; read: boolean; created_at: string }>>('/admin/contact-messages', { params }),
+    api.get<PaginatedResponse<{ id: number; name: string; email: string; message: string; ip_address: string; read: boolean; created_at: string }>>(
+      '/admin/contact-messages',
+      { params }
+    ),
 };
 
 // ============================================
@@ -40357,7 +40519,7 @@ export const useAuthStore = create<AuthState>()(
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: frontend/src/types/index.ts
-│ Language: TypeScript | Lines: 322 | Size: 8.0 KB
+│ Language: TypeScript | Lines: 291 | Size: 7.2 KB
 └────────────────────────────────────────────────────────────┘
 
 // ============================================
@@ -40393,8 +40555,10 @@ export enum FoundItemStatus {
   EXPIRED = 'EXPIRED'
 }
 
+// ✅ UPDATED: Claim statuses (includes NEW PENDING_QUESTIONS)
 export enum ClaimStatus {
-  PENDING = 'PENDING',
+  PENDING_QUESTIONS = 'PENDING_QUESTIONS', // NEW: Waiting for finder to set questions
+  PENDING = 'PENDING',                     // Owner needs to answer questions
   VERIFIED = 'VERIFIED',
   REJECTED = 'REJECTED',
   RETURNED = 'RETURNED',
@@ -40432,7 +40596,7 @@ export interface LostItem {
   status: LostItemStatus;
   keywords?: string[];
   photo_url?: string;
-  image_urls?: string[];          // Added: migration 004
+  image_urls?: string[];         // Added: migration 004
   created_at: string;
   user_name?: string;
   verification_questions?: string[];
@@ -40462,7 +40626,6 @@ export interface FoundItem {
   claim_count?: number;
 }
 
-// Claim — FIX: Added finder_id which backend returns
 export interface Claim {
   id: number;
   lost_item_id: number;
@@ -40480,6 +40643,9 @@ export interface Claim {
   claimant_name?: string;
   otp_expires_at?: string;
   otp_verified?: boolean;
+  // Location info (for handover location recommendations)
+  lost_item_area?: string;
+  found_item_area?: string;
   // Dispute info
   dispute_reason?: string;
 }
@@ -40619,19 +40785,23 @@ export const CATEGORY_INFO: Record<ItemCategory, { label: string; icon: string; 
   [ItemCategory.OTHER]: { label: 'Other', icon: '📦', color: 'bg-gray-100 text-gray-800' },
 };
 
-// Status info for UI
+// ✅ UPDATED: Status info for UI (includes new claim status)
 export const STATUS_INFO: Record<string, { label: string; color: string }> = {
+  // Items
   ACTIVE: { label: 'Active', color: 'blue' },
   UNCLAIMED: { label: 'Unclaimed', color: 'blue' },
   CLAIMED: { label: 'Claimed', color: 'yellow' },
   MATCHED: { label: 'Matched', color: 'yellow' },
+
+  // Claims
+  PENDING_QUESTIONS: { label: 'Awaiting Questions', color: 'blue' },      // NEW
+  PENDING: { label: 'Awaiting Verification', color: 'yellow' },           // UPDATED label
   VERIFIED: { label: 'Verified', color: 'green' },
-  RETURNED: { label: 'Returned', color: 'green' },
-  PENDING: { label: 'Pending', color: 'yellow' },
   REJECTED: { label: 'Rejected', color: 'red' },
-  EXPIRED: { label: 'Expired', color: 'gray' },
-  CANCELLED: { label: 'Cancelled', color: 'gray' },
+  RETURNED: { label: 'Returned', color: 'green' },
   DISPUTED: { label: 'Disputed', color: 'red' },
+  CANCELLED: { label: 'Cancelled', color: 'gray' },
+  EXPIRED: { label: 'Expired', color: 'gray' },
 };
 
 // Rwanda locations
@@ -40643,45 +40813,6 @@ export const RWANDA_LOCATIONS = [
   'Rubavu', 'Muhanga', 'Rwamagana', 'Kayonza', 'Nyagatare'
 ];
 
-// Verification question templates
-export const QUESTION_TEMPLATES: Record<ItemCategory, string[]> = {
-  [ItemCategory.PHONE]: [
-    'What is your lockscreen wallpaper?',
-    'How many apps are in your dock?',
-    'What music app is on your home screen?',
-    'What color is your phone case?',
-    'What are the last 4 digits of your IMEI?'
-  ],
-  [ItemCategory.WALLET]: [
-    'How many cards are in the wallet?',
-    'What personal item is in the photo slot?',
-    'Approximately how much cash was inside?',
-    'What color is the inside of the wallet?',
-    'What bank cards are inside?'
-  ],
-  [ItemCategory.ID]: [
-    'What are the last 4 characters of your ID number?',
-    'What district is shown on the ID?',
-    'What is your birth year on the ID?'
-  ],
-  [ItemCategory.BAG]: [
-    'What brand is the bag?',
-    'What items were inside?',
-    'What distinctive marks or stickers are on it?',
-    'How many compartments does it have?'
-  ],
-  [ItemCategory.KEYS]: [
-    'How many keys are on the keychain?',
-    'What does the keychain look like?',
-    'What brand is the car key?',
-    'Are there any distinctive items attached?'
-  ],
-  [ItemCategory.OTHER]: [
-    'What unique features does it have?',
-    'What color is it?',
-    'What brand or make is it?'
-  ]
-};
 
 
 ┌────────────────────────────────────────────────────────────┐
@@ -40946,5 +41077,5 @@ export default defineConfig({
 
 
 ══════════════════════════════════════════════════════════════
-  END OF DUMP — 171 files | 39,296 lines
+  END OF DUMP — 172 files | 39,418 lines
 ══════════════════════════════════════════════════════════════
