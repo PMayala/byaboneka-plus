@@ -62,7 +62,7 @@ function getJwtRefreshSecret(): string {
   return secret || 'dev_refresh_secret_change_in_production_min_32';
 }
 
-const ACCESS_TOKEN_EXPIRY = '15m';
+const ACCESS_TOKEN_EXPIRY = process.env.JWT_ACCESS_EXPIRY || '60m';
 const REFRESH_TOKEN_EXPIRY = '7d';
 
 export function generateAccessToken(payload: TokenPayload): string {

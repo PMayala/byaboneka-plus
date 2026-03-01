@@ -148,7 +148,7 @@ export async function exportUserData(req: Request, res: Response): Promise<void>
     const [userResult, lostItems, foundItems, claims, messages, auditLogs] = await Promise.all([
       query('SELECT id, email, name, phone, role, trust_score, email_verified, phone_verified, created_at FROM users WHERE id = $1', [userId]),
       query('SELECT id, category, title, description, location_area, location_hint, lost_date, status, created_at FROM lost_items WHERE user_id = $1 ORDER BY created_at DESC', [userId]),
-      query('SELECT id, category, title, description, location_area, location_hint, found_date, status, created_at FROM found_items WHERE user_id = $1 ORDER BY created_at DESC', [userId]),
+      query('SELECT id, category, title, description, location_area, location_hint, found_date, status, created_at FROM found_items WHERE finder_id = $1 ORDER BY created_at DESC', [userId]),
       query('SELECT id, lost_item_id, found_item_id, status, verification_score, attempts_made, created_at FROM claims WHERE claimant_id = $1 ORDER BY created_at DESC', [userId]),
       query('SELECT id, claim_id, content, is_read, created_at FROM messages WHERE sender_id = $1 ORDER BY created_at DESC', [userId]),
       query('SELECT action, resource_type, resource_id, timestamp FROM audit_logs WHERE actor_id = $1 ORDER BY timestamp DESC LIMIT 100', [userId]),

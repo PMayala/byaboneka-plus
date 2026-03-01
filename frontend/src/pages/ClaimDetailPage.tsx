@@ -212,7 +212,7 @@ const ClaimDetailPage: React.FC = () => {
             <div className="mb-6">
               {/* NOVEL: Safe handover location recommendations */}
               <SafeHandoverLocationPicker
-                itemArea={''}
+                itemArea={claim.found_item_area || claim.lost_item_area || ''}
                 itemCategory={claim.category || 'OTHER'}
                 onSelectLocation={(loc) => console.log('Selected handover location:', loc.name)}
               />

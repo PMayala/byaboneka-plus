@@ -27,6 +27,12 @@ export async function requireVerifiedEmail(
     return next();
   }
 
+  // FIX: If EMAIL_VERIFICATION_REQUIRED is explicitly set to 'false', skip check
+  // This allows production demos to work without requiring email verification
+  if (process.env.EMAIL_VERIFICATION_REQUIRED === 'false') {
+    return next();
+  }
+
   if (!req.user?.userId) {
     res.status(401).json({
       success: false,

@@ -100,7 +100,6 @@ export interface FoundItem {
   claim_count?: number;
 }
 
-// Claim — FIX: Added finder_id which backend returns
 export interface Claim {
   id: number;
   lost_item_id: number;
@@ -118,6 +117,9 @@ export interface Claim {
   claimant_name?: string;
   otp_expires_at?: string;
   otp_verified?: boolean;
+  // Location info (for handover location recommendations)
+  lost_item_area?: string;
+  found_item_area?: string;
   // Dispute info
   dispute_reason?: string;
 }

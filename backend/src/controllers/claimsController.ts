@@ -566,16 +566,18 @@ export async function getClaim(req: Request, res: Response): Promise<void> {
 
     const result = await query(
       `SELECT c.*, 
-              li.title as lost_item_title, li.category,
-              fi.title as found_item_title, fi.finder_id,
-              h.otp_expires_at, h.otp_verified,
-              u.name as claimant_name
-       FROM claims c
-       JOIN lost_items li ON c.lost_item_id = li.id
-       JOIN found_items fi ON c.found_item_id = fi.id
-       LEFT JOIN handover_confirmations h ON h.claim_id = c.id
-       JOIN users u ON c.claimant_id = u.id
-       WHERE c.id = $1`,
+                    li.title as lost_item_title, li.category,
+                    li.location_area as lost_item_area,
+                    fi.title as found_item_title, fi.finder_id,
+                    fi.location_area as found_item_area,
+                    h.otp_expires_at, h.otp_verified,
+                    u.name as claimant_name
+            FROM claims c
+            JOIN lost_items li ON c.lost_item_id = li.id
+            JOIN found_items fi ON c.found_item_id = fi.id
+            LEFT JOIN handover_confirmations h ON h.claim_id = c.id
+            JOIN users u ON c.claimant_id = u.id
+            WHERE c.id = $1`,
       [claimId]
     );
 
@@ -618,7 +620,9 @@ export async function getMyClaims(req: Request, res: Response): Promise<void> {
     const result = await query(
       `SELECT c.*, 
               li.title as lost_item_title, li.category,
+              li.location_area as lost_item_area,
               fi.title as found_item_title,
+              fi.location_area as found_item_area,
               h.otp_expires_at, h.otp_verified
        FROM claims c
        JOIN lost_items li ON c.lost_item_id = li.id

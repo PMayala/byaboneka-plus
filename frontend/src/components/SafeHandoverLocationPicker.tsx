@@ -34,6 +34,12 @@ const SafeHandoverLocationPicker: React.FC<Props> = ({
   const loadRecommendations = async () => {
     try {
       setLoading(true);
+      // If area is empty, go straight to all-locations fallback
+      if (!itemArea || itemArea.trim() === '') {
+        const res = await handoverLocationsApi.getAllLocations();
+        setLocations(res.data?.data?.slice(0, 5) || []);
+        return;
+      }
       const res = await handoverLocationsApi.getRecommended(itemArea, itemCategory);
       setLocations(res.data?.data || []);
     } catch {

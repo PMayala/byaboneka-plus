@@ -280,20 +280,44 @@ router.post('/privacy/preview-redaction',
 );
 
 // Safe locations
-router.get('/handover/safe-locations',
-  authenticate,
-  async (req: Request, res: Response) => {
-    res.json({ success: true, data: SAFE_HANDOVER_POINTS });
-  }
-);
-
 router.get('/handover/recommended-locations',
   authenticate,
   async (req: Request, res: Response) => {
     const { area, category } = req.query;
 
-    if (!area) {
-      res.status(400).json({ success: false, message: 'area query parameter is required' });
+    // If no area provided, return all safe locations as fallback instead of 400
+    if (!area || (typeof area === 'string' && area.trim() === '')) {
+      try {
+        const allLocations = await query(
+          `SELECT * FROM safe_handover_locations ORDER BY safety_rating DESC LIMIT 10`
+        );
+        res.json({
+          success: true,
+          data: allLocations.rows,
+          meta: {
+            search_area: 'all',
+            category: category || 'OTHER',
+            safety_note:
+              'Always meet at the recommended location during operating hours. For sensitive items (ID, wallet, phone), cooperative offices and sector offices are strongly recommended.'
+          }
+        });
+      } catch {
+        // If safe_handover_locations table doesn't exist, use the function with a default area
+        const recommendations = recommendHandoverLocations(
+          'Kigali',
+          (category as string) || 'OTHER'
+        );
+        res.json({
+          success: true,
+          data: recommendations,
+          meta: {
+            search_area: 'Kigali',
+            category: category || 'OTHER',
+            safety_note:
+              'Always meet at the recommended location during operating hours.'
+          }
+        });
+      }
       return;
     }
 

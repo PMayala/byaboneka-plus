@@ -79,9 +79,21 @@ enhancedRouter.post('/claims/:claimId/handover/otp',
         },
         message: result.message
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Generate OTP error:', error);
-      res.status(500).json({ success: false, message: 'Failed to generate handover code' });
+      // Provide more specific error messages
+      if (error.code === '42703') {
+        // Column not found - database schema issue
+        res.status(500).json({ success: false, message: 'Database schema error. Please contact support.' });
+      } else if (error.code === '23503') {
+        // Foreign key violation
+        res.status(400).json({ success: false, message: 'Referenced record not found' });
+      } else if (error.code === '23505') {
+        // Unique violation - OTP already exists
+        res.status(409).json({ success: false, message: 'A handover code already exists for this claim' });
+      } else {
+        res.status(500).json({ success: false, message: 'Failed to generate handover code' });
+      }
     }
   }
 );

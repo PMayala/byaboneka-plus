@@ -17,7 +17,12 @@ async function hashPassword(password: string): Promise<string> {
 
 async function hashAnswer(answer: string): Promise<{ hash: string; salt: string }> {
   const salt = crypto.randomBytes(16).toString('hex');
-  const normalized = answer.toLowerCase().trim();
+  // MUST match normalizeAnswer() in utils/index.ts exactly
+  const normalized = answer
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s]/g, '')  // Remove punctuation
+    .replace(/\s+/g, ' ');    // Collapse whitespace
   const hash = await bcrypt.hash(normalized + salt, 10);
   return { hash, salt };
 }
