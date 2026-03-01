@@ -267,8 +267,7 @@ All jobs run in parallel where possible. The deploy job only triggers on push to
 byaboneka-plus/
 ├── .github/
 │   └── workflows/
-│       ├── ci.yml                 # CI/CD pipeline (lint, test, build, deploy)
-│       ├── cd.yml                 # CI/CD pipeline (lint, test, build, deploy)
+│       └── ci-cd.yml                 # CI/CD pipeline (lint, test, build, deploy)
 │
 ├── backend/                           # Express.js API server
 │   ├── src/
@@ -338,13 +337,18 @@ byaboneka-plus/
 │   │   ├── services/              # Axios API client with JWT interceptors
 │   │   ├── store/                 # Zustand auth store (persisted)
 │   │   └── utils/                 # Date formatting, helpers
+│   ├── nginx.conf                 # SPA serving + API reverse proxy + security headers
 │   └── package.json
 │
 ├── docs/                             # Documentation
 │   ├── API.md                       # API endpoint reference
+│   ├── LOCAL_SETUP.md               # Local development guide
 │   └── TECHNICAL_DOCUMENTATION.md   # Full architecture, DB schema, deployment runbook
 │
+├── docker-compose.yml               # Local development (all services)
+├── docker-compose.production.yml     # Production deployment (PostgreSQL + API + nginx)
 ├── render.yaml                       # Render Blueprint (auto-deploy)
+├── DEPLOYMENT.md                     # Step-by-step deployment guide
 └── .env.example                      # Environment variable template
 ```
 
@@ -395,10 +399,22 @@ Translations cover all UI elements, form labels, error messages, email templates
 
 ## Deployment Options
 
-### Render + Vercel (Recommended for Demo)
+### Option A: Render + Vercel (Recommended for Demo)
 
 Deploy the backend to Render (with managed PostgreSQL) and the frontend to Vercel. See [`DEPLOYMENT.md`](DEPLOYMENT.md) for step-by-step instructions.
 
+### Option B: Docker Self-Hosted
+
+Run everything on a single server with Docker Compose:
+
+```bash
+cp .env.example .env           # Configure secrets
+docker compose -f docker-compose.production.yml up -d --build
+```
+
+See [`DEPLOYMENT.md`](DEPLOYMENT.md) for full Docker deployment guide including SSL/HTTPS setup.
+
+---
 
 ## Email Configuration (Brevo SMTP)
 
@@ -431,6 +447,7 @@ See [`.env.example`](.env.example) for the complete template. Key variables:
 | `JWT_SECRET` | Yes | JWT signing key (min 32 chars) |
 | `JWT_REFRESH_SECRET` | Yes | Refresh token signing key (min 32 chars) |
 | `DATABASE_URL` | Backend | Full PostgreSQL connection string |
+| `DATABASE_SSL` | Docker only | Set to `"false"` for local Docker Postgres |
 | `CORS_ORIGIN` | Backend | Allowed frontend origin(s) |
 | `BREVO_SMTP_USER` | No | Brevo SMTP login (emails disabled if unset) |
 | `BREVO_SMTP_KEY` | No | Brevo SMTP master password |
@@ -443,6 +460,7 @@ See [`.env.example`](.env.example) for the complete template. Key variables:
 
 | Issue | Solution |
 |-------|----------|
+| API container restarting (SSL error) | Set `DATABASE_SSL=false` in docker-compose env |
 | CORS errors | Verify `CORS_ORIGIN` includes the exact frontend URL |
 | Database connection failed | Check `DATABASE_URL` format and that PostgreSQL is running |
 | 401 errors after restart | JWT secrets must be consistent across restarts |

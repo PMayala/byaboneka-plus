@@ -1,18 +1,18 @@
 ╔══════════════════════════════════════════════════════════════╗
 ║  Byaboneka+ (Root Dump)                                    ║
 ║  Project Code Dump — AI Review Edition                      ║
-║  Generated: 2026-03-01T07:03:17.030Z                       ║
+║  Generated: 2026-03-01T14:27:32.722Z                       ║
 ╚══════════════════════════════════════════════════════════════╝
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   PROJECT SUMMARY
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   Root:           C:\Users\USER\Documents\byaboneka-plus
-  Files included: 164
-  Total lines:    38,929
+  Files included: 171
+  Total lines:    39,296
   Total size:     1.4 MB
   Env included:   YES (.env*)
-  Languages:      YAML (4), TypeScript (82), Env (6), Text (3), JSON (12), JavaScript (3), Markdown (5), SVG (1), TSX (46), CSS (1), HTML (1)
+  Languages:      YAML (7), TypeScript (82), Text (7), Env (6), JSON (12), JavaScript (3), Markdown (5), SVG (1), TSX (46), CSS (1), HTML (1)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   DIRECTORY STRUCTURE
@@ -90,22 +90,25 @@
   │   │   ├── performance/
   │   │   │   └── load-test.ts (8.2 KB)
   │   │   ├── unit/
-  │   │   │   ├── matching.test.ts (5.0 KB)
+  │   │   │   ├── matching.test.ts (5.1 KB)
   │   │   │   ├── middleware.test.ts (3.8 KB)
-  │   │   │   ├── novel-features.test.ts (8.6 KB)
-  │   │   │   ├── trust.test.ts (3.3 KB)
+  │   │   │   ├── novel-features.test.ts (8.7 KB)
+  │   │   │   ├── trust.test.ts (3.4 KB)
   │   │   │   ├── utils.test.ts (5.7 KB)
-  │   │   │   └── validation.test.ts (6.2 KB)
+  │   │   │   └── validation.test.ts (6.3 KB)
   │   │   ├── integration.test.ts (7.1 KB)
   │   │   ├── matching.test.ts (4.4 KB)
-  │   │   ├── setup.ts (595 B)
+  │   │   ├── setup.ts (634 B)
   │   │   ├── trust.test.ts (4.8 KB)
   │   │   ├── utils.test.ts (13.1 KB)
   │   │   └── validation.test.ts (10.7 KB)
+  │   ├── .dockerignore (202 B)
   │   ├── .env (1.4 KB)
   │   ├── .env.example (1.1 KB)
   │   ├── .env.production (1.2 KB)
   │   ├── Byaboneka_Plus_API.postman_collection.json (27.1 KB)
+  │   ├── docker-compose.yml (1.0 KB)
+  │   ├── Dockerfile (1.3 KB)
   │   ├── jest.config.js (859 B)
   │   ├── LICENSE (1.0 KB)
   │   ├── package.json (2.3 KB)
@@ -212,10 +215,13 @@
   │   │   ├── index.css (4.3 KB)
   │   │   ├── main.tsx (351 B)
   │   │   └── vite-env.d.ts (156 B)
+  │   ├── .dockerignore (122 B)
   │   ├── .env (172 B)
   │   ├── .env.example (253 B)
   │   ├── .env.production (140 B)
+  │   ├── Dockerfile (963 B)
   │   ├── index.html (806 B)
+  │   ├── nginx.conf (2.8 KB)
   │   ├── package.json (1.4 KB)
   │   ├── postcss.config.js (80 B)
   │   ├── README.md (906 B)
@@ -226,7 +232,9 @@
   │   ├── vite.config.ts (621 B)
   │   ├── vite.config.ts.timestamp-1772056237997-e0eb9b94341e8.mjs (3.6 KB)
   │   └── vite.config.ts.timestamp-1772093540825-1292b7a9436398.mjs (3.1 KB)
-  ├── README.md (20.5 KB)
+  ├── docker-compose.production.yml (3.0 KB)
+  ├── docker-compose.yml (2.2 KB)
+  ├── README.md (21.3 KB)
   └── render.yaml (2.2 KB)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -246,7 +254,7 @@
       6. backend/src/controllers/claimsController.ts  [681 lines | TypeScript]
       7. backend/src/controllers/cooperativesController.ts  [335 lines | TypeScript]
       8. backend/src/controllers/foundItemsController.ts  [438 lines | TypeScript]
-      9. backend/src/controllers/lostItemsController.ts  [535 lines | TypeScript]
+      9. backend/src/controllers/lostItemsController.ts  [536 lines | TypeScript]
      10. backend/src/controllers/messagesController.ts  [380 lines | TypeScript]
      11. backend/src/middleware/auth.ts  [261 lines | TypeScript]
      12. backend/src/middleware/consent.ts  [64 lines | TypeScript]
@@ -295,28 +303,31 @@
      55. backend/src/index.ts  [330 lines | TypeScript]
      56. backend/tests/integration/api.test.ts  [326 lines | TypeScript]
      57. backend/tests/performance/load-test.ts  [240 lines | TypeScript]
-     58. backend/tests/unit/matching.test.ts  [143 lines | TypeScript]
-     59. backend/tests/unit/middleware.test.ts  [132 lines | TypeScript]
+     58. backend/tests/unit/matching.test.ts  [144 lines | TypeScript]
+     59. backend/tests/unit/middleware.test.ts  [131 lines | TypeScript]
      60. backend/tests/unit/novel-features.test.ts  [262 lines | TypeScript]
-     61. backend/tests/unit/trust.test.ts  [114 lines | TypeScript]
-     62. backend/tests/unit/utils.test.ts  [167 lines | TypeScript]
-     63. backend/tests/unit/validation.test.ts  [191 lines | TypeScript]
+     61. backend/tests/unit/trust.test.ts  [115 lines | TypeScript]
+     62. backend/tests/unit/utils.test.ts  [168 lines | TypeScript]
+     63. backend/tests/unit/validation.test.ts  [192 lines | TypeScript]
      64. backend/tests/integration.test.ts  [229 lines | TypeScript]
      65. backend/tests/matching.test.ts  [127 lines | TypeScript]
-     66. backend/tests/setup.ts  [24 lines | TypeScript]
+     66. backend/tests/setup.ts  [26 lines | TypeScript]
      67. backend/tests/trust.test.ts  [143 lines | TypeScript]
      68. backend/tests/utils.test.ts  [395 lines | TypeScript]
      69. backend/tests/validation.test.ts  [390 lines | TypeScript]
-     70. backend/.env  [43 lines | Env]
-     71. backend/.env.example  [40 lines | Env]
-     72. backend/.env.production  [37 lines | Env]
-     73. backend/.gitignore  [106 lines | Text]
-     74. backend/Byaboneka_Plus_API.postman_collection.json  [711 lines | JSON]
-     75. backend/jest.config.js  [38 lines | JavaScript]
-     76. backend/package.json  [73 lines | JSON]
-     77. backend/README.md  [46 lines | Markdown]
-     78. backend/tsconfig.json  [21 lines | JSON]
-     79. backend/tsconfig.test.json  [13 lines | JSON]
+     70. backend/.dockerignore  [18 lines | Text]
+     71. backend/.env  [43 lines | Env]
+     72. backend/.env.example  [40 lines | Env]
+     73. backend/.env.production  [37 lines | Env]
+     74. backend/.gitignore  [106 lines | Text]
+     75. backend/Byaboneka_Plus_API.postman_collection.json  [711 lines | JSON]
+     76. backend/docker-compose.yml  [44 lines | YAML]
+     77. backend/Dockerfile  [55 lines | Text]
+     78. backend/jest.config.js  [38 lines | JavaScript]
+     79. backend/package.json  [73 lines | JSON]
+     80. backend/README.md  [46 lines | Markdown]
+     81. backend/tsconfig.json  [21 lines | JSON]
+     82. backend/tsconfig.test.json  [13 lines | JSON]
 
   📁 docs/
       1. docs/postman/Byaboneka-API.postman_collection.json  [784 lines | JSON]
@@ -388,24 +399,28 @@
      61. frontend/src/index.css  [207 lines | CSS]
      62. frontend/src/main.tsx  [14 lines | TSX]
      63. frontend/src/vite-env.d.ts  [9 lines | TypeScript]
-     64. frontend/.env  [8 lines | Env]
-     65. frontend/.env.example  [9 lines | Env]
-     66. frontend/.env.production  [4 lines | Env]
-     67. frontend/.gitignore  [107 lines | Text]
-     68. frontend/index.html  [19 lines | HTML]
-     69. frontend/package.json  [51 lines | JSON]
-     70. frontend/postcss.config.js  [7 lines | JavaScript]
-     71. frontend/README.md  [34 lines | Markdown]
-     72. frontend/tailwind.config.js  [54 lines | JavaScript]
-     73. frontend/tsconfig.json  [25 lines | JSON]
-     74. frontend/tsconfig.node.json  [10 lines | JSON]
-     75. frontend/vercel.json  [17 lines | JSON]
-     76. frontend/vite.config.ts  [29 lines | TypeScript]
+     64. frontend/.dockerignore  [12 lines | Text]
+     65. frontend/.env  [8 lines | Env]
+     66. frontend/.env.example  [9 lines | Env]
+     67. frontend/.env.production  [4 lines | Env]
+     68. frontend/.gitignore  [107 lines | Text]
+     69. frontend/Dockerfile  [39 lines | Text]
+     70. frontend/index.html  [19 lines | HTML]
+     71. frontend/package.json  [51 lines | JSON]
+     72. frontend/postcss.config.js  [7 lines | JavaScript]
+     73. frontend/README.md  [34 lines | Markdown]
+     74. frontend/tailwind.config.js  [54 lines | JavaScript]
+     75. frontend/tsconfig.json  [25 lines | JSON]
+     76. frontend/tsconfig.node.json  [10 lines | JSON]
+     77. frontend/vercel.json  [17 lines | JSON]
+     78. frontend/vite.config.ts  [29 lines | TypeScript]
 
   📁 (root)/
       1. .gitignore  [34 lines | Text]
-      2. README.md  [459 lines | Markdown]
-      3. render.yaml  [82 lines | YAML]
+      2. docker-compose.production.yml  [93 lines | YAML]
+      3. docker-compose.yml  [82 lines | YAML]
+      4. README.md  [477 lines | Markdown]
+      5. render.yaml  [82 lines | YAML]
 
 
 ╔══════════════════════════════════════════════════════════════╗
@@ -734,8 +749,197 @@ backups/
 
 
 ┌────────────────────────────────────────────────────────────┐
+│ FILE: docker-compose.production.yml
+│ Language: YAML | Lines: 93 | Size: 3.0 KB
+└────────────────────────────────────────────────────────────┘
+
+# ============================================
+# Byaboneka+ Docker Compose - Production
+# Full-stack: PostgreSQL + Node.js API + Nginx Frontend
+#
+# Architecture:
+#   Browser → :80 nginx → static files (SPA)
+#                       → /api/* proxy → :4000 Node.js API → PostgreSQL
+#
+# Usage:
+#   1. cp .env.example .env && nano .env   (fill in secrets)
+#   2. docker compose -f docker-compose.production.yml up -d --build
+#   3. docker exec -it $(docker ps -qf "name=api") node dist/seeds/run.js  (optional: seed data)
+# ============================================
+
+services:
+  # ── PostgreSQL Database ──
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-byaboneka}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+      POSTGRES_DB: ${DB_NAME:-byaboneka_plus}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-byaboneka} -d ${DB_NAME:-byaboneka_plus}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - byaboneka-net
+    # DB not exposed to host — only reachable inside Docker network
+
+  # ── Backend API (Node.js) ──
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      DATABASE_URL: postgresql://${DB_USER:-byaboneka}:${DB_PASSWORD}@db:5432/${DB_NAME:-byaboneka_plus}
+      DATABASE_SSL: "false"  # Local Postgres container doesn't support SSL (omit on Render)
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:?JWT_REFRESH_SECRET is required}
+      JWT_ACCESS_EXPIRY: ${JWT_ACCESS_EXPIRY:-15m}
+      JWT_REFRESH_EXPIRY: ${JWT_REFRESH_EXPIRY:-7d}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost}
+      UPLOAD_PATH: /app/uploads
+      BREVO_SMTP_HOST: ${BREVO_SMTP_HOST:-smtp-relay.brevo.com}
+      BREVO_SMTP_PORT: ${BREVO_SMTP_PORT:-587}
+      BREVO_SMTP_USER: ${BREVO_SMTP_USER:-}
+      BREVO_SMTP_KEY: ${BREVO_SMTP_KEY:-}
+      EMAIL_FROM: ${EMAIL_FROM:-Byaboneka+ <noreply@byaboneka.rw>}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost}
+      RECAPTCHA_SECRET_KEY: ${RECAPTCHA_SECRET_KEY:-}
+      RECAPTCHA_MIN_SCORE: ${RECAPTCHA_MIN_SCORE:-0.5}
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - uploads:/app/uploads
+    networks:
+      - byaboneka-net
+    # API not exposed to host — nginx proxies /api/* to this container
+
+  # ── Frontend (Nginx SPA + API reverse proxy) ──
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: /api/v1
+        VITE_RECAPTCHA_SITE_KEY: ${VITE_RECAPTCHA_SITE_KEY:-}
+    restart: unless-stopped
+    ports:
+      - "${PORT:-80}:80"
+    depends_on:
+      - api
+    networks:
+      - byaboneka-net
+
+volumes:
+  pgdata:
+    driver: local
+  uploads:
+    driver: local
+
+networks:
+  byaboneka-net:
+    driver: bridge
+
+
+┌────────────────────────────────────────────────────────────┐
+│ FILE: docker-compose.yml
+│ Language: YAML | Lines: 82 | Size: 2.2 KB
+└────────────────────────────────────────────────────────────┘
+
+# ============================================
+# Byaboneka+ Docker Compose - Local Development
+# Run: docker compose up -d
+# ============================================
+
+services:
+  # ── PostgreSQL Database ──
+  postgres:
+    image: postgres:16-alpine
+    container_name: byaboneka-db
+    environment:
+      POSTGRES_USER: byaboneka
+      POSTGRES_PASSWORD: byaboneka_dev_pass
+      POSTGRES_DB: byaboneka_plus
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U byaboneka -d byaboneka_plus"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - byaboneka-net
+
+  # ── Backend API (Node.js) ──
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: byaboneka-backend
+    environment:
+      NODE_ENV: development
+      PORT: 4000
+      DATABASE_URL: postgresql://byaboneka:byaboneka_dev_pass@postgres:5432/byaboneka_plus
+      JWT_SECRET: dev_jwt_secret_change_in_production_min_32_chars!!
+      JWT_REFRESH_SECRET: dev_refresh_secret_change_in_production_min_32!!
+      JWT_ACCESS_EXPIRY: 15m
+      JWT_REFRESH_EXPIRY: 7d
+      CORS_ORIGIN: http://localhost:3000,http://localhost
+      UPLOAD_PATH: /app/uploads
+      BREVO_SMTP_HOST: smtp-relay.brevo.com
+      BREVO_SMTP_PORT: "587"
+      BREVO_SMTP_USER: ${BREVO_SMTP_USER:-}
+      BREVO_SMTP_KEY: ${BREVO_SMTP_KEY:-}
+      EMAIL_FROM: "Byaboneka+ <noreply@byaboneka.rw>"
+      FRONTEND_URL: http://localhost:3000
+      RECAPTCHA_SECRET_KEY: ${RECAPTCHA_SECRET_KEY:-}
+      RECAPTCHA_MIN_SCORE: "0.5"
+    ports:
+      - "4000:4000"
+    volumes:
+      - uploads_data:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - byaboneka-net
+
+  # ── Frontend (Vite Dev or Nginx) ──
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: byaboneka-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - byaboneka-net
+
+volumes:
+  postgres_data:
+  uploads_data:
+
+networks:
+  byaboneka-net:
+    driver: bridge
+
+
+┌────────────────────────────────────────────────────────────┐
 │ FILE: README.md
-│ Language: Markdown | Lines: 459 | Size: 20.5 KB
+│ Language: Markdown | Lines: 477 | Size: 21.3 KB
 └────────────────────────────────────────────────────────────┘
 
 # Byaboneka+ 🔍
@@ -1007,8 +1211,7 @@ All jobs run in parallel where possible. The deploy job only triggers on push to
 byaboneka-plus/
 ├── .github/
 │   └── workflows/
-│       ├── ci.yml                 # CI/CD pipeline (lint, test, build, deploy)
-│       ├── cd.yml                 # CI/CD pipeline (lint, test, build, deploy)
+│       └── ci-cd.yml                 # CI/CD pipeline (lint, test, build, deploy)
 │
 ├── backend/                           # Express.js API server
 │   ├── src/
@@ -1078,13 +1281,18 @@ byaboneka-plus/
 │   │   ├── services/              # Axios API client with JWT interceptors
 │   │   ├── store/                 # Zustand auth store (persisted)
 │   │   └── utils/                 # Date formatting, helpers
+│   ├── nginx.conf                 # SPA serving + API reverse proxy + security headers
 │   └── package.json
 │
 ├── docs/                             # Documentation
 │   ├── API.md                       # API endpoint reference
+│   ├── LOCAL_SETUP.md               # Local development guide
 │   └── TECHNICAL_DOCUMENTATION.md   # Full architecture, DB schema, deployment runbook
 │
+├── docker-compose.yml               # Local development (all services)
+├── docker-compose.production.yml     # Production deployment (PostgreSQL + API + nginx)
 ├── render.yaml                       # Render Blueprint (auto-deploy)
+├── DEPLOYMENT.md                     # Step-by-step deployment guide
 └── .env.example                      # Environment variable template
 ```
 
@@ -1135,10 +1343,22 @@ Translations cover all UI elements, form labels, error messages, email templates
 
 ## Deployment Options
 
-### Render + Vercel (Recommended for Demo)
+### Option A: Render + Vercel (Recommended for Demo)
 
 Deploy the backend to Render (with managed PostgreSQL) and the frontend to Vercel. See [`DEPLOYMENT.md`](DEPLOYMENT.md) for step-by-step instructions.
 
+### Option B: Docker Self-Hosted
+
+Run everything on a single server with Docker Compose:
+
+```bash
+cp .env.example .env           # Configure secrets
+docker compose -f docker-compose.production.yml up -d --build
+```
+
+See [`DEPLOYMENT.md`](DEPLOYMENT.md) for full Docker deployment guide including SSL/HTTPS setup.
+
+---
 
 ## Email Configuration (Brevo SMTP)
 
@@ -1171,6 +1391,7 @@ See [`.env.example`](.env.example) for the complete template. Key variables:
 | `JWT_SECRET` | Yes | JWT signing key (min 32 chars) |
 | `JWT_REFRESH_SECRET` | Yes | Refresh token signing key (min 32 chars) |
 | `DATABASE_URL` | Backend | Full PostgreSQL connection string |
+| `DATABASE_SSL` | Docker only | Set to `"false"` for local Docker Postgres |
 | `CORS_ORIGIN` | Backend | Allowed frontend origin(s) |
 | `BREVO_SMTP_USER` | No | Brevo SMTP login (emails disabled if unset) |
 | `BREVO_SMTP_KEY` | No | Brevo SMTP master password |
@@ -1183,6 +1404,7 @@ See [`.env.example`](.env.example) for the complete template. Key variables:
 
 | Issue | Solution |
 |-------|----------|
+| API container restarting (SSL error) | Set `DATABASE_SSL=false` in docker-compose env |
 | CORS errors | Verify `CORS_ORIGIN` includes the exact frontend URL |
 | Database connection failed | Check `DATABASE_URL` format and that PostgreSQL is running |
 | 401 errors after restart | JWT secrets must be consistent across restarts |
@@ -1292,6 +1514,31 @@ services:
 ──────────────────────────────────────────────────────────────
   SECTION: backend/
 ──────────────────────────────────────────────────────────────
+
+┌────────────────────────────────────────────────────────────┐
+│ FILE: backend/.dockerignore
+│ Language: Text | Lines: 18 | Size: 202 B
+└────────────────────────────────────────────────────────────┘
+
+node_modules
+npm-debug.log
+dist
+coverage
+.env
+.env.*
+!.env.example
+uploads/*
+!uploads/.gitkeep
+*.md
+.git
+.github
+tests
+jest.config.js
+.eslintrc*
+.prettierrc*
+docker-compose.yml
+*.postman_collection.json
+
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: backend/.env
@@ -2263,6 +2510,119 @@ storybook-static/
     }
   ]
 }
+
+
+┌────────────────────────────────────────────────────────────┐
+│ FILE: backend/docker-compose.yml
+│ Language: YAML | Lines: 44 | Size: 1.0 KB
+└────────────────────────────────────────────────────────────┘
+
+# docker-compose.yml - Local development
+version: '3.9'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+      - DATABASE_URL=postgresql://byaboneka:byaboneka_dev@db:5432/byaboneka_plus
+      - JWT_SECRET=dev_jwt_secret_change_in_production_min_32_chars!!
+      - JWT_REFRESH_SECRET=dev_refresh_secret_change_in_production_min_32!!
+      - CORS_ORIGIN=http://localhost:3000
+      - UPLOAD_PATH=./uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+      - uploads:/app/uploads
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=byaboneka
+      - POSTGRES_PASSWORD=byaboneka_dev
+      - POSTGRES_DB=byaboneka_plus
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U byaboneka -d byaboneka_plus"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
+  uploads:
+
+
+┌────────────────────────────────────────────────────────────┐
+│ FILE: backend/Dockerfile
+│ Language: Text | Lines: 55 | Size: 1.3 KB
+└────────────────────────────────────────────────────────────┘
+
+# ============================================
+# Byaboneka+ API - Production Dockerfile
+# Multi-stage build for minimal image size
+# ============================================
+
+# Stage 1: Build
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Install build dependencies for sharp (image processing)
+RUN apk add --no-cache python3 make g++ vips-dev
+
+COPY package*.json ./
+RUN npm ci
+
+COPY tsconfig.json ./
+COPY src/ ./src/
+
+# Compile TypeScript
+RUN npx tsc
+
+# Remove dev dependencies
+RUN npm prune --production
+
+# Stage 2: Production
+FROM node:20-alpine AS production
+
+WORKDIR /app
+
+# Install runtime dependencies for sharp only
+RUN apk add --no-cache vips tini
+
+# Copy compiled code and production deps
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./
+
+# Create uploads directory and non-root user
+RUN mkdir -p uploads && \
+    addgroup -g 1001 -S appgroup && \
+    adduser -S appuser -u 1001 -G appgroup && \
+    chown -R appuser:appgroup /app
+
+USER appuser
+
+EXPOSE 4000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:4000/api/v1/health || exit 1
+
+# Use tini for proper PID 1 signal handling
+ENTRYPOINT ["/sbin/tini", "--"]
+CMD ["node", "dist/index.js"]
 
 
 ┌────────────────────────────────────────────────────────────┐
@@ -6442,7 +6802,7 @@ export async function getMyFoundItems(req: Request, res: Response): Promise<void
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: backend/src/controllers/lostItemsController.ts
-│ Language: TypeScript | Lines: 535 | Size: 15.6 KB
+│ Language: TypeScript | Lines: 536 | Size: 15.6 KB
 └────────────────────────────────────────────────────────────┘
 
 import { Request, Response } from 'express';
@@ -6526,6 +6886,7 @@ export async function createLostItem(req: Request, res: Response): Promise<void>
         location_hint: result.location_hint,
         lost_date: result.lost_date,
         status: result.status,
+        keywords: result.keywords || [],
         photo_url: result.photo_url,
         image_urls: result.image_urls || [],
         created_at: result.created_at
@@ -7064,7 +7425,7 @@ export async function sendMessage(req: Request, res: Response): Promise<void> {
     }
 
     // Only allow messaging for verified claims
-    if (!['VERIFIED', 'PENDING'].includes(claim.status)) {
+    if (!['VERIFIED', 'PENDING', 'RETURNED'].includes(claim.status)) {
       res.status(400).json({ success: false, message: 'Messaging is not available for this claim status' });
       return;
     }
@@ -18955,7 +19316,7 @@ export function generateTokenFamily(): string {
 │ Language: TypeScript | Lines: 229 | Size: 7.1 KB
 └────────────────────────────────────────────────────────────┘
 
-import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
+import { describe, it, expect } from '@jest/globals';
 
 // ============================================
 // BYABONEKA+ INTEGRATION TESTS
@@ -19501,7 +19862,7 @@ describeIf('Integration: Full API Flow', () => {
       const res = await request.get('/api/v1/messages/unread-count')
         .set('Authorization', `Bearer ${finderToken}`);
       expect(res.status).toBe(200);
-      expect(res.body.data).toHaveProperty('count');
+      expect(res.body.data).toHaveProperty('unread_count');
     });
   });
 
@@ -19525,7 +19886,7 @@ describeIf('Integration: Full API Flow', () => {
 └────────────────────────────────────────────────────────────┘
 
 import { computeMatchScore } from '../src/services/matchingService';
-import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
+import { describe, it, expect } from '@jest/globals';
 import { LostItem, FoundItem, ItemCategory, LostItemStatus, FoundItemStatus, ItemSource } from '../src/types';
 
 describe('Matching Engine', () => {
@@ -19902,11 +20263,13 @@ runLoadTest().catch((err) => {
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: backend/tests/setup.ts
-│ Language: TypeScript | Lines: 24 | Size: 595 B
+│ Language: TypeScript | Lines: 26 | Size: 634 B
 └────────────────────────────────────────────────────────────┘
 
 // Test setup file
 import dotenv from 'dotenv';
+
+import { jest } from '@jest/globals';
 
 // Load test environment
 dotenv.config({ path: '.env.test' });
@@ -20083,7 +20446,7 @@ describe('Trust Score Utilities', () => {
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: backend/tests/unit/matching.test.ts
-│ Language: TypeScript | Lines: 143 | Size: 5.0 KB
+│ Language: TypeScript | Lines: 144 | Size: 5.1 KB
 └────────────────────────────────────────────────────────────┘
 
 /**
@@ -20098,6 +20461,7 @@ describe('Trust Score Utilities', () => {
 
 // We test the pure scoring logic by importing the scoring functions
 // If they're not exported, we test indirectly through findMatchesForLostItem
+import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 
 describe('Matching Score Calculation', () => {
   // Score constants from spec
@@ -20233,7 +20597,7 @@ describe('Location Matching', () => {
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: backend/tests/unit/middleware.test.ts
-│ Language: TypeScript | Lines: 132 | Size: 3.8 KB
+│ Language: TypeScript | Lines: 131 | Size: 3.8 KB
 └────────────────────────────────────────────────────────────┘
 
 /**
@@ -20242,9 +20606,8 @@ describe('Location Matching', () => {
  * and rate limiter configuration.
  */
 
-import { Request, Response, NextFunction } from 'express';
-import { generateAccessToken } from '../../src/utils';
-import { UserRole } from '../../src/types';
+import { Request, Response } from 'express';
+import { describe, it, expect} from '@jest/globals';
 
 // Mock request/response helpers
 function mockReq(overrides: Partial<Request> = {}): Request {
@@ -20372,7 +20735,7 @@ describe('Rate Limiter Configuration', () => {
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: backend/tests/unit/novel-features.test.ts
-│ Language: TypeScript | Lines: 262 | Size: 8.6 KB
+│ Language: TypeScript | Lines: 262 | Size: 8.7 KB
 └────────────────────────────────────────────────────────────┘
 
 /**
@@ -20387,7 +20750,7 @@ describe('Rate Limiter Configuration', () => {
  * 
  * Run with: npx jest tests/unit/novel-features.test.ts
  */
-
+import { jest, describe, it, expect } from '@jest/globals';
 // ── Mock database before imports ──
 jest.mock('../../src/config/database', () => ({
   query: jest.fn(),
@@ -20641,7 +21004,7 @@ describe('Sensitive Item Redaction', () => {
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: backend/tests/unit/trust.test.ts
-│ Language: TypeScript | Lines: 114 | Size: 3.3 KB
+│ Language: TypeScript | Lines: 115 | Size: 3.4 KB
 └────────────────────────────────────────────────────────────┘
 
 /**
@@ -20656,6 +21019,7 @@ describe('Sensitive Item Redaction', () => {
  */
 
 import { TrustLevel } from '../../src/types';
+import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 
 describe('Trust Score Rules', () => {
   // Mirror the trust level thresholds from trustService
@@ -20762,7 +21126,7 @@ describe('Trust Score Rules', () => {
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: backend/tests/unit/utils.test.ts
-│ Language: TypeScript | Lines: 167 | Size: 5.7 KB
+│ Language: TypeScript | Lines: 168 | Size: 5.7 KB
 └────────────────────────────────────────────────────────────┘
 
 import {
@@ -20772,6 +21136,7 @@ import {
   detectExtortionKeywords, hashToken, generateUUID,
 } from '../../src/utils';
 import { UserRole } from '../../src/types';
+import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 
 describe('Password Hashing', () => {
   it('should hash and verify correctly', async () => {
@@ -20936,7 +21301,7 @@ describe('Utility Functions', () => {
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: backend/tests/unit/validation.test.ts
-│ Language: TypeScript | Lines: 191 | Size: 6.2 KB
+│ Language: TypeScript | Lines: 192 | Size: 6.3 KB
 └────────────────────────────────────────────────────────────┘
 
 import {
@@ -20944,6 +21309,7 @@ import {
   createClaimSchema, verifyClaimSchema, verifyOtpSchema, sendMessageSchema,
   createCooperativeSchema, banUserSchema,
 } from '../../src/middleware/validation';
+import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 
 describe('Register Schema', () => {
   const valid = { email: 'test@example.com', password: 'MySecure1P', name: 'Jean' };
@@ -24583,6 +24949,25 @@ Cooperatives using Byaboneka+ agree to the following data handling terms:
 ──────────────────────────────────────────────────────────────
 
 ┌────────────────────────────────────────────────────────────┐
+│ FILE: frontend/.dockerignore
+│ Language: Text | Lines: 12 | Size: 122 B
+└────────────────────────────────────────────────────────────┘
+
+node_modules
+dist
+.env
+.env.production
+npm-debug.log*
+.git
+.gitignore
+*.md
+src/__tests__
+coverage
+.vscode
+.idea
+
+
+┌────────────────────────────────────────────────────────────┐
 │ FILE: frontend/.env
 │ Language: Env | Lines: 8 | Size: 172 B
 └────────────────────────────────────────────────────────────┘
@@ -24736,6 +25121,52 @@ storybook-static/
 # =========================
 .eslintcache
 
+
+
+┌────────────────────────────────────────────────────────────┐
+│ FILE: frontend/Dockerfile
+│ Language: Text | Lines: 39 | Size: 963 B
+└────────────────────────────────────────────────────────────┘
+
+# ============================================
+# Byaboneka+ Frontend - Production Dockerfile
+# Multi-stage build: build + serve via nginx
+# ============================================
+
+# Stage 1: Build
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci
+
+COPY . .
+
+# In production with nginx reverse proxy, API is on the same origin
+ARG VITE_API_URL=/api/v1
+ENV VITE_API_URL=${VITE_API_URL}
+
+ARG VITE_RECAPTCHA_SITE_KEY
+ENV VITE_RECAPTCHA_SITE_KEY=${VITE_RECAPTCHA_SITE_KEY}
+
+RUN npm run build
+
+# Stage 2: Production with nginx
+FROM nginx:1.25-alpine AS production
+
+# Copy custom nginx config (includes API reverse proxy)
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Copy built assets
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+EXPOSE 80
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:80/ || exit 1
+
+CMD ["nginx", "-g", "daemon off;"]
 
 
 ┌────────────────────────────────────────────────────────────┐
@@ -40515,5 +40946,5 @@ export default defineConfig({
 
 
 ══════════════════════════════════════════════════════════════
-  END OF DUMP — 164 files | 38,929 lines
+  END OF DUMP — 171 files | 39,296 lines
 ══════════════════════════════════════════════════════════════
