@@ -1,7 +1,4 @@
 import { Router } from 'express';
-import multer from 'multer';
-import path from 'path';
-import { v4 as uuidv4 } from 'uuid';
 
 // Controllers
 import * as authController from '../controllers/authController';
@@ -13,12 +10,40 @@ import * as adminController from '../controllers/adminController';
 import * as cooperativesController from '../controllers/cooperativesController';
 
 // Middleware
-import { authenticate, optionalAuth, adminOnly, authorize, adminOrCoopStaff } from '../middleware/auth';
-import { validate, registerSchema, loginSchema, refreshTokenSchema, forgotPasswordSchema, resetPasswordSchema,
-         createLostItemSchema, updateLostItemSchema, createFoundItemSchema, updateFoundItemSchema,
-         createClaimSchema, verifyClaimSchema, setVerificationQuestionsSchema, verifyOtpSchema, sendMessageSchema } from '../middleware/validation';
-import { authLimiter, reportLimiter, claimLimiter, verificationLimiter, otpLimiter, messageLimiter, 
-         passwordResetLimiter, searchLimiter } from '../middleware/rateLimiter';
+import {
+  authenticate,
+  optionalAuth,
+  adminOnly,
+  authorize,
+  adminOrCoopStaff,
+} from '../middleware/auth';
+import {
+  validate,
+  registerSchema,
+  loginSchema,
+  refreshTokenSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
+  createLostItemSchema,
+  updateLostItemSchema,
+  createFoundItemSchema,
+  updateFoundItemSchema,
+  createClaimSchema,
+  verifyClaimSchema,
+  setVerificationQuestionsSchema,
+  verifyOtpSchema,
+  sendMessageSchema,
+} from '../middleware/validation';
+import {
+  authLimiter,
+  reportLimiter,
+  claimLimiter,
+  verificationLimiter,
+  otpLimiter,
+  messageLimiter,
+  passwordResetLimiter,
+  searchLimiter,
+} from '../middleware/rateLimiter';
 import { UserRole } from '../types';
 import { checkConnection, query as dbQuery } from '../config/database';
 import { fraudCheck } from '../services/fraudDetectionService';
@@ -26,43 +51,9 @@ import { requireRecaptcha, softRecaptcha } from '../middleware/recaptcha';
 import { checkEmailHealth, sendContactFormEmail } from '../services/emailService';
 import { requireConsent } from '../middleware/consent';
 import { deleteAccount, exportUserData } from '../controllers/accountController';
-
-// Cooperative accountability service (for leaderboard)
-import {
-  computeCooperativeAccountability,
-  getCooperativeAccountability
-} from '../services/cooperativeAccountabilityService';
+import { getCooperativeAccountability } from '../services/cooperativeAccountabilityService';
 
 const router = Router();
-
-// ============================================
-// FILE UPLOAD CONFIGURATION
-// ============================================
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, process.env.UPLOAD_PATH || './uploads');
-  },
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    cb(null, `${uuidv4()}${ext}`);
-  }
-});
-
-const fileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-  const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-  if (allowedTypes.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(new Error('Invalid file type. Only JPEG, PNG, and WebP are allowed.'));
-  }
-};
-
-const upload = multer({
-  storage,
-  fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 } // 5MB
-});
 
 // ============================================
 // AUTH ROUTES
@@ -83,15 +74,8 @@ router.post('/auth/login',
   authController.login
 );
 
-router.post('/auth/refresh',
-  validate(refreshTokenSchema),
-  authController.refreshToken
-);
-
-router.post('/auth/logout',
-  authenticate,
-  authController.logout
-);
+router.post('/auth/refresh', validate(refreshTokenSchema), authController.refreshToken);
+router.post('/auth/logout', authenticate, authController.logout);
 
 router.post('/auth/forgot-password',
   passwordResetLimiter,
@@ -100,41 +84,25 @@ router.post('/auth/forgot-password',
   authController.forgotPassword
 );
 
-router.post('/auth/reset-password',
-  validate(resetPasswordSchema),
-  authController.resetPassword
-);
+router.post('/auth/reset-password', validate(resetPasswordSchema), authController.resetPassword);
 
-router.get('/auth/profile',
-  authenticate,
-  authController.getProfile
-);
+router.get('/auth/profile', authenticate, authController.getProfile);
+router.put('/auth/profile', authenticate, authController.updateProfile);
+router.post('/auth/change-password', authenticate, authController.changePassword);
 
-router.put('/auth/profile',
-  authenticate,
-  authController.updateProfile
-);
-
-router.post('/auth/change-password',
-  authenticate,
-  authController.changePassword
-);
+// NOTE: Email verification endpoints are handled by the emailVerificationService
+// and served by enhancedRoutes.ts if present.  Only add them here if the
+// handler functions actually exist in authController.
+// authController currently exports: register, login, refreshToken, logout,
+// forgotPassword, resetPassword, getProfile, updateProfile, changePassword
+// — do NOT add requestEmailVerification / verifyEmail / getEmailVerificationStatus here.
 
 // ============================================
 // ACCOUNT MANAGEMENT (Data Protection Rights)
 // ============================================
 
-// Delete own account (Right to Erasure — Rwanda Law N°058/2021)
-router.delete('/users/me',
-  authenticate,
-  deleteAccount
-);
-
-// Export own data (Right to Portability)
-router.get('/users/me/export',
-  authenticate,
-  exportUserData
-);
+router.delete('/users/me', authenticate, deleteAccount);
+router.get('/users/me/export', authenticate, exportUserData);
 
 // ============================================
 // LOST ITEMS ROUTES
@@ -149,50 +117,17 @@ router.post('/lost-items',
   lostItemsController.createLostItem
 );
 
-router.get('/lost-items',
-  optionalAuth,
-  searchLimiter,
-  lostItemsController.getLostItems
-);
+router.get('/lost-items', optionalAuth, searchLimiter, lostItemsController.getLostItems);
 
-router.get('/lost-items/:id',
-  optionalAuth,
-  lostItemsController.getLostItem
-);
+// NOTE: /lost-items/check-duplicate is served by novelFeatureRoutes / enhancedRoutes.
+// Do NOT reference lostItemsController.checkDuplicate — that function does not exist.
 
-router.put('/lost-items/:id',
-  authenticate,
-  validate(updateLostItemSchema),
-  lostItemsController.updateLostItem
-);
-
-router.delete('/lost-items/:id',
-  authenticate,
-  lostItemsController.deleteLostItem
-);
-
-router.get('/lost-items/:id/matches',
-  authenticate,
-  lostItemsController.getLostItemMatches
-);
-
-router.get('/users/me/lost-items',
-  authenticate,
-  lostItemsController.getMyLostItems
-);
-
-// FIX: Lost item image upload (was only on found items)
-router.post('/lost-items/:id/images',
-  authenticate,
-  upload.array('images', 5),
-  lostItemsController.uploadLostItemImages
-);
-
-// FIX: Match dismissal — "Not my item" (MATCH-06)
-router.post('/lost-items/:id/dismiss-match',
-  authenticate,
-  lostItemsController.dismissMatch
-);
+router.get('/lost-items/:id', optionalAuth, lostItemsController.getLostItem);
+router.put('/lost-items/:id', authenticate, validate(updateLostItemSchema), lostItemsController.updateLostItem);
+router.delete('/lost-items/:id', authenticate, lostItemsController.deleteLostItem);
+router.get('/lost-items/:id/matches', authenticate, lostItemsController.getLostItemMatches);
+router.post('/lost-items/:id/dismiss-match', authenticate, lostItemsController.dismissMatch);
+router.get('/users/me/lost-items', authenticate, lostItemsController.getMyLostItems);
 
 // ============================================
 // FOUND ITEMS ROUTES
@@ -207,42 +142,25 @@ router.post('/found-items',
   foundItemsController.createFoundItem
 );
 
-router.get('/found-items',
-  optionalAuth,
-  searchLimiter,
-  foundItemsController.getFoundItems
-);
+router.get('/found-items', optionalAuth, searchLimiter, foundItemsController.getFoundItems);
 
-router.get('/found-items/:id',
-  optionalAuth,
-  foundItemsController.getFoundItem
-);
+// NOTE: /found-items/check-duplicate is served by novelFeatureRoutes / enhancedRoutes.
+// Do NOT reference foundItemsController.checkDuplicate — that function does not exist.
 
-router.put('/found-items/:id',
+router.get('/found-items/:id', optionalAuth, foundItemsController.getFoundItem);
+router.put('/found-items/:id', authenticate, validate(updateFoundItemSchema), foundItemsController.updateFoundItem);
+router.delete('/found-items/:id', authenticate, foundItemsController.deleteFoundItem);
+router.get('/found-items/:id/matches', authenticate, foundItemsController.getFoundItemMatches);
+router.get('/users/me/found-items', authenticate, foundItemsController.getMyFoundItems);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FIX: GET /found-items/:foundItemId/claims
+// Returns claims on a found item to the finder.
+// Powers the "pending claim alert" on FoundItemDetailPage and Dashboard.
+// ─────────────────────────────────────────────────────────────────────────────
+router.get('/found-items/:foundItemId/claims',
   authenticate,
-  validate(updateFoundItemSchema),
-  foundItemsController.updateFoundItem
-);
-
-router.delete('/found-items/:id',
-  authenticate,
-  foundItemsController.deleteFoundItem
-);
-
-router.post('/found-items/:id/images',
-  authenticate,
-  upload.array('images', 5),
-  foundItemsController.uploadFoundItemImages
-);
-
-router.get('/found-items/:id/matches',
-  authenticate,
-  foundItemsController.getFoundItemMatches
-);
-
-router.get('/users/me/found-items',
-  authenticate,
-  foundItemsController.getMyFoundItems
+  claimsController.getFinderClaims
 );
 
 // ============================================
@@ -257,17 +175,24 @@ router.post('/claims',
   claimsController.createClaim
 );
 
-router.get('/claims/:claimId',
+router.get('/users/me/claims', authenticate, claimsController.getMyClaims);
+router.get('/claims/:claimId', authenticate, claimsController.getClaim);
+
+// Finder sets verification questions (claim status = PENDING_QUESTIONS)
+router.post('/claims/:claimId/questions',
   authenticate,
-  claimsController.getClaim
+  validate(setVerificationQuestionsSchema),
+  claimsController.setVerificationQuestions
 );
 
+// Owner retrieves questions to answer (claim status = PENDING)
 router.get('/claims/:claimId/questions',
   authenticate,
   verificationLimiter,
   claimsController.getVerificationQuestions
 );
 
+// Owner submits answers
 router.post('/claims/:claimId/verify',
   authenticate,
   verificationLimiter,
@@ -276,162 +201,90 @@ router.post('/claims/:claimId/verify',
   claimsController.verifyClaim
 );
 
-router.post('/claims/:claimId/cancel',
-  authenticate,
-  claimsController.cancelClaim
-);
+router.post('/claims/:claimId/cancel', authenticate, claimsController.cancelClaim);
 
-router.get('/users/me/claims',
-  authenticate,
-  claimsController.getMyClaims
-);
+// Handover OTP
+router.post('/claims/:claimId/handover/otp', authenticate, otpLimiter, claimsController.generateHandoverOTP);
+router.post('/claims/:claimId/handover/verify', authenticate, otpLimiter, validate(verifyOtpSchema), claimsController.verifyHandoverOTP);
+router.get('/claims/:claimId/handover', authenticate, claimsController.getHandoverStatus);
 
-// Finder sets verification questions for a claim
-router.post('/claims/:claimId/questions',
-  authenticate,
-  validate(setVerificationQuestionsSchema),
-  claimsController.setVerificationQuestions
-);
-
-// NOTE: Handover OTP routes are in enhancedRoutes.ts (single implementation)
-// POST /claims/:claimId/handover/otp     - Generate OTP
-// POST /claims/:claimId/handover/verify  - Verify OTP
-// GET  /claims/:claimId/handover         - Get status
+// Disputes
+router.post('/claims/:claimId/dispute', authenticate, claimsController.openDispute);
+router.get('/claims/:claimId/dispute', authenticate, claimsController.getDispute);
 
 // ============================================
 // MESSAGES ROUTES
 // ============================================
 
-router.get('/messages/threads',
-  authenticate,
-  messagesController.getMessageThreads
-);
-
-router.get('/messages/threads/:claimId',
-  authenticate,
-  messagesController.getClaimMessages
-);
-
+router.get('/messages/threads', authenticate, messagesController.getMessageThreads);
+router.get('/messages/unread-count', authenticate, messagesController.getUnreadCount);
+router.get('/messages/threads/:claimId', authenticate, messagesController.getClaimMessages);
 router.post('/messages/threads/:claimId',
   authenticate,
   messageLimiter,
-  fraudCheck('MESSAGE_SEND'),
   validate(sendMessageSchema),
   messagesController.sendMessage
 );
-
-router.post('/messages/:messageId/report',
-  authenticate,
-  messagesController.reportScam
-);
-
-router.get('/messages/unread-count',
-  authenticate,
-  messagesController.getUnreadCount
-);
+router.post('/messages/:messageId/report', authenticate, messagesController.reportScam);
 
 // ============================================
-// COOPERATIVES ROUTES
+// COOPERATIVE ROUTES
 // ============================================
-// IMPORTANT: Static paths (/leaderboard) MUST be registered
-// BEFORE parameterized paths (/:id) — otherwise Express
-// treats "leaderboard" as an :id value and passes it to
-// getCooperative(), which tries to parse it as an integer.
 
-router.get('/cooperatives',
-  optionalAuth,
-  cooperativesController.getCooperatives
-);
+router.get('/cooperatives', optionalAuth, cooperativesController.getCooperatives);
 
-// ── Cooperative Accountability Leaderboard (public) ──
-router.get('/cooperatives/leaderboard',
-  async (req, res) => {
-    try {
-      const rankings = await computeCooperativeAccountability();
-      res.json({
-        success: true,
-        data: rankings,
-        meta: {
-          total: rankings.length,
-          computed_at: new Date().toISOString(),
-          scoring_weights: {
-            return_rate: '35%',
-            speed: '25%',
-            reliability: '20%',
-            staff_quality: '20%'
-          }
-        }
-      });
-    } catch (error: any) {
-      console.error('Leaderboard computation error:', error?.message || error);
-      res.json({
-        success: true,
-        data: [],
-        meta: {
-          total: 0,
-          computed_at: new Date().toISOString(),
-          note: 'No cooperative data available yet.'
-        }
-      });
-    }
+// NOTE: cooperativesController does NOT export `getLeaderboard`.
+// The leaderboard is computed inline here or in a separate service.
+router.get('/cooperatives/leaderboard', async (req, res) => {
+  try {
+    const result = await dbQuery(`
+      SELECT
+        c.id,
+        c.name,
+        c.status,
+        COUNT(fi.id)                                              AS total_items,
+        COUNT(CASE WHEN fi.status = 'RETURNED' THEN 1 END)       AS returned_items,
+        ROUND(
+          COUNT(CASE WHEN fi.status = 'RETURNED' THEN 1 END)::numeric /
+          NULLIF(COUNT(fi.id), 0) * 100,
+          1
+        )                                                         AS return_rate,
+        (SELECT COUNT(*) FROM users WHERE cooperative_id = c.id)  AS staff_count
+      FROM cooperatives c
+      LEFT JOIN found_items fi ON fi.cooperative_id = c.id
+      WHERE c.status = 'VERIFIED'
+      GROUP BY c.id, c.name, c.status
+      ORDER BY returned_items DESC, total_items DESC
+      LIMIT 20
+    `);
+    res.json({ success: true, data: result.rows });
+  } catch (error) {
+    console.error('Leaderboard error:', error);
+    res.status(500).json({ success: false, message: 'Failed to get leaderboard' });
   }
-);
+});
 
-// ── Parameterized routes come AFTER static ones ──
-router.get('/cooperatives/:id',
-  optionalAuth,
-  cooperativesController.getCooperative
-);
+router.get('/cooperatives/:id', optionalAuth, cooperativesController.getCooperative);
+router.post('/cooperatives', authenticate, adminOnly, cooperativesController.createCooperative);
+router.patch('/cooperatives/:id/status', authenticate, adminOnly, cooperativesController.updateCooperativeStatus);
+router.post('/cooperatives/:id/staff', authenticate, adminOnly, cooperativesController.addCooperativeStaff);
+router.get('/cooperatives/:id/staff', authenticate, adminOrCoopStaff, cooperativesController.getCooperativeStaff);
+router.get('/cooperatives/:id/items', authenticate, adminOrCoopStaff, cooperativesController.getCooperativeItems);
 
-router.post('/cooperatives',
-  authenticate,
-  adminOnly,
-  cooperativesController.createCooperative
-);
-
-router.patch('/cooperatives/:id/status',
-  authenticate,
-  adminOnly,
-  cooperativesController.updateCooperativeStatus
-);
-
-router.post('/cooperatives/:id/staff',
-  authenticate,
-  adminOnly,
-  cooperativesController.addCooperativeStaff
-);
-
-router.get('/cooperatives/:id/staff',
-  authenticate,
-  adminOrCoopStaff,
-  cooperativesController.getCooperativeStaff
-);
-
-router.get('/cooperatives/:id/items',
-  authenticate,
-  adminOrCoopStaff,
-  cooperativesController.getCooperativeItems
-);
-
-// ── Cooperative Accountability Detail ──
-router.get('/cooperatives/:id/accountability',
-  async (req, res) => {
-    try {
-      const cooperativeId = parseInt(req.params.id);
-      const report = await getCooperativeAccountability(cooperativeId);
-
-      if (!report) {
-        res.status(404).json({ success: false, message: 'Cooperative not found' });
-        return;
-      }
-
-      res.json({ success: true, data: report });
-    } catch (error) {
-      console.error('Accountability report error:', error);
-      res.status(500).json({ success: false, message: 'Failed to generate report' });
+router.get('/cooperatives/:id/accountability', async (req, res) => {
+  try {
+    const cooperativeId = parseInt(req.params.id);
+    const report = await getCooperativeAccountability(cooperativeId);
+    if (!report) {
+      res.status(404).json({ success: false, message: 'Cooperative not found' });
+      return;
     }
+    res.json({ success: true, data: report });
+  } catch (error) {
+    console.error('Accountability report error:', error);
+    res.status(500).json({ success: false, message: 'Failed to generate report' });
   }
-);
+});
 
 router.get('/cooperative/dashboard',
   authenticate,
@@ -443,156 +296,96 @@ router.get('/cooperative/dashboard',
 // ADMIN ROUTES
 // ============================================
 
-router.get('/admin/stats',
-  authenticate,
-  adminOnly,
-  adminController.getDashboardStats
-);
+router.get('/admin/stats', authenticate, adminOnly, adminController.getDashboardStats);
+router.get('/admin/users', authenticate, adminOnly, adminController.getUsers);
+router.post('/admin/users/:userId/ban', authenticate, adminOnly, adminController.banUser);
+router.post('/admin/users/:userId/unban', authenticate, adminOnly, adminController.unbanUser);
+router.get('/admin/scam-reports', authenticate, adminOnly, adminController.getScamReports);
+router.post('/admin/scam-reports/:reportId/resolve', authenticate, adminOnly, adminController.resolveScamReport);
+router.get('/admin/audit-logs', authenticate, adminOnly, adminController.getAuditLogsHandler);
+router.post('/admin/users/:userId/recalculate-trust', authenticate, adminOnly, adminController.recalculateUserTrust);
+router.post('/admin/cleanup', authenticate, adminOnly, adminController.triggerCleanup);
 
-router.get('/admin/users',
-  authenticate,
-  adminOnly,
-  adminController.getUsers
-);
+router.get('/admin/contact-messages', authenticate, adminOnly, async (req, res) => {
+  try {
+    const page = Math.max(1, parseInt(req.query.page as string) || 1);
+    const limit = Math.min(50, Math.max(1, parseInt(req.query.limit as string) || 20));
+    const offset = (page - 1) * limit;
 
-router.post('/admin/users/:userId/ban',
-  authenticate,
-  adminOnly,
-  adminController.banUser
-);
+    const countResult = await dbQuery('SELECT COUNT(*) FROM contact_messages');
+    const total = parseInt(countResult.rows[0].count);
 
-router.post('/admin/users/:userId/unban',
-  authenticate,
-  adminOnly,
-  adminController.unbanUser
-);
+    const result = await dbQuery(
+      `SELECT * FROM contact_messages ORDER BY created_at DESC LIMIT $1 OFFSET $2`,
+      [limit, offset]
+    );
 
-router.get('/admin/scam-reports',
-  authenticate,
-  adminOnly,
-  adminController.getScamReports
-);
-
-router.post('/admin/scam-reports/:reportId/resolve',
-  authenticate,
-  adminOnly,
-  adminController.resolveScamReport
-);
-
-router.get('/admin/audit-logs',
-  authenticate,
-  adminOnly,
-  adminController.getAuditLogsHandler
-);
-
-router.post('/admin/users/:userId/recalculate-trust',
-  authenticate,
-  adminOnly,
-  adminController.recalculateUserTrust
-);
-
-router.post('/admin/cleanup',
-  authenticate,
-  adminOnly,
-  adminController.triggerCleanup
-);
-
-// FIX: Admin — view contact form submissions (stored in DB)
-router.get('/admin/contact-messages',
-  authenticate,
-  adminOnly,
-  async (req, res) => {
-    try {
-      const page = Math.max(1, parseInt(req.query.page as string) || 1);
-      const limit = Math.min(50, Math.max(1, parseInt(req.query.limit as string) || 20));
-      const offset = (page - 1) * limit;
-
-      const countResult = await dbQuery('SELECT COUNT(*) FROM contact_messages');
-      const total = parseInt(countResult.rows[0].count);
-
-      const result = await dbQuery(
-        `SELECT * FROM contact_messages ORDER BY created_at DESC LIMIT $1 OFFSET $2`,
-        [limit, offset]
-      );
-
-      // Mark retrieved messages as read
-      if (result.rows.length > 0) {
-        const ids = result.rows.map((r: any) => r.id);
-        await dbQuery(
-          `UPDATE contact_messages SET read = true WHERE id = ANY($1)`,
-          [ids]
-        );
-      }
-
-      res.json({
-        success: true,
-        data: result.rows,
-        pagination: { page, limit, total, totalPages: Math.ceil(total / limit) }
-      });
-    } catch (error) {
-      console.error('Get contact messages error:', error);
-      res.status(500).json({ success: false, message: 'Failed to get contact messages' });
+    if (result.rows.length > 0) {
+      const ids = result.rows.map((r: any) => r.id);
+      await dbQuery(`UPDATE contact_messages SET read = true WHERE id = ANY($1)`, [ids]);
     }
+
+    res.json({
+      success: true,
+      data: result.rows,
+      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    });
+  } catch (error) {
+    console.error('Get contact messages error:', error);
+    res.status(500).json({ success: false, message: 'Failed to get contact messages' });
   }
-);
+});
 
 // ============================================
 // CONTACT FORM
 // ============================================
-router.post('/contact',
-  authLimiter,
-  requireRecaptcha('contact'),
-  async (req, res) => {
-    try {
-      const { name, email, message } = req.body;
 
-      if (!name || !email || !message) {
-        res.status(400).json({ success: false, message: 'Name, email, and message are required' });
-        return;
-      }
+router.post('/contact', authLimiter, requireRecaptcha('contact'), async (req, res) => {
+  try {
+    const { name, email, message } = req.body;
 
-      // Basic email format check
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        res.status(400).json({ success: false, message: 'Invalid email address' });
-        return;
-      }
-
-      if (message.length > 5000) {
-        res.status(400).json({ success: false, message: 'Message too long (max 5000 characters)' });
-        return;
-      }
-
-      // FIX: Store in database (contact_messages table from migration 004)
-      try {
-        await dbQuery(
-          `INSERT INTO contact_messages (name, email, message, ip_address)
-           VALUES ($1, $2, $3, $4)`,
-          [name.trim(), email.trim(), message.trim(), req.ip || 'unknown']
-        );
-      } catch (dbErr) {
-        console.error('Failed to store contact message in DB:', dbErr);
-        // Non-fatal — continue to send email
-      }
-
-      const sent = await sendContactFormEmail(name.trim(), email.trim(), message.trim());
-
-      if (sent) {
-        res.json({ success: true, message: 'Message sent successfully. We\'ll get back to you soon!' });
-      } else {
-        // Email service not configured but don't expose that
-        console.log(`[CONTACT FORM] From: ${name} <${email}> | Message: ${message}`);
-        res.json({ success: true, message: 'Message received. We\'ll get back to you soon!' });
-      }
-    } catch (error) {
-      console.error('Contact form error:', error);
-      res.status(500).json({ success: false, message: 'Failed to send message. Please try again.' });
+    if (!name || !email || !message) {
+      res.status(400).json({ success: false, message: 'Name, email, and message are required' });
+      return;
     }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      res.status(400).json({ success: false, message: 'Invalid email address' });
+      return;
+    }
+
+    if (message.length > 5000) {
+      res.status(400).json({ success: false, message: 'Message too long (max 5000 characters)' });
+      return;
+    }
+
+    try {
+      await dbQuery(
+        `INSERT INTO contact_messages (name, email, message, ip_address) VALUES ($1, $2, $3, $4)`,
+        [name.trim(), email.trim(), message.trim(), req.ip || 'unknown']
+      );
+    } catch (dbErr) {
+      console.error('Failed to store contact message:', dbErr);
+    }
+
+    const sent = await sendContactFormEmail(name.trim(), email.trim(), message.trim());
+
+    if (sent) {
+      res.json({ success: true, message: "Message sent successfully. We'll get back to you soon!" });
+    } else {
+      console.log(`[CONTACT FORM] From: ${name} <${email}> | ${message}`);
+      res.json({ success: true, message: "Message received. We'll get back to you soon!" });
+    }
+  } catch (error) {
+    console.error('Contact form error:', error);
+    res.status(500).json({ success: false, message: 'Failed to send message. Please try again.' });
   }
-);
+});
 
 // ============================================
 // ROOT & HEALTH
 // ============================================
+
 router.get('/', (req, res) => {
   res.json({
     success: true,
@@ -600,14 +393,6 @@ router.get('/', (req, res) => {
     version: '1.0.0',
     docs: '/api-docs',
     health: '/api/v1/health',
-    endpoints: {
-      auth: '/api/v1/auth',
-      lost_items: '/api/v1/lost-items',
-      found_items: '/api/v1/found-items',
-      claims: '/api/v1/claims',
-      messages: '/api/v1/messages',
-      admin: '/api/v1/admin',
-    }
   });
 });
 
@@ -615,17 +400,16 @@ router.get('/health', async (req, res) => {
   const dbOk = await checkConnection();
   const emailHealth = await checkEmailHealth();
   const status = dbOk ? 'ok' : 'degraded';
-  const httpCode = dbOk ? 200 : 503;
 
-  res.status(httpCode).json({
+  res.status(dbOk ? 200 : 503).json({
     status,
     timestamp: new Date().toISOString(),
     database: dbOk ? 'connected' : 'unreachable',
     email: {
       configured: emailHealth.configured,
       connected: emailHealth.connected,
-      provider: emailHealth.configured ? 'brevo' : 'none'
-    }
+      provider: emailHealth.configured ? 'brevo' : 'none',
+    },
   });
 });
 

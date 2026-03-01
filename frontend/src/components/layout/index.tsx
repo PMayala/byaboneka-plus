@@ -54,8 +54,8 @@ export const Header: React.FC = () => {
     { href: '/', label: t('nav.home'), icon: Home },
     { href: '/search', label: t('nav.search'), icon: Search },
     { href: '/report-lost', label: t('nav.reportLost'), icon: FileText },
-    { href: '/report-found', label: t('nav.reportFound'), icon: Package },
-    { href: '/leaderboard', label: t('nav.leaderboard'), icon: Trophy },
+    { href: '/report-found', label: t('nav.reportFound'), icon: Package },/* 
+    { href: '/leaderboard', label: t('nav.leaderboard'), icon: Trophy }, */
   ];
   const isActive = (href: string) => location.pathname === href;
   return (

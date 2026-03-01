@@ -1,36 +1,90 @@
-import React, { useState, useEffect } from 'react';
+/**
+ * ClaimDetailPage — FULLY FIXED
+ *
+ * Changes vs original:
+ *  1. PENDING_QUESTIONS status: finder sees SetQuestionsPanel — the core missing feature.
+ *  2. Badge variant correctly handles PENDING_QUESTIONS (active/blue).
+ *  3. verifyClaim response normalised: backend returns { passed, score } but frontend
+ *     now reads both shapes (verified|passed, correct_count|score).
+ *  4. loadMessages() is now called for both owner and finder whenever the claim is
+ *     in PENDING, VERIFIED, or RETURNED state.
+ *  5. Finder also sees the messages section (no longer gated to isOwner only).
+ *  6. 30-second polling keeps both parties updated without a manual refresh.
+ *  7. PENDING_QUESTIONS status is shown to the owner with a "waiting" info card.
+ *  8. Progress tracker reflects all 4 stages: Created → Questions Set → Verified → Returned.
+ */
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { 
-  ArrowLeft, Shield, CheckCircle, XCircle, Clock, 
-  Key, MessageSquare, AlertCircle, Copy, Check
+import {
+  ArrowLeft,
+  Shield,
+  CheckCircle,
+  XCircle,
+  Clock,
+  MessageSquare,
+  AlertCircle,
+  Loader2,
 } from 'lucide-react';
-import { Button, Card, Badge, LoadingSpinner, Alert, Input, Modal } from '../components/ui';
+import { Button, Card, Badge, LoadingSpinner, Alert, Input } from '../components/ui';
 import { claimsApi, messagesApi, disputeApi } from '../services/api';
 import { HandoverOTPPanel } from '../components/HandoverOTPPanel';
 import { DisputeForm } from '../components/DisputeForm';
 import { SafetyWarningBanner } from '../components/SafetyWarningBanner';
 import { ScamReportButton } from '../components/ScamReportButton';
 import SafeHandoverLocationPicker from '../components/SafeHandoverLocationPicker';
+import SetQuestionsPanel from '../components/SetQuestionsPanel';
 import { Claim, Message, CATEGORY_INFO, STATUS_INFO } from '../types';
 import { useAuthStore } from '../store/authStore';
 import { formatDate } from '../utils/dateUtils';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-/**
- * ClaimDetailPage - FIXED VERSION
- * 
- * FIX #13: Now uses HandoverOTPPanel component instead of inline OTP logic
- * FIX #13: Now includes DisputeForm component
- * FIX #15: Now includes SafetyWarningBanner
- * FIX #16: Now includes ScamReportButton on messages
- */
+
+/** Normalise the two possible backend response shapes for verify */
+function normaliseVerifyResult(raw: any): {
+  verified: boolean;
+  correct_count: number;
+  attempts_remaining: number;
+} {
+  return {
+    verified: raw.verified ?? raw.passed ?? false,
+    correct_count: raw.correct_count ?? raw.score ?? 0,
+    attempts_remaining: raw.attempts_remaining ?? 0,
+  };
+}
+
+/** Map claim status to a Badge variant */
+function claimBadgeVariant(
+  status: string
+): 'verified' | 'pending' | 'active' | 'expired' | 'danger' {
+  switch (status) {
+    case 'VERIFIED':
+    case 'RETURNED':
+      return 'verified';
+    case 'PENDING':
+      return 'pending';
+    case 'PENDING_QUESTIONS':
+      return 'active';
+    case 'REJECTED':
+    case 'CANCELLED':
+    case 'EXPIRED':
+    case 'DISPUTED':
+      return status === 'DISPUTED' ? 'danger' : 'expired';
+    default:
+      return 'expired';
+  }
+}
+
 const ClaimDetailPage: React.FC = () => {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuthStore();
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
   const [claim, setClaim] = useState<Claim | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Owner-side: answers verification questions
   const [questions, setQuestions] = useState<string[]>([]);
   const [answers, setAnswers] = useState(['', '', '']);
   const [verifying, setVerifying] = useState(false);
@@ -39,32 +93,27 @@ const ClaimDetailPage: React.FC = () => {
     correct_count: number;
     attempts_remaining: number;
   } | null>(null);
-  // Dispute state
+
+  // Messaging
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [newMessage, setNewMessage] = useState('');
+  const [sendingMessage, setSendingMessage] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Dispute
   const [existingDispute, setExistingDispute] = useState<{
     id: number;
     status: string;
     reason: string;
     created_at: string;
   } | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [newMessage, setNewMessage] = useState('');
-  const [sendingMessage, setSendingMessage] = useState(false);
+
+  // Derived: who is this user in the claim?
   const isOwner = user?.id === claim?.claimant_id;
-  useEffect(() => {
-    loadClaim();
-  }, [id]);
-  useEffect(() => {
-    if (claim?.status === 'PENDING' && isOwner) {
-      loadQuestions();
-    }
-    if (claim && ['VERIFIED', 'PENDING'].includes(claim.status)) {
-      loadMessages();
-    }
-    // Load dispute status for relevant claim states
-    if (claim && ['PENDING', 'VERIFIED', 'REJECTED'].includes(claim.status)) {
-      loadDispute();
-    }
-  }, [claim, isOwner]);
+  const isFinder = !isOwner; // both participants share this page
+
+  /* ─── Data Loading ─── */
+
   const loadClaim = async () => {
     try {
       const response = await claimsApi.getById(parseInt(id!));
@@ -76,6 +125,7 @@ const ClaimDetailPage: React.FC = () => {
       setLoading(false);
     }
   };
+
   const loadQuestions = async () => {
     try {
       const response = await claimsApi.getQuestions(parseInt(id!));
@@ -86,15 +136,16 @@ const ClaimDetailPage: React.FC = () => {
       }
     }
   };
+
   const loadMessages = async () => {
     try {
       const response = await messagesApi.getMessages(parseInt(id!));
-      // Backend returns data as array directly (not paginated)
       setMessages(response.data.data || []);
     } catch (error) {
-      console.error('Failed to load messages:', error);
+      // Silently ignore — messaging may not be open yet
     }
   };
+
   const loadDispute = async () => {
     try {
       const response = await disputeApi.get(parseInt(id!));
@@ -102,12 +153,73 @@ const ClaimDetailPage: React.FC = () => {
         setExistingDispute(response.data.data);
       }
     } catch (error: any) {
-      // 404 = no dispute, that's fine
       if (error.response?.status !== 404) {
         console.error('Failed to load dispute:', error);
       }
     }
   };
+
+  /* ─── Effects ─── */
+
+  useEffect(() => {
+    loadClaim();
+    return () => {
+      if (pollRef.current) clearInterval(pollRef.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+
+  useEffect(() => {
+    if (!claim) return;
+
+    // Owner answers questions once claim is PENDING
+    if (claim.status === 'PENDING' && isOwner) {
+      loadQuestions();
+    }
+
+    // Messages available for both parties in PENDING, VERIFIED, RETURNED
+    if (['PENDING', 'VERIFIED', 'RETURNED'].includes(claim.status)) {
+      loadMessages();
+    }
+
+    // Dispute status
+    if (['PENDING', 'VERIFIED', 'REJECTED'].includes(claim.status)) {
+      loadDispute();
+    }
+
+    // Poll every 30 s so both parties see status changes without a manual refresh
+    if (pollRef.current) clearInterval(pollRef.current);
+    if (!['RETURNED', 'CANCELLED', 'REJECTED', 'EXPIRED'].includes(claim.status)) {
+      pollRef.current = setInterval(async () => {
+        try {
+          const r = await claimsApi.getById(parseInt(id!));
+          const fresh = r.data.data;
+          setClaim((prev) => {
+            if (!prev || prev.status !== fresh.status) return fresh;
+            return prev;
+          });
+          if (['PENDING', 'VERIFIED', 'RETURNED'].includes(fresh.status)) {
+            loadMessages();
+          }
+        } catch {
+          // ignore polling errors
+        }
+      }, 30_000);
+    }
+
+    return () => {
+      if (pollRef.current) clearInterval(pollRef.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [claim?.status, isOwner]);
+
+  // Scroll messages to bottom on new messages
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  /* ─── Actions ─── */
+
   const handleVerify = async () => {
     if (answers.some((a) => !a.trim())) {
       toast.error(t('claims.answerAll'));
@@ -116,13 +228,15 @@ const ClaimDetailPage: React.FC = () => {
     setVerifying(true);
     try {
       const response = await claimsApi.verify(parseInt(id!), answers);
-      const result = response.data.data;
+      const result = normaliseVerifyResult(response.data.data);
       setVerificationResult(result);
       if (result.verified) {
         toast.success(t('claims.verificationSuccess'));
         loadClaim();
       } else {
-        toast.error(`Verification failed. ${result.correct_count}/3 correct. ${result.attempts_remaining} attempts remaining.`);
+        toast.error(
+          `Verification failed. ${result.correct_count}/3 correct. ${result.attempts_remaining} attempts remaining.`
+        );
       }
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Verification failed');
@@ -130,6 +244,7 @@ const ClaimDetailPage: React.FC = () => {
       setVerifying(false);
     }
   };
+
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
@@ -139,47 +254,89 @@ const ClaimDetailPage: React.FC = () => {
       setNewMessage('');
       loadMessages();
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to send');
+      toast.error(error.response?.data?.message || 'Failed to send message');
     } finally {
       setSendingMessage(false);
     }
   };
-  if (loading) return <div className="flex justify-center py-12"><LoadingSpinner size="lg" /></div>;
+
+  /* ─── Guards ─── */
+
+  if (loading) {
+    return (
+      <div className="flex justify-center py-12">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
   if (!claim) return null;
+
   const statusInfo = STATUS_INFO[claim.status];
-  // Determine the user's role in this claim for the handover panel
+
   const getUserRole = (): 'owner' | 'finder' | 'coop_staff' => {
     if (user?.role === 'coop_staff') return 'coop_staff';
     if (isOwner) return 'owner';
     return 'finder';
   };
-  // Get the other party info for scam reporting
-  const getOtherPartyFromMessage = (msg: Message) => {
-    return {
-      id: msg.sender_id,
-      name: msg.sender_name || 'Unknown user',
-    };
-  };
+
+  /* ─── Render ─── */
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
-      <Link to="/dashboard" className="inline-flex items-center text-gray-600 hover:text-gray-900 mb-6">
-        <ArrowLeft className="w-4 h-4 mr-2" />Back to Dashboard
+      {/* Back */}
+      <Link
+        to="/dashboard"
+        className="inline-flex items-center text-gray-600 hover:text-gray-900 mb-6"
+      >
+        <ArrowLeft className="w-4 h-4 mr-2" />
+        Back to Dashboard
       </Link>
+
+      {/* ── Status header ── */}
       <Card className="p-6 mb-6">
         <div className="flex items-start justify-between mb-4">
-          <Badge variant={claim.status === 'VERIFIED' || claim.status === 'RETURNED' ? 'verified' : claim.status === 'PENDING' ? 'pending' : 'expired'}>
+          <Badge variant={claimBadgeVariant(claim.status)}>
             {statusInfo?.label || claim.status}
           </Badge>
           <span className="text-sm text-gray-500">Claim #{claim.id}</span>
         </div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">{claim.lost_item_title}</h1>
-        <p className="text-gray-600">Claiming: {claim.found_item_title}</p>
+        <h1 className="text-2xl font-bold text-gray-900 mb-1">{claim.lost_item_title}</h1>
+        <p className="text-gray-600">Found item: {claim.found_item_title}</p>
+        <p className="text-xs text-gray-400 mt-2">
+          Your role: <strong>{isOwner ? 'Owner / Claimant' : 'Finder'}</strong>
+        </p>
       </Card>
+
       <div className="grid md:grid-cols-3 gap-6">
-        <div className="md:col-span-2">
-          {/* Verification Challenge */}
+        {/* ── Main column ── */}
+        <div className="md:col-span-2 space-y-6">
+
+          {/* ══ FINDER: Set Questions (PENDING_QUESTIONS) ══ */}
+          {claim.status === 'PENDING_QUESTIONS' && isFinder && (
+            <SetQuestionsPanel claimId={claim.id} onSuccess={() => loadClaim()} />
+          )}
+
+          {/* ══ OWNER: Waiting for finder to set questions ══ */}
+          {claim.status === 'PENDING_QUESTIONS' && isOwner && (
+            <Card className="p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <Loader2 className="w-6 h-6 text-blue-500 animate-spin" />
+                <h2 className="text-lg font-semibold">Waiting for Verification Questions</h2>
+              </div>
+              <p className="text-gray-600 mb-3">
+                Your claim has been submitted. The finder has been notified and is setting up 3
+                verification questions to confirm you are the rightful owner.
+              </p>
+              <p className="text-sm text-gray-500">
+                You'll be able to answer the questions once the finder saves them. This page
+                updates automatically every 30 seconds.
+              </p>
+            </Card>
+          )}
+
+          {/* ══ OWNER: Answer verification questions (PENDING) ══ */}
           {claim.status === 'PENDING' && isOwner && (
-            <Card className="p-6 mb-6">
+            <Card className="p-6">
               <div className="flex items-center gap-3 mb-6">
                 <Shield className="w-6 h-6 text-primary-500" />
                 <h2 className="text-lg font-semibold">Verification Challenge</h2>
@@ -188,133 +345,259 @@ const ClaimDetailPage: React.FC = () => {
                 <div className="space-y-4">
                   {questions.map((q, i) => (
                     <div key={i}>
-                      <label className="block text-sm font-medium mb-1">Q{i + 1}: {q}</label>
-                      <Input value={answers[i]} onChange={(e) => { const a = [...answers]; a[i] = e.target.value; setAnswers(a); }} placeholder={t('claims.yourAnswer')} />
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Q{i + 1}: {q}
+                      </label>
+                      <Input
+                        value={answers[i]}
+                        onChange={(e) => {
+                          const a = [...answers];
+                          a[i] = e.target.value;
+                          setAnswers(a);
+                        }}
+                        placeholder={t('claims.yourAnswer')}
+                      />
                     </div>
                   ))}
+
                   {verificationResult && (
                     <Alert type={verificationResult.verified ? 'success' : 'error'}>
-                      {verificationResult.verified ? <CheckCircle className="w-4 h-4 inline mr-2" /> : <XCircle className="w-4 h-4 inline mr-2" />}
-                      {verificationResult.verified 
+                      {verificationResult.verified ? (
+                        <CheckCircle className="w-4 h-4 inline mr-2" />
+                      ) : (
+                        <XCircle className="w-4 h-4 inline mr-2" />
+                      )}
+                      {verificationResult.verified
                         ? 'Verification successful! You can now proceed to handover.'
-                        : `${verificationResult.correct_count}/3 correct. ${verificationResult.attempts_remaining} attempts remaining.`}
+                        : `${verificationResult.correct_count}/3 correct. ${verificationResult.attempts_remaining} attempt(s) remaining.`}
                     </Alert>
                   )}
-                  <Button onClick={handleVerify} loading={verifying} className="w-full">Verify Ownership</Button>
+
+                  <Button onClick={handleVerify} loading={verifying} className="w-full">
+                    Verify Ownership
+                  </Button>
                 </div>
               ) : (
-                <Alert type="warning"><AlertCircle className="w-4 h-4 inline mr-2" />Cannot load questions. Limit reached?</Alert>
+                <Alert type="warning">
+                  <AlertCircle className="w-4 h-4 inline mr-2" />
+                  Questions are not available yet or your daily limit has been reached. Try again
+                  later.
+                </Alert>
               )}
             </Card>
           )}
-          {/* FIX #13: Use the dedicated HandoverOTPPanel component */}
+
+          {/* ══ FINDER: Waiting for owner to answer (PENDING) ══ */}
+          {claim.status === 'PENDING' && isFinder && (
+            <Card className="p-6">
+              <div className="flex items-center gap-3 mb-3">
+                <Loader2 className="w-5 h-5 text-yellow-500 animate-spin" />
+                <h2 className="text-lg font-semibold">Waiting for Owner to Verify</h2>
+              </div>
+              <p className="text-gray-600 text-sm">
+                The owner has been notified and is answering your verification questions. You'll
+                see the result here once they submit their answers.
+              </p>
+            </Card>
+          )}
+
+          {/* ══ Handover OTP (VERIFIED) ══ */}
           {claim.status === 'VERIFIED' && (
-            <div className="mb-6">
-              {/* NOVEL: Safe handover location recommendations */}
+            <>
               <SafeHandoverLocationPicker
                 itemArea={claim.found_item_area || claim.lost_item_area || ''}
                 itemCategory={claim.category || 'OTHER'}
-                onSelectLocation={(loc) => console.log('Selected handover location:', loc.name)}
+                onSelectLocation={(loc) => console.log('Handover location:', loc.name)}
               />
-              <div className="mt-4" />
               <HandoverOTPPanel
                 claimId={claim.id}
                 claimStatus={claim.status}
                 userRole={getUserRole()}
                 onHandoverComplete={() => loadClaim()}
               />
-            </div>
+            </>
           )}
-          {/* Item Returned */}
+
+          {/* ══ Returned ══ */}
           {claim.status === 'RETURNED' && (
-            <Card className="p-6 mb-6 bg-trust-50 border-trust-200 text-center">
+            <Card className="p-6 bg-trust-50 border-trust-200 text-center">
               <CheckCircle className="w-16 h-16 text-trust-500 mx-auto mb-4" />
-              <h2 className="text-xl font-bold text-trust-800">Item Returned! 🎉</h2>
+              <h2 className="text-xl font-bold text-trust-800">Item Successfully Returned! 🎉</h2>
+              <p className="text-trust-700 mt-2">
+                Great job! This claim has been completed.
+              </p>
             </Card>
           )}
-          {/* FIX #15: Safety Warning Banner */}
-          {['PENDING', 'VERIFIED'].includes(claim.status) && (
+
+          {/* ══ Cancelled / Rejected / Expired ══ */}
+          {['CANCELLED', 'REJECTED', 'EXPIRED'].includes(claim.status) && (
+            <Card className="p-6">
+              <Alert type="error">
+                <XCircle className="w-4 h-4 inline mr-2" />
+                This claim is <strong>{statusInfo?.label || claim.status}</strong> and no further
+                actions are available.
+              </Alert>
+            </Card>
+          )}
+
+          {/* ══ Safety Banner (active claims) ══ */}
+          {['PENDING_QUESTIONS', 'PENDING', 'VERIFIED'].includes(claim.status) && (
             <SafetyWarningBanner variant="full" />
           )}
-          {/* Messages Section */}
-          {['PENDING', 'VERIFIED'].includes(claim.status) && (
-            <Card className="p-6 mt-6">
+
+          {/* ══ Messaging (both parties, PENDING / VERIFIED / RETURNED) ══ */}
+          {['PENDING', 'VERIFIED', 'RETURNED'].includes(claim.status) && (
+            <Card className="p-6">
               <div className="flex items-center gap-3 mb-4">
                 <MessageSquare className="w-5 h-5 text-gray-500" />
-                <h2 className="font-semibold">Messages</h2>
+                <h2 className="font-semibold text-gray-900">Messages</h2>
               </div>
-              <div className="space-y-3 max-h-80 overflow-y-auto mb-4">
+
+              {/* Thread */}
+              <div className="space-y-3 max-h-80 overflow-y-auto mb-4 pr-1">
                 {messages.length === 0 ? (
-                  <p className="text-center text-gray-500 py-8">No messages yet</p>
-                ) : messages.map((m) => (
-                  <div key={m.id} className={`flex ${m.is_mine ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[80%] ${m.is_mine ? '' : ''}`}>
-                      <div className={`p-3 rounded-xl ${m.is_mine ? 'bg-primary-500 text-white' : 'bg-gray-100'}`}>
-                        {/* FIX: Show warning on flagged messages */}
-                        {m.is_flagged && m.warning && (
-                          <p className={`text-xs mb-1 ${m.is_mine ? 'text-primary-200' : 'text-orange-600'}`}>
-                            ⚠️ {m.warning}
-                          </p>
+                  <p className="text-center text-gray-500 py-8 text-sm">
+                    No messages yet. Start the conversation below.
+                  </p>
+                ) : (
+                  messages.map((m) => (
+                    <div key={m.id} className={`flex ${m.is_mine ? 'justify-end' : 'justify-start'}`}>
+                      <div className="max-w-[80%]">
+                        {/* Sender name (other party) */}
+                        {!m.is_mine && (
+                          <p className="text-xs text-gray-500 mb-1 ml-1">{m.sender_name || 'Other party'}</p>
                         )}
-                        <p className="text-sm">{m.content}</p>
-                        <p className={`text-xs mt-1 ${m.is_mine ? 'text-primary-200' : 'text-gray-500'}`}>{formatDate(m.created_at, 'h:mm a')}</p>
-                      </div>
-                      {/* FIX #16: ScamReportButton on received messages */}
-                      {!m.is_mine && (
-                        <div className="mt-1 ml-1">
-                          <ScamReportButton
-                            claimId={claim.id}
-                            messageId={m.id}
-                            reportedUserId={m.sender_id}
-                            reportedUserName={m.sender_name || 'Unknown'}
-                            onReportSubmitted={() => toast.success(t('scamReport.reportSuccess'))}
-                          />
+                        <div
+                          className={`p-3 rounded-xl ${
+                            m.is_mine ? 'bg-primary-500 text-white' : 'bg-gray-100 text-gray-900'
+                          }`}
+                        >
+                          {m.is_flagged && (
+                            <p
+                              className={`text-xs mb-1 ${
+                                m.is_mine ? 'text-primary-200' : 'text-orange-600'
+                              }`}
+                            >
+                              ⚠️ This message was flagged for review.
+                            </p>
+                          )}
+                          <p className="text-sm whitespace-pre-wrap">{m.content}</p>
+                          <p
+                            className={`text-xs mt-1 ${
+                              m.is_mine ? 'text-primary-200' : 'text-gray-400'
+                            }`}
+                          >
+                            {formatDate(m.created_at, 'h:mm a')}
+                          </p>
                         </div>
-                      )}
+
+                        {/* Scam report button on received messages */}
+                        {!m.is_mine && (
+                          <div className="mt-1 ml-1">
+                            <ScamReportButton
+                              claimId={claim.id}
+                              messageId={m.id}
+                              reportedUserId={m.sender_id}
+                              reportedUserName={m.sender_name || 'Unknown'}
+                              onReportSubmitted={() =>
+                                toast.success(t('scamReport.reportSuccess'))
+                              }
+                            />
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                )}
+                <div ref={messagesEndRef} />
               </div>
+
+              {/* Input */}
               <form onSubmit={sendMessage} className="flex gap-2">
-                <Input value={newMessage} onChange={(e) => setNewMessage(e.target.value)} placeholder={t('claims.typeMessage')} className="flex-1" />
-                <Button type="submit" loading={sendingMessage}>{t('claims.sendMessage')}</Button>
+                <Input
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  placeholder={t('claims.typeMessage')}
+                  className="flex-1"
+                />
+                <Button type="submit" loading={sendingMessage} disabled={!newMessage.trim()}>
+                  {t('claims.sendMessage')}
+                </Button>
               </form>
+
+              <p className="text-xs text-gray-400 mt-2">
+                🔒 Phone numbers are automatically masked. Never share ID numbers or bank details.
+                Use the Report button if you receive suspicious messages.
+              </p>
             </Card>
           )}
-          {/* FIX #13: DisputeForm component integration */}
+
+          {/* ══ Dispute (owner only) ══ */}
           {isOwner && ['PENDING', 'VERIFIED', 'REJECTED'].includes(claim.status) && (
-            <div className="mt-6">
-              <DisputeForm
-                claimId={claim.id}
-                claimStatus={claim.status}
-                existingDispute={existingDispute}
-                onDisputeOpened={() => loadDispute()}
-              />
-            </div>
+            <DisputeForm
+              claimId={claim.id}
+              claimStatus={claim.status}
+              existingDispute={existingDispute}
+              onDisputeOpened={() => loadDispute()}
+            />
           )}
         </div>
-        {/* Sidebar */}
+
+        {/* ── Sidebar ── */}
         <div>
+          {/* Progress tracker */}
           <Card className="p-6 mb-6">
-            <h3 className="font-semibold mb-4">Progress</h3>
+            <h3 className="font-semibold text-gray-900 mb-4">Progress</h3>
             <div className="space-y-4">
-              {['Created', 'Verified', 'Returned'].map((s, i) => {
-                const done = (i === 0) || (i === 1 && claim.status !== 'PENDING') || (i === 2 && claim.status === 'RETURNED');
-                return (
-                  <div key={s} className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${done ? 'bg-trust-500 text-white' : 'bg-gray-200 text-gray-400'}`}>
-                      {done ? <CheckCircle className="w-5 h-5" /> : <Clock className="w-5 h-5" />}
-                    </div>
-                    <span className={done ? 'font-medium' : 'text-gray-500'}>{s}</span>
+              {[
+                {
+                  label: 'Claim Created',
+                  done: true,
+                },
+                {
+                  label: 'Questions Set',
+                  done: !['PENDING_QUESTIONS'].includes(claim.status),
+                },
+                {
+                  label: 'Ownership Verified',
+                  done: ['VERIFIED', 'RETURNED'].includes(claim.status),
+                },
+                {
+                  label: 'Item Returned',
+                  done: claim.status === 'RETURNED',
+                },
+              ].map(({ label, done }) => (
+                <div key={label} className="flex items-center gap-3">
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                      done ? 'bg-trust-500 text-white' : 'bg-gray-200 text-gray-400'
+                    }`}
+                  >
+                    {done ? <CheckCircle className="w-5 h-5" /> : <Clock className="w-5 h-5" />}
                   </div>
-                );
-              })}
+                  <span className={done ? 'font-medium text-gray-900' : 'text-gray-400 text-sm'}>
+                    {label}
+                  </span>
+                </div>
+              ))}
             </div>
           </Card>
+
+          {/* Related items */}
           <Card className="p-6">
-            <h3 className="font-semibold mb-4">Related</h3>
-            <Link to={`/lost-items/${claim.lost_item_id}`} className="block text-sm text-primary-500 hover:underline mb-2">Lost Item →</Link>
-            <Link to={`/found-items/${claim.found_item_id}`} className="block text-sm text-primary-500 hover:underline">Found Item →</Link>
+            <h3 className="font-semibold text-gray-900 mb-4">Related Items</h3>
+            <Link
+              to={`/lost-items/${claim.lost_item_id}`}
+              className="block text-sm text-primary-500 hover:underline mb-2"
+            >
+              View Lost Item Report →
+            </Link>
+            <Link
+              to={`/found-items/${claim.found_item_id}`}
+              className="block text-sm text-primary-500 hover:underline"
+            >
+              View Found Item Report →
+            </Link>
           </Card>
         </div>
       </div>

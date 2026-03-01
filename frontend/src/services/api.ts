@@ -407,6 +407,18 @@ export const claimsApi = {
 
   getVerificationStatus: (claimId: number) =>
     api.get<ApiResponse>(`/claims/${claimId}/verification/status`),
+
+  // ✅ NEW: Get claims on a found item (finder-side view)
+  getFinderClaims: (foundItemId: number) =>
+    api.get<ApiResponse<Array<{
+      id: number;
+      status: string;
+      claimant_id: number;
+      claimant_name: string;
+      lost_item_title: string;
+      category: string;
+      created_at: string;
+    }>>>(`/found-items/${foundItemId}/claims`),
 };
 
 // ============================================
@@ -466,10 +478,10 @@ export const messagesApi = {
     api.get<PaginatedResponse<MessageThread>>('/messages/threads', { params }),
 
   getMessages: (claimId: number, params?: { page?: number; limit?: number }) =>
-    api.get<ApiResponse<Message[]>>(`/messages/threads/${claimId}`, { params }),
+    api.get<ApiResponse<Message[]>>(`/messages/${claimId}`, { params }),
 
   sendMessage: (claimId: number, content: string) =>
-    api.post<ApiResponse<Message>>(`/messages/threads/${claimId}`, { content }),
+    api.post<ApiResponse>(`/messages/${claimId}`, { content }),
 
   reportScam: (messageId: number, reason: string) =>
     api.post<ApiResponse>(`/messages/${messageId}/report`, { reason }),

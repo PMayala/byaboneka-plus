@@ -25,6 +25,8 @@ import { runComprehensiveFixMigration } from './migrations/004_comprehensive_fix
 import { runFinalProductionMigration } from './migrations/005_final_production_fixes';
 import { runComprehensiveBugfixMigration } from './migrations/006_comprehensive_bugfix';
 import { runLogicRefactorMigration } from './migrations/007_logic_refactor';
+import { runClaimFlowFixMigration } from './migrations/008_claim_flow_fixes';
+
 
 
 // swagger-ui-express is CJS — use require for reliable loading
@@ -286,6 +288,7 @@ async function startServer() {
     await runFinalProductionMigration().catch(err => console.warn('Final production migration note:', err.message));
     await runComprehensiveBugfixMigration().catch(err => console.warn('Comprehensive bugfix migration note:', err.message));
     await runLogicRefactorMigration().catch(err => console.warn('Logic refactor migration note:', err.message));
+    await runClaimFlowFixMigration().catch(err => console.warn('Claim flow fix migration note:', err.message));
 
     // Create uploads directory if it doesn't exist
     if (!fs.existsSync(uploadPath)) {

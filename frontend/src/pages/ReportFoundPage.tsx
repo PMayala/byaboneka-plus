@@ -1,9 +1,6 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Camera,
-  Upload,
-  X,
   MapPin,
   Calendar,
   Check,
@@ -15,6 +12,7 @@ import {
   Package,
   Building,
   AlertCircle,
+  Shield,
 } from 'lucide-react';
 import { Button, Card, Input, Textarea, Alert } from '../components/ui';
 import { foundItemsApi, duplicateApi } from '../services/api';
@@ -49,14 +47,7 @@ const ReportFoundPage: React.FC = () => {
   const { user } = useAuthStore();
   const { executeRecaptcha } = useRecaptcha();
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
   const [loading, setLoading] = useState(false);
-  const [uploadingImages, setUploadingImages] = useState(false);
-
-  const [images, setImages] = useState<File[]>([]);
-  const [imagesPreviews, setImagesPreviews] = useState<string[]>([]);
-
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [duplicateCandidates, setDuplicateCandidates] = useState<any[]>([]);
   const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
@@ -72,51 +63,15 @@ const ReportFoundPage: React.FC = () => {
 
   const isCoopStaff = user?.role === 'coop_staff';
 
-  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files) return;
-
-    const newFiles = Array.from(files).slice(0, 5 - images.length);
-
-    // Validate file types and sizes
-    for (const file of newFiles) {
-      if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
-        toast.error(t('reportFound.imageTypeError'));
-        return;
-      }
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error(t('reportFound.imageSizeError'));
-        return;
-      }
-    }
-
-    // Create previews
-    const previews = newFiles.map((file) => URL.createObjectURL(file));
-
-    setImages([...images, ...newFiles]);
-    setImagesPreviews([...imagesPreviews, ...previews]);
-  };
-
-  const removeImage = (index: number) => {
-    URL.revokeObjectURL(imagesPreviews[index]);
-    setImages(images.filter((_, i) => i !== index));
-    setImagesPreviews(imagesPreviews.filter((_, i) => i !== index));
-  };
-
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
-
     if (!formData.category) newErrors.category = 'Please select a category';
-    if (!formData.title || formData.title.length < 3) newErrors.title = 'Title must be at least 3 characters';
-    if (!formData.description || formData.description.length < 10) {
+    if (!formData.title || formData.title.length < 3)
+      newErrors.title = 'Title must be at least 3 characters';
+    if (!formData.description || formData.description.length < 10)
       newErrors.description = 'Description must be at least 10 characters';
-    }
     if (!formData.location_area) newErrors.location_area = 'Please select a location';
     if (!formData.found_date) newErrors.found_date = 'Please enter the date you found the item';
-
-    // ✅ Images are OPTIONAL now (removed requirement)
-    // if (images.length === 0) newErrors.images = 'Please upload at least one image';
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -125,7 +80,6 @@ const ReportFoundPage: React.FC = () => {
     e.preventDefault();
     if (!validate()) return;
 
-    // Check for duplicates first (if not already confirmed)
     if (!showDuplicateWarning && duplicateCandidates.length === 0) {
       try {
         const dupRes = await duplicateApi.checkFound({
@@ -135,14 +89,12 @@ const ReportFoundPage: React.FC = () => {
           location_area: formData.location_area,
           found_date: formData.found_date,
         });
-
         if (dupRes.data.data?.has_potential_duplicates && dupRes.data.data.candidates.length > 0) {
           setDuplicateCandidates(dupRes.data.data.candidates);
           setShowDuplicateWarning(true);
           return;
         }
       } catch (error) {
-        // If duplicate check fails, proceed anyway
         console.warn('Duplicate check failed:', error);
       }
     }
@@ -153,11 +105,8 @@ const ReportFoundPage: React.FC = () => {
   const submitFoundItem = async () => {
     setShowDuplicateWarning(false);
     setLoading(true);
-
     try {
       const recaptchaToken = await executeRecaptcha('report_found');
-
-      // Create the found item first
       const createData = {
         category: formData.category,
         title: formData.title,
@@ -168,18 +117,8 @@ const ReportFoundPage: React.FC = () => {
         cooperative_id: isCoopStaff && user?.cooperative_id ? user.cooperative_id : undefined,
         ...(recaptchaToken && { recaptchaToken }),
       };
-
       const response = await foundItemsApi.create(createData as any);
       const itemId = response.data.data.id;
-
-      // Upload images (optional)
-      if (images.length > 0) {
-        setUploadingImages(true);
-        const fileList = new DataTransfer();
-        images.forEach((file) => fileList.items.add(file));
-        await foundItemsApi.uploadImages(itemId, fileList.files);
-      }
-
       toast.success(t('reportFound.reportSuccess'));
       navigate(`/found-items/${itemId}`);
     } catch (error: any) {
@@ -187,7 +126,6 @@ const ReportFoundPage: React.FC = () => {
       toast.error(message);
     } finally {
       setLoading(false);
-      setUploadingImages(false);
     }
   };
 
@@ -212,22 +150,33 @@ const ReportFoundPage: React.FC = () => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">{t('reportFound.title')}</h1>
-          <p className="text-gray-600">Thank you for helping reunite someone with their belongings!</p>
+          <p className="text-gray-600">
+            Thank you for helping reunite someone with their belongings!
+          </p>
         </div>
+
+        {/* Privacy Notice */}
+        <Alert type="info" className="mb-6">
+          <Shield className="w-4 h-4 inline mr-2" />
+          <strong>Privacy first:</strong> Describe the item using text only. Do{' '}
+          <strong>not</strong> include personal data such as ID numbers, names, phone numbers, or
+          bank card details. The owner will verify ownership through secure questions.
+        </Alert>
 
         {isCoopStaff && (
           <Alert type="info" className="mb-6">
             <Building className="w-4 h-4 inline mr-2" />
-            You're reporting as a <strong>Cooperative Staff</strong>. This item will be associated with your
-            cooperative and held for secure pickup.
+            You're reporting as a <strong>Cooperative Staff</strong>. This item will be associated
+            with your cooperative and held for secure pickup.
           </Alert>
         )}
 
         <form onSubmit={handleSubmit}>
+          {/* ─── Item Details ─── */}
           <Card className="p-6 mb-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-6">Item Details</h2>
 
-            {/* Category Selection */}
+            {/* Category */}
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-3">Category *</label>
               <div className="grid grid-cols-3 gap-3">
@@ -242,16 +191,28 @@ const ReportFoundPage: React.FC = () => {
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
-                    <div className={`mx-auto mb-2 ${formData.category === key ? 'text-trust-500' : 'text-gray-400'}`}>
+                    <div
+                      className={`mx-auto mb-2 ${
+                        formData.category === key ? 'text-trust-500' : 'text-gray-400'
+                      }`}
+                    >
                       {CATEGORY_ICONS[key as ItemCategory]}
                     </div>
-                    <p className={`text-sm font-medium ${formData.category === key ? 'text-trust-500' : 'text-gray-600'}`}>
+                    <p
+                      className={`text-sm font-medium ${
+                        formData.category === key ? 'text-trust-500' : 'text-gray-600'
+                      }`}
+                    >
                       {info.label}
                     </p>
                   </button>
                 ))}
               </div>
-              {errors.category && <p role="alert" className="mt-2 text-sm text-red-500">{errors.category}</p>}
+              {errors.category && (
+                <p role="alert" className="mt-2 text-sm text-red-500">
+                  {errors.category}
+                </p>
+              )}
             </div>
 
             {/* Title */}
@@ -276,20 +237,30 @@ const ReportFoundPage: React.FC = () => {
                 error={errors.description}
               />
               {(formData.category === 'ID' || formData.category === 'WALLET') && (
-                <p className="mt-2 text-sm text-yellow-600">
-                  <AlertCircle className="w-4 h-4 inline mr-1" />
-                  Do NOT include personal information like ID numbers, names, or card details
+                <p className="mt-2 text-sm text-yellow-700 flex items-start gap-1">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                  Do NOT include personal ID numbers, card numbers, names, or any sensitive data in
+                  the description.
                 </p>
               )}
+              <p className="mt-1 text-xs text-gray-500">
+                Describe the item's appearance, colour, make, or distinguishing marks. The genuine
+                owner will prove ownership through verification questions — you don't need to
+                include private data.
+              </p>
             </div>
           </Card>
 
+          {/* ─── Location & Date ─── */}
           <Card className="p-6 mb-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-6">Location & Date</h2>
 
             {/* Location */}
             <div className="mb-6">
-              <label htmlFor="found-location-area" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="found-location-area"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 <MapPin className="w-4 h-4 inline mr-1" aria-hidden="true" />
                 Where did you find it? *
               </label>
@@ -297,17 +268,17 @@ const ReportFoundPage: React.FC = () => {
                 id="found-location-area"
                 value={formData.location_area}
                 onChange={(e) => setFormData({ ...formData, location_area: e.target.value })}
-                aria-invalid={!!errors.location_area}
-                aria-describedby={errors.location_area ? 'found-location-error' : undefined}
                 className={`input ${errors.location_area ? 'border-red-500' : ''}`}
               >
                 <option value="">{t('items.selectLocation')}</option>
                 {RWANDA_LOCATIONS.map((loc) => (
-                  <option key={loc} value={loc}>{loc}</option>
+                  <option key={loc} value={loc}>
+                    {loc}
+                  </option>
                 ))}
               </select>
               {errors.location_area && (
-                <p id="found-location-error" role="alert" className="mt-1 text-sm text-red-500">
+                <p role="alert" className="mt-1 text-sm text-red-500">
                   {errors.location_area}
                 </p>
               )}
@@ -319,16 +290,19 @@ const ReportFoundPage: React.FC = () => {
                 label="Specific Location (Optional)"
                 value={formData.location_hint}
                 onChange={(e) => setFormData({ ...formData, location_hint: e.target.value })}
-                placeholder={t('items.locationHintPlaceholderFound')}
+                placeholder="e.g. Near the bus stop, inside the supermarket…"
                 rows={2}
               />
             </div>
 
             {/* Date */}
-            <div className="mb-6">
-              <label htmlFor="found-date" className="block text-sm font-medium text-gray-700 mb-1">
+            <div className="mb-2">
+              <label
+                htmlFor="found-date"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 <Calendar className="w-4 h-4 inline mr-1" aria-hidden="true" />
-                When did you find it? *
+                Date Found *
               </label>
               <input
                 id="found-date"
@@ -336,92 +310,31 @@ const ReportFoundPage: React.FC = () => {
                 value={formData.found_date}
                 onChange={(e) => setFormData({ ...formData, found_date: e.target.value })}
                 max={new Date().toISOString().split('T')[0]}
-                aria-invalid={!!errors.found_date}
-                aria-describedby={errors.found_date ? 'found-date-error' : undefined}
                 className={`input ${errors.found_date ? 'border-red-500' : ''}`}
               />
               {errors.found_date && (
-                <p id="found-date-error" role="alert" className="mt-1 text-sm text-red-500">
+                <p role="alert" className="mt-1 text-sm text-red-500">
                   {errors.found_date}
                 </p>
               )}
             </div>
           </Card>
 
-          {/* Photos (Optional now) + Privacy note */}
-          <Card className="p-6 mb-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
-              <Camera className="w-5 h-5 inline mr-2" />
-              Photos (Optional)
-            </h2>
-
-            <Alert type="info" className="mb-4">
-              <strong>Privacy:</strong> Photos are stored privately as evidence and are not shown publicly.
-              They help confirm authenticity during the handover process.
-            </Alert>
-
-            <p className="text-sm text-gray-600 mb-4">
-              If you can, upload clear photos. This helps confirm the item later — but you can submit without photos.
-            </p>
-
-            {/* Image Upload Area */}
-            <div className="grid grid-cols-3 gap-4 mb-4">
-              {imagesPreviews.map((preview, index) => (
-                <div key={index} className="relative aspect-square rounded-lg overflow-hidden bg-gray-100">
-                  <img src={preview} alt="" className="w-full h-full object-cover" />
-                  <button
-                    type="button"
-                    onClick={() => removeImage(index)}
-                    className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
-
-              {images.length < 5 && (
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="aspect-square rounded-lg border-2 border-dashed border-gray-300 hover:border-primary-400 flex flex-col items-center justify-center transition-colors"
-                >
-                  <Upload className="w-8 h-8 text-gray-400 mb-2" />
-                  <span className="text-sm text-gray-500">Add Photo</span>
-                </button>
-              )}
-            </div>
-
-            <input
-              ref={fileInputRef}
-              type="file"
-              aria-label="Upload item photos"
-              accept="image/jpeg,image/png,image/webp"
-              multiple
-              onChange={handleImageSelect}
-              className="hidden"
-            />
-
-            {errors.images && <p role="alert" className="text-sm text-red-500">{errors.images}</p>}
-
-            <p className="text-xs text-gray-500 mt-2">
-              Max 5 images, 5MB each. JPEG, PNG, or WebP format.
-            </p>
-          </Card>
-
-          {/* Important Notice */}
+          {/* ─── Important Notice ─── */}
           <Alert type="warning" className="mb-6">
-            <strong>Important:</strong> Never demand payment before verification. Byaboneka+ uses secure verification
-            to confirm ownership. Attempting to extort money is against our policies and may result in account suspension.
+            <strong>Important:</strong> Never demand payment before verification. Byaboneka+ uses
+            secure questions to confirm ownership. Attempting to extort money is against our
+            policies and may result in account suspension.
           </Alert>
 
-          {/* Submit Button */}
+          {/* ─── Submit ─── */}
           <div className="flex justify-end gap-4">
             <Button type="button" variant="secondary" onClick={() => navigate(-1)}>
               Cancel
             </Button>
-            <Button type="submit" loading={loading || uploadingImages}>
-              <Check className="w-4 h-4 mr-2" />
-              {uploadingImages ? 'Uploading Images...' : 'Submit Report'}
+            <Button type="submit" loading={loading}>
+              {loading ? 'Submitting…' : 'Submit Report'}
+              {!loading && <Check className="w-4 h-4 ml-2" />}
             </Button>
           </div>
         </form>
