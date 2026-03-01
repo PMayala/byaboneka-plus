@@ -79,6 +79,7 @@ export async function createLostItem(req: Request, res: Response): Promise<void>
         location_hint: result.location_hint,
         lost_date: result.lost_date,
         status: result.status,
+        keywords: result.keywords || [],
         photo_url: result.photo_url,
         image_urls: result.image_urls || [],
         created_at: result.created_at

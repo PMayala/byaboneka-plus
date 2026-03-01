@@ -308,7 +308,7 @@ describeIf('Integration: Full API Flow', () => {
       const res = await request.get('/api/v1/messages/unread-count')
         .set('Authorization', `Bearer ${finderToken}`);
       expect(res.status).toBe(200);
-      expect(res.body.data).toHaveProperty('count');
+      expect(res.body.data).toHaveProperty('unread_count');
     });
   });
 
