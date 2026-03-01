@@ -1,0 +1,93 @@
+# ============================================
+# Byaboneka+ Docker Compose - Production
+# Full-stack: PostgreSQL + Node.js API + Nginx Frontend
+#
+# Architecture:
+#   Browser → :80 nginx → static files (SPA)
+#                       → /api/* proxy → :4000 Node.js API → PostgreSQL
+#
+# Usage:
+#   1. cp .env.example .env && nano .env   (fill in secrets)
+#   2. docker compose -f docker-compose.production.yml up -d --build
+#   3. docker exec -it $(docker ps -qf "name=api") node dist/seeds/run.js  (optional: seed data)
+# ============================================
+
+services:
+  # ── PostgreSQL Database ──
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-byaboneka}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+      POSTGRES_DB: ${DB_NAME:-byaboneka_plus}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-byaboneka} -d ${DB_NAME:-byaboneka_plus}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - byaboneka-net
+    # DB not exposed to host — only reachable inside Docker network
+
+  # ── Backend API (Node.js) ──
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      DATABASE_URL: postgresql://${DB_USER:-byaboneka}:${DB_PASSWORD}@db:5432/${DB_NAME:-byaboneka_plus}
+      DATABASE_SSL: "false"  # Local Postgres container doesn't support SSL (omit on Render)
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:?JWT_REFRESH_SECRET is required}
+      JWT_ACCESS_EXPIRY: ${JWT_ACCESS_EXPIRY:-15m}
+      JWT_REFRESH_EXPIRY: ${JWT_REFRESH_EXPIRY:-7d}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost}
+      UPLOAD_PATH: /app/uploads
+      BREVO_SMTP_HOST: ${BREVO_SMTP_HOST:-smtp-relay.brevo.com}
+      BREVO_SMTP_PORT: ${BREVO_SMTP_PORT:-587}
+      BREVO_SMTP_USER: ${BREVO_SMTP_USER:-}
+      BREVO_SMTP_KEY: ${BREVO_SMTP_KEY:-}
+      EMAIL_FROM: ${EMAIL_FROM:-Byaboneka+ <noreply@byaboneka.rw>}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost}
+      RECAPTCHA_SECRET_KEY: ${RECAPTCHA_SECRET_KEY:-}
+      RECAPTCHA_MIN_SCORE: ${RECAPTCHA_MIN_SCORE:-0.5}
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - uploads:/app/uploads
+    networks:
+      - byaboneka-net
+    # API not exposed to host — nginx proxies /api/* to this container
+
+  # ── Frontend (Nginx SPA + API reverse proxy) ──
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: /api/v1
+        VITE_RECAPTCHA_SITE_KEY: ${VITE_RECAPTCHA_SITE_KEY:-}
+    restart: unless-stopped
+    ports:
+      - "${PORT:-80}:80"
+    depends_on:
+      - api
+    networks:
+      - byaboneka-net
+
+volumes:
+  pgdata:
+    driver: local
+  uploads:
+    driver: local
+
+networks:
+  byaboneka-net:
+    driver: bridge

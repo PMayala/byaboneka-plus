@@ -1,0 +1,82 @@
+# ============================================
+# Byaboneka+ Docker Compose - Local Development
+# Run: docker compose up -d
+# ============================================
+
+services:
+  # ── PostgreSQL Database ──
+  postgres:
+    image: postgres:16-alpine
+    container_name: byaboneka-db
+    environment:
+      POSTGRES_USER: byaboneka
+      POSTGRES_PASSWORD: byaboneka_dev_pass
+      POSTGRES_DB: byaboneka_plus
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U byaboneka -d byaboneka_plus"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - byaboneka-net
+
+  # ── Backend API (Node.js) ──
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: byaboneka-backend
+    environment:
+      NODE_ENV: development
+      PORT: 4000
+      DATABASE_URL: postgresql://byaboneka:byaboneka_dev_pass@postgres:5432/byaboneka_plus
+      JWT_SECRET: dev_jwt_secret_change_in_production_min_32_chars!!
+      JWT_REFRESH_SECRET: dev_refresh_secret_change_in_production_min_32!!
+      JWT_ACCESS_EXPIRY: 15m
+      JWT_REFRESH_EXPIRY: 7d
+      CORS_ORIGIN: http://localhost:3000,http://localhost
+      UPLOAD_PATH: /app/uploads
+      BREVO_SMTP_HOST: smtp-relay.brevo.com
+      BREVO_SMTP_PORT: "587"
+      BREVO_SMTP_USER: ${BREVO_SMTP_USER:-}
+      BREVO_SMTP_KEY: ${BREVO_SMTP_KEY:-}
+      EMAIL_FROM: "Byaboneka+ <noreply@byaboneka.rw>"
+      FRONTEND_URL: http://localhost:3000
+      RECAPTCHA_SECRET_KEY: ${RECAPTCHA_SECRET_KEY:-}
+      RECAPTCHA_MIN_SCORE: "0.5"
+    ports:
+      - "4000:4000"
+    volumes:
+      - uploads_data:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - byaboneka-net
+
+  # ── Frontend (Vite Dev or Nginx) ──
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: byaboneka-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - byaboneka-net
+
+volumes:
+  postgres_data:
+  uploads_data:
+
+networks:
+  byaboneka-net:
+    driver: bridge

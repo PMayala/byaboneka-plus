@@ -5,6 +5,7 @@ import {
   detectExtortionKeywords, hashToken, generateUUID,
 } from '../../src/utils';
 import { UserRole } from '../../src/types';
+import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 
 describe('Password Hashing', () => {
   it('should hash and verify correctly', async () => {

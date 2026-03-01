@@ -3,6 +3,7 @@ import {
   createClaimSchema, verifyClaimSchema, verifyOtpSchema, sendMessageSchema,
   createCooperativeSchema, banUserSchema,
 } from '../../src/middleware/validation';
+import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 
 describe('Register Schema', () => {
   const valid = { email: 'test@example.com', password: 'MySecure1P', name: 'Jean' };

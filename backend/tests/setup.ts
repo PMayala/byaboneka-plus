@@ -1,6 +1,8 @@
 // Test setup file
 import dotenv from 'dotenv';
 
+import { jest } from '@jest/globals';
+
 // Load test environment
 dotenv.config({ path: '.env.test' });
 

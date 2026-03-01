@@ -4,9 +4,8 @@
  * and rate limiter configuration.
  */
 
-import { Request, Response, NextFunction } from 'express';
-import { generateAccessToken } from '../../src/utils';
-import { UserRole } from '../../src/types';
+import { Request, Response } from 'express';
+import { describe, it, expect} from '@jest/globals';
 
 // Mock request/response helpers
 function mockReq(overrides: Partial<Request> = {}): Request {

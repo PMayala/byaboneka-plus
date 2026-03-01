@@ -10,6 +10,7 @@
 
 // We test the pure scoring logic by importing the scoring functions
 // If they're not exported, we test indirectly through findMatchesForLostItem
+import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 
 describe('Matching Score Calculation', () => {
   // Score constants from spec

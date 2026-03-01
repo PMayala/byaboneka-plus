@@ -10,7 +10,7 @@
  * 
  * Run with: npx jest tests/unit/novel-features.test.ts
  */
-
+import { jest, describe, it, expect } from '@jest/globals';
 // ── Mock database before imports ──
 jest.mock('../../src/config/database', () => ({
   query: jest.fn(),

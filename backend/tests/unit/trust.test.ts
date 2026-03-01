@@ -10,6 +10,7 @@
  */
 
 import { TrustLevel } from '../../src/types';
+import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 
 describe('Trust Score Rules', () => {
   // Mirror the trust level thresholds from trustService
