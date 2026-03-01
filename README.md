@@ -16,6 +16,8 @@
 | **Backend API** | [byaboneka-api.onrender.com/api/v1](https://byaboneka-api.onrender.com/api/v1) |
 | **API Health** | [byaboneka-api.onrender.com/api/v1/health](https://byaboneka-api.onrender.com/api/v1/health) |
 | **Swagger Docs** | [byaboneka-api.onrender.com/api-docs](https://byaboneka-api.onrender.com/api-docs) |
+| **Final Report** | [Implementation and Testing Report](https://docs.google.com/document/d/1Cjlp6svaB2mD0qiproi7EP2cbFwEjFtmg6OUZLNhnSQ/edit?usp=sharing) |
+| **Video** | [Short Video](https://youtu.be/gBNZG32QZPA) |
 
 > The backend runs on Render's free tier and may take ~30 seconds to wake on the first request.
 
