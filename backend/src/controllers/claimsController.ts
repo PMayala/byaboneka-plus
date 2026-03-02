@@ -493,7 +493,7 @@ export async function getClaim(req: Request, res: Response): Promise<void> {
               li.location_area as lost_item_area,
               fi.title as found_item_title, fi.finder_id,
               fi.location_area as found_item_area,
-              h.otp_expires_at, h.otp_verified,
+              h.expires_at as otp_expires_at, h.otp_verified,
               u.name as claimant_name
        FROM claims c
        JOIN lost_items li ON c.lost_item_id = li.id

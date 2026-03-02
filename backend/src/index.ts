@@ -26,6 +26,7 @@ import { runFinalProductionMigration } from './migrations/005_final_production_f
 import { runComprehensiveBugfixMigration } from './migrations/006_comprehensive_bugfix';
 import { runLogicRefactorMigration } from './migrations/007_logic_refactor';
 import { runClaimFlowFixMigration } from './migrations/008_claim_flow_fixes';
+import { runHandoverSchemaFix } from './migrations/009_handover_schema_fix'; // ← NEW
 
 
 
@@ -289,6 +290,7 @@ async function startServer() {
     await runComprehensiveBugfixMigration().catch(err => console.warn('Comprehensive bugfix migration note:', err.message));
     await runLogicRefactorMigration().catch(err => console.warn('Logic refactor migration note:', err.message));
     await runClaimFlowFixMigration().catch(err => console.warn('Claim flow fix migration note:', err.message));
+    await runHandoverSchemaFix().catch(err => console.warn('Handover schema fix migration note:', err.message)); // ← NEW
 
     // Create uploads directory if it doesn't exist
     if (!fs.existsSync(uploadPath)) {

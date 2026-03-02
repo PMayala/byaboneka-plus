@@ -244,7 +244,7 @@ describeIf('Integration: Full API Flow', () => {
         .set('Authorization', `Bearer ${citizenToken}`)
         .send({ answers: ['wrong', 'wrong', 'wrong'] });
       expect(res.status).toBe(200);
-      expect(res.body.data.passed).toBe(false);
+      expect(res.body.data.verified).toBe(false);
       expect(res.body.data.score).toBe(0);
     });
 
@@ -253,7 +253,7 @@ describeIf('Integration: Full API Flow', () => {
         .set('Authorization', `Bearer ${citizenToken}`)
         .send({ answers: ['my dog', 'blue', 'wrong answer'] });
       expect(res.status).toBe(200);
-      expect(res.body.data.passed).toBe(true);
+      expect(res.body.data.verified).toBe(true);
       expect(res.body.data.score).toBeGreaterThanOrEqual(2);
     });
 
