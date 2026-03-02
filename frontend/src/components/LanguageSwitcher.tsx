@@ -1,54 +1,76 @@
-import React, { useState, useRef, useEffect } from 'react';
+// frontend/src/components/LanguageSwitcher.tsx
+import React, { useEffect, useMemo, useState } from 'react';
+import { Check, Globe } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Globe, Check } from 'lucide-react';
-import { LANGUAGES } from '../i18n';
+import i18n, { LANG_STORAGE_KEY, SUPPORTED_LANGS, type SupportedLang } from '../i18n';
 
-const LanguageSwitcher: React.FC<{ compact?: boolean }> = ({ compact = false }) => {
-  const { i18n } = useTranslation();
+const LANGUAGES: Array<{ code: SupportedLang; label: string; flag: string }> = [
+  { code: 'en', label: 'English', flag: '🇬🇧' },
+  { code: 'fr', label: 'Français', flag: '🇫🇷' },
+  { code: 'rw', label: 'Kinyarwanda', flag: '🇷🇼' },
+];
+
+function normalizeLang(lng: string | undefined | null): SupportedLang {
+  const short = String(lng || 'en').split('-')[0] as SupportedLang;
+  return (SUPPORTED_LANGS as readonly string[]).includes(short) ? short : 'en';
+}
+
+const LanguageSwitcher: React.FC<{ compact?: boolean }> = ({ compact }) => {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
 
-  const currentLang = LANGUAGES.find(l => l.code === i18n.language) || LANGUAGES[0];
+  // ✅ stable current lang even if i18n says "en-US"
+  const activeLang = useMemo(() => normalizeLang(i18n.resolvedLanguage || i18n.language), [i18n.resolvedLanguage, i18n.language]);
 
+  // ✅ ensure initial state comes from localStorage if present
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    const saved = localStorage.getItem(LANG_STORAGE_KEY);
+    const savedNorm = normalizeLang(saved);
+    if (saved && savedNorm !== activeLang) {
+      i18n.changeLanguage(savedNorm);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const switchLanguage = (code: string) => {
-    i18n.changeLanguage(code);
+  const currentLang = useMemo(
+    () => LANGUAGES.find((l) => l.code === activeLang) || LANGUAGES[0],
+    [activeLang]
+  );
+
+  const switchLanguage = async (code: SupportedLang) => {
+    const normalized = normalizeLang(code);
+
+    // ✅ persist across refresh + login + rehydrate
+    localStorage.setItem(LANG_STORAGE_KEY, normalized);
+
+    await i18n.changeLanguage(normalized);
     setOpen(false);
-    // Update HTML lang attribute for accessibility
-    document.documentElement.lang = code;
+
+    // Optional: update <html lang="">
+    document.documentElement.lang = normalized;
   };
 
   return (
-    <div ref={ref} className="relative">
+    <div className="relative">
       <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 px-2.5 py-1.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-        aria-label="Change language"
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 border border-gray-200"
       >
         <Globe className="w-4 h-4" />
-        {!compact && (
-          <span className="hidden sm:inline">{currentLang.flag} {currentLang.label}</span>
-        )}
+        {!compact && <span>{currentLang.flag} {currentLang.label}</span>}
         {compact && <span>{currentLang.flag}</span>}
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-1 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50 animate-fade-in">
+        <div className="absolute right-0 mt-1 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50">
           {LANGUAGES.map((lang) => (
             <button
               key={lang.code}
+              type="button"
               onClick={() => switchLanguage(lang.code)}
               className={`flex items-center justify-between w-full px-4 py-2.5 text-sm transition-colors ${
-                i18n.language === lang.code
+                activeLang === lang.code
                   ? 'bg-primary-50 text-primary-700 font-medium'
                   : 'text-gray-700 hover:bg-gray-50'
               }`}
@@ -57,9 +79,8 @@ const LanguageSwitcher: React.FC<{ compact?: boolean }> = ({ compact = false }) 
                 <span className="text-base">{lang.flag}</span>
                 {lang.label}
               </span>
-              {i18n.language === lang.code && (
-                <Check className="w-4 h-4 text-primary-600" />
-              )}
+
+              {activeLang === lang.code && <Check className="w-4 h-4 text-primary-600" />}
             </button>
           ))}
         </div>

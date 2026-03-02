@@ -405,7 +405,6 @@ const ClaimDetailPage: React.FC = () => {
           {/* ══ Handover (VERIFIED) ══ */}
           {claim.status === 'VERIFIED' && (
             <>
-              {/* Role instructions — clear so neither party is confused */}
               <Card className="p-4 border-l-4 border-blue-500 bg-blue-50">
                 <p className="text-sm text-blue-900">
                   {isOwner ? (
@@ -424,13 +423,22 @@ const ClaimDetailPage: React.FC = () => {
                 </p>
               </Card>
 
-              {/* HandoverOTPPanel branches by userRole automatically */}
-              <HandoverOTPPanel
-                claimId={claim.id}
-                claimStatus={claim.status}
-                userRole={getUserRole()}
-                onHandoverComplete={() => loadClaim()}
-              />
+              {/* Add these definitions above your return:
+                  const userRole = ...
+                  const handleHandoverComplete = ...
+              */}
+
+              {user && claim?.claimant_id && claim?.finder_id && (
+                <HandoverOTPPanel
+                  claimId={claim.id}
+                  claimStatus={claim.status}
+                  userRole={getUserRole()}
+                  userId={user.id}
+                  claimantId={claim.claimant_id}
+                  finderId={claim.finder_id}
+                  onHandoverComplete={() => loadClaim()}
+                />
+              )}
             </>
           )}
 

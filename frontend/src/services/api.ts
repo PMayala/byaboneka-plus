@@ -200,7 +200,26 @@ export const authApi = {
 
   // Data export (Right to Portability)
   exportData: () =>
-    api.get<ApiResponse>('/users/me/export'),
+    api.get<ApiResponse<{
+      user: User;
+      lost_items: LostItem[];
+      found_items: FoundItem[];
+      claims: Claim[];
+      messages: Message[];
+      disputes: any[];
+      export_date: string;
+    }>>('/users/me/export'),
+
+  // Data preview before export
+  exportDataPreview: () =>
+    api.get<ApiResponse<{
+      total_lost_items: number;
+      total_found_items: number;
+      total_claims: number;
+      total_messages: number;
+      total_disputes: number;
+      estimated_size_bytes: number;
+    }>>('/users/me/export/preview'),
 };
 
 // ============================================
@@ -262,7 +281,7 @@ export const lostItemsApi = {
   getMine: (params?: { page?: number; limit?: number }) =>
     api.get<PaginatedResponse<LostItem>>('/users/me/lost-items', { params }),
 
-  // FIX: Lost item image upload (was only on found items)
+  // Lost item image upload
   uploadImages: (id: number, files: FileList | File[]) => {
     const formData = new FormData();
     Array.from(files).forEach((file) => {
@@ -274,7 +293,7 @@ export const lostItemsApi = {
     });
   },
 
-  // FIX: Dismiss match — "Not my item" (MATCH-06)
+  // Dismiss match — "Not my item"
   dismissMatch: (lostItemId: number, foundItemId: number) =>
     api.post<ApiResponse>(`/lost-items/${lostItemId}/dismiss-match`, { found_item_id: foundItemId }),
 };
@@ -389,7 +408,6 @@ export const claimsApi = {
       `/claims/${claimId}/questions`
     ),
 
-  // ✅ NEW: Finder sets verification questions
   setQuestions: (claimId: number, questions: Array<{ question: string; answer: string }>) =>
     api.post<ApiResponse>(`/claims/${claimId}/questions`, { questions }),
 
@@ -408,7 +426,6 @@ export const claimsApi = {
   getVerificationStatus: (claimId: number) =>
     api.get<ApiResponse>(`/claims/${claimId}/verification/status`),
 
-  // ✅ NEW: Get claims on a found item (finder-side view)
   getFinderClaims: (foundItemId: number) =>
     api.get<ApiResponse<Array<{
       id: number;
@@ -449,26 +466,53 @@ export const handoverApi = {
 
 export const disputeApi = {
   open: (claimId: number, data: { reason: string; evidence_urls?: string[] }) =>
-    api.post<ApiResponse>(`/claims/${claimId}/dispute`, data),
-
-  get: (claimId: number) =>
-    api.get<ApiResponse<{
+    api.post<ApiResponse<{
       id: number;
       claim_id: number;
-      opened_by: number;
-      reason: string;
-      status: 'OPEN' | 'UNDER_REVIEW' | 'RESOLVED_OWNER' | 'RESOLVED_FINDER' | 'DISMISSED';
-      evidence_urls: string[];
-      resolution_notes?: string;
-      resolved_by?: number;
-      created_at: string;
-      resolved_at?: string;
-    }>>(`/claims/${claimId}/dispute`),
+      status: string;
+      message: string;
+    }>>(`/claims/${claimId}/dispute`, data),
+
+  get: async (claimId: number) => {
+    try {
+      return await api.get<ApiResponse<{
+        id: number;
+        claim_id: number;
+        initiated_by: number;
+        reason: string;
+        status: 'OPEN' | 'UNDER_REVIEW' | 'RESOLVED_OWNER' | 'RESOLVED_FINDER' | 'DISMISSED';
+        evidence_urls: string[];
+        admin_notes?: string;
+        resolved_by?: number;
+        created_at: string;
+        resolved_at?: string;
+      }>>(`/claims/${claimId}/dispute`);
+    } catch (e) {
+      const err = e as AxiosError<any>;
+      const status = err?.response?.status;
+
+      // ✅ Normalize "no dispute exists" into success + null data
+      if (status === 404) {
+        return {
+          data: {
+            success: true,
+            data: null,
+            message: 'No dispute found for this claim',
+          },
+        } as any;
+      }
+
+      // Anything else is a real error
+      throw err;
+    }
+  },
 
   addEvidence: (disputeId: number, evidence_urls: string[]) =>
     api.post<ApiResponse>(`/disputes/${disputeId}/evidence`, { evidence_urls }),
-};
 
+  getForReview: (params?: { page?: number; limit?: number; status?: string }) =>
+    api.get<PaginatedResponse<any>>(`/admin/disputes`, { params }),
+};
 // ============================================
 // MESSAGES API
 // ============================================
@@ -478,10 +522,10 @@ export const messagesApi = {
     api.get<PaginatedResponse<MessageThread>>('/messages/threads', { params }),
 
   getMessages: (claimId: number, params?: { page?: number; limit?: number }) =>
-    api.get<ApiResponse<Message[]>>(`/messages/threads/${claimId}`, { params }),  // FIXED: was /messages/:claimId
+    api.get<ApiResponse<Message[]>>(`/messages/threads/${claimId}`, { params }),
 
   sendMessage: (claimId: number, content: string) =>
-    api.post<ApiResponse>(`/messages/threads/${claimId}`, { content }),            // FIXED: was /messages/:claimId
+    api.post<ApiResponse>(`/messages/threads/${claimId}`, { content }),
 
   reportScam: (messageId: number, reason: string) =>
     api.post<ApiResponse>(`/messages/${messageId}/report`, { reason }),
@@ -584,10 +628,9 @@ export const adminApi = {
   getDisputes: (params?: { page?: number; limit?: number; status?: string }) =>
     api.get<PaginatedResponse<any>>('/admin/disputes', { params }),
 
-  resolveDispute: (disputeId: number, data: { resolution: string; resolution_notes: string }) =>
-    api.post<ApiResponse>(`/admin/disputes/${disputeId}/resolve`, data),
+  resolveDispute: (disputeId: number, data: { resolution: 'RESOLVED_OWNER' | 'RESOLVED_FINDER' | 'DISMISSED'; resolution_notes: string }) =>
+    api.post<ApiResponse<{ success: boolean; message: string; trustAdjustments?: any }>>(`/admin/disputes/${disputeId}/resolve`, data),
 
-  // FIX: Admin contact messages endpoint
   getContactMessages: (params?: { page?: number; limit?: number }) =>
     api.get<PaginatedResponse<{ id: number; name: string; email: string; message: string; ip_address: string; read: boolean; created_at: string }>>(
       '/admin/contact-messages',

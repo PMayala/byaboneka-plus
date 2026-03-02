@@ -993,23 +993,36 @@ export async function getDispute(req: Request, res: Response): Promise<void> {
 
     const claim = claimResult.rows[0];
     const isParticipant = claim.claimant_id === userId || claim.finder_id === userId;
+
     if (!isParticipant && req.user!.role !== UserRole.ADMIN) {
       res.status(403).json({ success: false, message: 'Not authorized' });
       return;
     }
 
-    // FIX: correct table name is `claim_disputes`
+    // Always return 200. "No dispute yet" is not an error.
     const result = await query(
-      `SELECT * FROM claim_disputes WHERE claim_id = $1 ORDER BY created_at DESC LIMIT 1`,
+      `SELECT * FROM claim_disputes
+       WHERE claim_id = $1
+       ORDER BY created_at DESC
+       LIMIT 1`,
       [claimId]
     );
 
     if (result.rows.length === 0) {
-      res.status(404).json({ success: false, message: 'No dispute found for this claim' });
+      res.json({
+        success: true,
+        data: null,
+        meta: { has_dispute: false },
+        message: 'No dispute found for this claim',
+      });
       return;
     }
 
-    res.json({ success: true, data: result.rows[0] });
+    res.json({
+      success: true,
+      data: result.rows[0],
+      meta: { has_dispute: true },
+    });
   } catch (error) {
     console.error('Get dispute error:', error);
     res.status(500).json({ success: false, message: 'Failed to get dispute' });
