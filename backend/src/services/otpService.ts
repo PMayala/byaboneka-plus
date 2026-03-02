@@ -99,7 +99,7 @@ export async function generateHandoverOTP(
   
   // Check for existing valid OTP
   const existingOTP = await query(
-    `SELECT id, otp_expires_at, otp_verified FROM handover_confirmations
+    `SELECT id, expires_at, otp_verified FROM handover_confirmations
      WHERE claim_id = $1`,
     [claimId]
   );
@@ -111,8 +111,8 @@ export async function generateHandoverOTP(
       return { success: false, message: 'Handover has already been completed for this claim' };
     }
     
-    if (new Date(existing.otp_expires_at) > new Date()) {
-      const remainingMs = new Date(existing.otp_expires_at).getTime() - Date.now();
+    if (new Date(existing.expires_at) > new Date()) {
+      const remainingMs = new Date(existing.expires_at).getTime() - Date.now();
       const remainingHours = Math.ceil(remainingMs / (60 * 60 * 1000));
       return { 
         success: false, 
@@ -131,7 +131,7 @@ export async function generateHandoverOTP(
   
   await query(
     `INSERT INTO handover_confirmations 
-     (claim_id, otp_code_hash, otp_expires_at, generated_by, max_attempts)
+     (claim_id, otp_hash, expires_at, generated_by, max_attempts)
      VALUES ($1, $2, $3, $4, $5)`,
     [claimId, otpHash, expiresAt, userId, MAX_OTP_ATTEMPTS]
   );
@@ -198,7 +198,7 @@ export async function verifyHandoverOTP(
     return { success: false, message: isAuthorizedVerifier.reason };
   }
   
-  if (new Date(handover.otp_expires_at) < new Date()) {
+  if (new Date(handover.expires_at) < new Date()) {
     return { success: false, message: 'Handover code has expired. Please ask the owner to generate a new one.' };
   }
   
@@ -211,7 +211,7 @@ export async function verifyHandoverOTP(
   }
   
   // Verify OTP
-  const isValid = await bcrypt.compare(otp, handover.otp_code_hash);
+  const isValid = await bcrypt.compare(otp, handover.otp_hash);
   
   const { ipAddress, userAgent } = req ? extractRequestMeta(req) : { ipAddress: undefined, userAgent: undefined };
   
@@ -244,7 +244,7 @@ export async function verifyHandoverOTP(
   await transaction(async (client) => {
     await client.query(
       `UPDATE handover_confirmations 
-       SET otp_verified = TRUE, returned_at = NOW(), return_confirmed_by = $1
+       SET otp_verified = TRUE, verified_at = NOW(), returned_at = NOW(), return_confirmed_by = $1
        WHERE id = $2`,
       [verifierId, handover.id]
     );
@@ -372,7 +372,7 @@ export async function getHandoverStatus(claimId: number): Promise<HandoverDetail
     foundItemId: h.found_item_id,
     ownerId: h.owner_id,
     finderId: h.finder_id,
-    otpExpiresAt: h.otp_expires_at,
+    otpExpiresAt: h.expires_at,      // fixed: was h.otp_expires_at
     otpVerified: h.otp_verified,
     verificationAttempts: h.verification_attempts
   };

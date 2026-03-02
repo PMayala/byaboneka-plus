@@ -478,10 +478,10 @@ export const messagesApi = {
     api.get<PaginatedResponse<MessageThread>>('/messages/threads', { params }),
 
   getMessages: (claimId: number, params?: { page?: number; limit?: number }) =>
-    api.get<ApiResponse<Message[]>>(`/messages/${claimId}`, { params }),
+    api.get<ApiResponse<Message[]>>(`/messages/threads/${claimId}`, { params }),  // FIXED: was /messages/:claimId
 
   sendMessage: (claimId: number, content: string) =>
-    api.post<ApiResponse>(`/messages/${claimId}`, { content }),
+    api.post<ApiResponse>(`/messages/threads/${claimId}`, { content }),            // FIXED: was /messages/:claimId
 
   reportScam: (messageId: number, reason: string) =>
     api.post<ApiResponse>(`/messages/${messageId}/report`, { reason }),
