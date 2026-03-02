@@ -1,15 +1,15 @@
 /**
- * ClaimDetailPage — FULLY FIXED
+ * ClaimDetailPage — FIXED
  *
  * Fixes in this version:
- *  1. SafeHandoverLocationPicker shown to BOTH parties but with role-appropriate messaging.
- *     Owner: "Generate a one-time code and share it with the finder."
- *     Finder: "Enter the 6-digit code the owner reads to you at the meetup."
- *  2. HandoverOTPPanel correctly shows generate (owner) vs enter (finder) — unchanged, was correct.
- *  3. isOwner logic: claimant_id IS the owner/person who lost the item. Correct.
- *  4. Dispute 404 is now silently swallowed — it's expected when no dispute exists.
+ *  1. SafeHandoverLocationPicker REMOVED — safe location feature is deferred (future iposita/police integration).
+ *  2. Scroll-to-footer BUG FIXED: messagesEndRef.current?.scrollIntoView() was firing on every
+ *     messages state change, including the initial empty-array load, which caused the page to
+ *     jump to the bottom on load. Now only scrolls when messages.length > 0.
+ *  3. normaliseVerifyResult handles both old `score`/`passed` and new `correct_count`/`verified` shapes.
+ *  4. Dispute 404 is silently swallowed — expected when no dispute exists.
  *  5. Messages 404 also silently swallowed — not all claims have messaging open yet.
- *  6. Progress tracker, polling, messaging all intact from prior version.
+ *  6. Progress tracker, polling, messaging all intact.
  */
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
@@ -29,7 +29,6 @@ import { HandoverOTPPanel } from '../components/HandoverOTPPanel';
 import { DisputeForm } from '../components/DisputeForm';
 import { SafetyWarningBanner } from '../components/SafetyWarningBanner';
 import { ScamReportButton } from '../components/ScamReportButton';
-import SafeHandoverLocationPicker from '../components/SafeHandoverLocationPicker';
 import SetQuestionsPanel from '../components/SetQuestionsPanel';
 import { Claim, Message, CATEGORY_INFO, STATUS_INFO } from '../types';
 import { useAuthStore } from '../store/authStore';
@@ -206,8 +205,13 @@ const ClaimDetailPage: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [claim?.status, isOwner]);
 
+  // FIX: Only scroll to bottom when there are actual messages.
+  // Previously this fired on every render including the initial empty load,
+  // causing the page to jump to the footer on first load.
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (messages.length > 0) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
   }, [messages]);
 
   /* ─── Actions ─── */
@@ -401,33 +405,26 @@ const ClaimDetailPage: React.FC = () => {
           {/* ══ Handover (VERIFIED) ══ */}
           {claim.status === 'VERIFIED' && (
             <>
-              {/* Safe location picker — shown to both, same map, role-aware instructions */}
-              <SafeHandoverLocationPicker
-                itemArea={claim.found_item_area || claim.lost_item_area || ''}
-                itemCategory={claim.category || 'OTHER'}
-                onSelectLocation={(loc) => console.log('Handover location selected:', loc.name)}
-              />
-
-              {/* Clear role explanation so neither party is confused about what to do */}
+              {/* Role instructions — clear so neither party is confused */}
               <Card className="p-4 border-l-4 border-blue-500 bg-blue-50">
                 <p className="text-sm text-blue-900">
                   {isOwner ? (
                     <>
-                      <strong>📱 Your turn (Owner):</strong> Once you've agreed on a safe meetup
-                      location above, tap <em>Generate Handover Code</em> below. Show or read the
-                      6-digit code to the finder <strong>only when you meet in person</strong>.
+                      <strong>📱 Your turn (Owner):</strong> Tap{' '}
+                      <em>Generate Handover Code</em> below, then meet the finder in person and
+                      read them the 6-digit code. <strong>Only share it face-to-face.</strong>
                     </>
                   ) : (
                     <>
-                      <strong>🤝 Your turn (Finder):</strong> Agree on a safe meetup location
-                      above, then meet the owner in person. The owner will generate a 6-digit code
-                      — enter it below to confirm the handover and close this claim.
+                      <strong>🤝 Your turn (Finder):</strong> Meet the owner in person. They
+                      will generate a 6-digit code — enter it below to confirm the handover and
+                      close this claim.
                     </>
                   )}
                 </p>
               </Card>
 
-              {/* HandoverOTPPanel already correctly branches by userRole */}
+              {/* HandoverOTPPanel branches by userRole automatically */}
               <HandoverOTPPanel
                 claimId={claim.id}
                 claimStatus={claim.status}

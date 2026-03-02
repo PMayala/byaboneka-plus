@@ -3,14 +3,10 @@
  *
  * Fixes applied:
  *  1. verifyClaim: response now uses `verified` + `correct_count` (not `passed` + `score`)
- *     so the frontend ClaimDetailPage type matches the backend response.
- *  2. getFinderClaims: new exported function — returns claims on a specific found
- *     item where the requesting user is the finder. Used by:
- *       GET /found-items/:foundItemId/claims   (see routes/index.ts additions)
+ *  2. getFinderClaims: new exported function — returns claims on a specific found item
  *  3. verifySecretAnswer calls run in parallel (Promise.all) to prevent timing attacks.
- *  4. Everything else is identical to the original.
- *
- * ──────────────────────────────────────────────────────────────────────────────
+ *  4. openDispute / getDispute: fixed table name from `disputes` → `claim_disputes`
+ *     (the migration creates `claim_disputes`, not `disputes`)
  */
 
 import { Request, Response } from 'express';
@@ -569,7 +565,7 @@ export async function getMyClaims(req: Request, res: Response): Promise<void> {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// NEW: GET FINDER CLAIMS for a specific found item
+// GET FINDER CLAIMS for a specific found item
 // Endpoint: GET /found-items/:foundItemId/claims
 // Only the finder of that item can call this.
 // ─────────────────────────────────────────────────────────────────────────────
@@ -578,7 +574,6 @@ export async function getFinderClaims(req: Request, res: Response): Promise<void
     const { foundItemId } = req.params;
     const userId = req.user!.userId;
 
-    // Verify the requesting user is the finder of this item
     const foundItem = await query(
       'SELECT id, finder_id FROM found_items WHERE id = $1',
       [foundItemId]
@@ -669,7 +664,6 @@ export async function cancelClaim(req: Request, res: Response): Promise<void> {
       [claimId]
     );
 
-    // Revert found item to UNCLAIMED if it was MATCHED
     if (claim.status === 'VERIFIED') {
       await query(
         `UPDATE found_items SET status = 'UNCLAIMED' WHERE id = $1 AND status = 'MATCHED'`,
@@ -917,6 +911,7 @@ export async function getHandoverStatus(req: Request, res: Response): Promise<vo
 
 // ─────────────────────────────────────────────────────────────────────────────
 // OPEN DISPUTE
+// FIX: changed `disputes` → `claim_disputes` to match the actual DB table name
 // ─────────────────────────────────────────────────────────────────────────────
 export async function openDispute(req: Request, res: Response): Promise<void> {
   try {
@@ -948,9 +943,9 @@ export async function openDispute(req: Request, res: Response): Promise<void> {
       return;
     }
 
-    // Check for existing open dispute
+    // FIX: correct table name is `claim_disputes`
     const existing = await query(
-      `SELECT id FROM disputes WHERE claim_id = $1 AND status IN ('OPEN', 'UNDER_REVIEW')`,
+      `SELECT id FROM claim_disputes WHERE claim_id = $1 AND status IN ('OPEN', 'UNDER_REVIEW')`,
       [claimId]
     );
     if (existing.rows.length > 0) {
@@ -958,14 +953,14 @@ export async function openDispute(req: Request, res: Response): Promise<void> {
       return;
     }
 
+    // FIX: correct table name + column name (`initiated_by` not `opened_by`)
     const result = await query(
-      `INSERT INTO disputes (claim_id, opened_by, reason, evidence_urls, status)
+      `INSERT INTO claim_disputes (claim_id, initiated_by, reason, evidence_urls, status)
        VALUES ($1, $2, $3, $4, 'OPEN')
        RETURNING *`,
       [claimId, userId, reason, JSON.stringify(evidence_urls || [])]
     );
 
-    // Update claim status
     await query(`UPDATE claims SET status = 'DISPUTED' WHERE id = $1`, [claimId]);
 
     res.status(201).json({ success: true, data: result.rows[0] });
@@ -977,6 +972,7 @@ export async function openDispute(req: Request, res: Response): Promise<void> {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // GET DISPUTE
+// FIX: changed `disputes` → `claim_disputes` to match the actual DB table name
 // ─────────────────────────────────────────────────────────────────────────────
 export async function getDispute(req: Request, res: Response): Promise<void> {
   try {
@@ -1002,8 +998,9 @@ export async function getDispute(req: Request, res: Response): Promise<void> {
       return;
     }
 
+    // FIX: correct table name is `claim_disputes`
     const result = await query(
-      `SELECT * FROM disputes WHERE claim_id = $1 ORDER BY created_at DESC LIMIT 1`,
+      `SELECT * FROM claim_disputes WHERE claim_id = $1 ORDER BY created_at DESC LIMIT 1`,
       [claimId]
     );
 

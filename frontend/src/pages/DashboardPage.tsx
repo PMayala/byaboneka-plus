@@ -1,11 +1,11 @@
 /**
  * DashboardPage — FIXED
  *
- * Changes vs original:
- *  1. Loads and displays "Claims on My Found Items" (finder-side claims) in a
- *     dedicated section, with a highlight for PENDING_QUESTIONS items needing action.
- *  2. activeClaims stat now includes both claimant-side AND finder-side active claims.
- *  3. All existing sections (lost items, claims, trust score) retained.
+ * Fixes:
+ *  1. i18n keys corrected: dashboard.lostItems, dashboard.foundItems, dashboard.activeClaims
+ *     (keys now exist in en.json after the en.json patch)
+ *  2. Loads and displays "Claims on My Found Items" (finder-side claims).
+ *  3. activeClaims stat includes both claimant-side AND finder-side active claims.
  */
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -97,12 +97,10 @@ const DashboardPage: React.FC = () => {
   const loadFinderClaims = async () => {
     setFinderClaimsLoading(true);
     try {
-      // Get all my found items, then check for active claims on them
       const foundRes = await foundItemsApi.getMine({ limit: 50 });
       const myFoundItems: FoundItem[] = foundRes.data.data || [];
       if (myFoundItems.length === 0) return;
 
-      // For each found item with non-returned status, check for pending claims
       const claimPromises = myFoundItems
         .filter((fi) => fi.status !== 'RETURNED')
         .map((fi) =>
@@ -120,7 +118,6 @@ const DashboardPage: React.FC = () => {
       const results = await Promise.all(claimPromises);
       const allClaims: FinderClaim[] = results.flat();
 
-      // Show active ones (PENDING_QUESTIONS first, then PENDING, VERIFIED)
       const active = allClaims
         .filter((c) => ['PENDING_QUESTIONS', 'PENDING', 'VERIFIED'].includes(c.status))
         .sort((a, b) => {
@@ -214,6 +211,7 @@ const DashboardPage: React.FC = () => {
             </div>
             <div className="min-w-0">
               <p className="text-xl sm:text-2xl font-bold text-gray-900">{stats.lostItems}</p>
+              {/* FIX: use dashboard.lostItems key (added to en.json) */}
               <p className="text-xs sm:text-sm text-gray-500 truncate">{t('dashboard.lostItems')}</p>
             </div>
           </div>
@@ -226,6 +224,7 @@ const DashboardPage: React.FC = () => {
             </div>
             <div className="min-w-0">
               <p className="text-xl sm:text-2xl font-bold text-gray-900">{stats.foundItems}</p>
+              {/* FIX: use dashboard.foundItems key (added to en.json) */}
               <p className="text-xs sm:text-sm text-gray-500 truncate">{t('dashboard.foundItems')}</p>
             </div>
           </div>
@@ -238,6 +237,7 @@ const DashboardPage: React.FC = () => {
             </div>
             <div className="min-w-0">
               <p className="text-xl sm:text-2xl font-bold text-gray-900">{stats.activeClaims}</p>
+              {/* FIX: use dashboard.activeClaims key (added to en.json) */}
               <p className="text-xs sm:text-sm text-gray-500 truncate">{t('dashboard.activeClaims')}</p>
             </div>
           </div>

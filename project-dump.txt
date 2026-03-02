@@ -1,7 +1,7 @@
 ╔══════════════════════════════════════════════════════════════╗
 ║  Byaboneka+ (Root Dump)                                    ║
 ║  Project Code Dump — AI Review Edition                      ║
-║  Generated: 2026-03-02T00:26:59.314Z                       ║
+║  Generated: 2026-03-02T00:51:56.560Z                       ║
 ╚══════════════════════════════════════════════════════════════╝
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -9,7 +9,7 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   Root:           C:\Users\USER\Documents\byaboneka-plus
   Files included: 176
-  Total lines:    41,010
+  Total lines:    40,968
   Total size:     1.4 MB
   Env included:   YES (.env*)
   Languages:      YAML (7), TypeScript (85), Text (7), Env (6), JSON (12), JavaScript (4), Markdown (5), SVG (1), TSX (47), CSS (1), HTML (1)
@@ -70,7 +70,7 @@
   │   │   │   ├── duplicateDetectionService.ts (10.0 KB)
   │   │   │   ├── emailService.ts (24.6 KB)
   │   │   │   ├── emailVerificationService.ts (4.8 KB)
-  │   │   │   ├── expiryService.ts (5.9 KB)
+  │   │   │   ├── expiryService.ts (5.5 KB)
   │   │   │   ├── fraudDetectionService.ts (14.3 KB)
   │   │   │   ├── matchingService.ts (11.1 KB)
   │   │   │   ├── matchNotificationTrigger.ts (2.6 KB)
@@ -183,7 +183,7 @@
   │   │   │   ├── AdminFraudDashboard.tsx (7.5 KB)
   │   │   │   ├── AdminScamReportsPage.tsx (12.0 KB)
   │   │   │   ├── AdminUsersPage.tsx (12.2 KB)
-  │   │   │   ├── ClaimDetailPage.tsx (22.1 KB)
+  │   │   │   ├── ClaimDetailPage.tsx (22.0 KB)
   │   │   │   ├── ContactPage.tsx (9.6 KB)
   │   │   │   ├── CoopDashboardPage.tsx (6.1 KB)
   │   │   │   ├── DashboardPage.tsx (19.6 KB)
@@ -206,7 +206,7 @@
   │   │   │   ├── SettingsPage.tsx (18.6 KB)
   │   │   │   └── TermsPage.tsx (11.8 KB)
   │   │   ├── services/
-  │   │   │   ├── api.ts (19.1 KB)
+  │   │   │   ├── api.ts (19.2 KB)
   │   │   │   └── novelFeatureApi.ts (2.5 KB)
   │   │   ├── store/
   │   │   │   └── authStore.ts (1.7 KB)
@@ -294,7 +294,7 @@
      41. backend/src/services/duplicateDetectionService.ts  [342 lines | TypeScript]
      42. backend/src/services/emailService.ts  [706 lines | TypeScript]
      43. backend/src/services/emailVerificationService.ts  [194 lines | TypeScript]
-     44. backend/src/services/expiryService.ts  [209 lines | TypeScript]
+     44. backend/src/services/expiryService.ts  [187 lines | TypeScript]
      45. backend/src/services/fraudDetectionService.ts  [413 lines | TypeScript]
      46. backend/src/services/matchingService.ts  [352 lines | TypeScript]
      47. backend/src/services/matchNotificationTrigger.ts  [85 lines | TypeScript]
@@ -376,7 +376,7 @@
      30. frontend/src/pages/AdminFraudDashboard.tsx  [216 lines | TSX]
      31. frontend/src/pages/AdminScamReportsPage.tsx  [302 lines | TSX]
      32. frontend/src/pages/AdminUsersPage.tsx  [312 lines | TSX]
-     33. frontend/src/pages/ClaimDetailPage.tsx  [608 lines | TSX]
+     33. frontend/src/pages/ClaimDetailPage.tsx  [588 lines | TSX]
      34. frontend/src/pages/ContactPage.tsx  [191 lines | TSX]
      35. frontend/src/pages/CoopDashboardPage.tsx  [167 lines | TSX]
      36. frontend/src/pages/DashboardPage.tsx  [492 lines | TSX]
@@ -6306,7 +6306,7 @@ export async function getMyClaims(req: Request, res: Response): Promise<void> {
               li.location_area as lost_item_area,
               fi.title as found_item_title,
               fi.location_area as found_item_area,
-              h.otp_expires_at, h.otp_verified
+              h.expires_at as otp_expires_at, h.otp_verified
        FROM claims c
        JOIN lost_items li ON c.lost_item_id = li.id
        JOIN found_items fi ON c.found_item_id = fi.id
@@ -16540,7 +16540,7 @@ export async function cleanupExpiredTokens(): Promise<number> {
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: backend/src/services/expiryService.ts
-│ Language: TypeScript | Lines: 209 | Size: 5.9 KB
+│ Language: TypeScript | Lines: 187 | Size: 5.5 KB
 └────────────────────────────────────────────────────────────┘
 
 import { query, transaction } from '../config/database';
@@ -16560,7 +16560,6 @@ export async function expireLostItems(): Promise<{ expired: number; warned: numb
   let expired = 0;
   let warned = 0;
 
-  // Find items to expire
   const toExpire = await query(
     `SELECT id, user_id, title FROM lost_items
      WHERE status = 'ACTIVE'
@@ -16572,18 +16571,14 @@ export async function expireLostItems(): Promise<{ expired: number; warned: numb
       `UPDATE lost_items SET status = 'EXPIRED', expired_at = NOW() WHERE id = $1`,
       [item.id]
     );
-    
-    // Log expiry
     await query(
       `INSERT INTO audit_logs (actor_id, action, resource_type, resource_id, changes)
        VALUES (NULL, 'AUTO_EXPIRED', 'lost_item', $1, $2)`,
       [item.id, JSON.stringify({ reason: 'inactivity', title: item.title })]
     );
-    
     expired++;
   }
 
-  // Find items to warn
   const toWarn = await query(
     `SELECT id, user_id, title FROM lost_items
      WHERE status = 'ACTIVE'
@@ -16597,8 +16592,6 @@ export async function expireLostItems(): Promise<{ expired: number; warned: numb
       `UPDATE lost_items SET expiry_warning_sent = TRUE WHERE id = $1`,
       [item.id]
     );
-    
-    // In production, send email notification here
     warned++;
   }
 
@@ -16610,7 +16603,6 @@ export async function expireFoundItems(): Promise<{ expired: number; warned: num
   let expired = 0;
   let warned = 0;
 
-  // Find items to expire
   const toExpire = await query(
     `SELECT id, finder_id, title FROM found_items
      WHERE status IN ('UNCLAIMED', 'MATCHED')
@@ -16622,17 +16614,14 @@ export async function expireFoundItems(): Promise<{ expired: number; warned: num
       `UPDATE found_items SET status = 'EXPIRED', expired_at = NOW() WHERE id = $1`,
       [item.id]
     );
-    
     await query(
       `INSERT INTO audit_logs (actor_id, action, resource_type, resource_id, changes)
        VALUES (NULL, 'AUTO_EXPIRED', 'found_item', $1, $2)`,
       [item.id, JSON.stringify({ reason: 'inactivity', title: item.title })]
     );
-    
     expired++;
   }
 
-  // Find items to warn
   const toWarn = await query(
     `SELECT id, finder_id, title FROM found_items
      WHERE status IN ('UNCLAIMED', 'MATCHED')
@@ -16646,7 +16635,6 @@ export async function expireFoundItems(): Promise<{ expired: number; warned: num
       `UPDATE found_items SET expiry_warning_sent = TRUE WHERE id = $1`,
       [item.id]
     );
-    
     warned++;
   }
 
@@ -16661,19 +16649,18 @@ export async function expireStaleClaims(): Promise<number> {
      AND created_at < NOW() - INTERVAL '7 days'
      RETURNING id`
   );
-  
   return result.rowCount || 0;
 }
 
 // Revoke expired OTPs (cleanup only, validation already checks expiry)
+// FIX: column renamed from otp_expires_at → expires_at by migration 009
 export async function cleanupExpiredOTPs(): Promise<number> {
   const result = await query(
     `DELETE FROM handover_confirmations
-     WHERE otp_expires_at < NOW() - INTERVAL '7 days'
+     WHERE expires_at < NOW() - INTERVAL '7 days'
      AND otp_verified = FALSE
      RETURNING id`
   );
-  
   return result.rowCount || 0;
 }
 
@@ -16684,7 +16671,6 @@ export async function cleanupOldAuditLogs(): Promise<number> {
      WHERE timestamp < NOW() - INTERVAL '90 days'
      RETURNING id`
   );
-  
   return result.rowCount || 0;
 }
 
@@ -16695,13 +16681,11 @@ export async function cleanupExpiredTokens(): Promise<{ refresh: number; reset: 
      WHERE expires_at < NOW()
      RETURNING id`
   );
-  
   const resetResult = await query(
     `DELETE FROM password_reset_tokens
      WHERE expires_at < NOW()
      RETURNING id`
   );
-  
   return {
     refresh: refreshResult.rowCount || 0,
     reset: resetResult.rowCount || 0
@@ -16711,30 +16695,25 @@ export async function cleanupExpiredTokens(): Promise<{ refresh: number; reset: 
 // Main cleanup job - run daily
 export async function runDailyCleanup(): Promise<void> {
   console.log('🧹 Starting daily cleanup job...');
-  
   try {
     const lostExpiry = await expireLostItems();
     console.log(`  Lost items: ${lostExpiry.expired} expired, ${lostExpiry.warned} warned`);
-    
+
     const foundExpiry = await expireFoundItems();
     console.log(`  Found items: ${foundExpiry.expired} expired, ${foundExpiry.warned} warned`);
-    
+
     const staleClaims = await expireStaleClaims();
     console.log(`  Stale claims expired: ${staleClaims}`);
-    
+
     const staleMatches = await clearStaleMatches();
     console.log(`  Stale matches cleared: ${staleMatches}`);
-    
+
     const expiredOTPs = await cleanupExpiredOTPs();
     console.log(`  Expired OTPs cleaned: ${expiredOTPs}`);
-    
+
     const tokens = await cleanupExpiredTokens();
     console.log(`  Expired tokens cleaned: ${tokens.refresh} refresh, ${tokens.reset} reset`);
-    
-    // Note: Audit log cleanup is optional, keep for compliance
-    // const auditLogs = await cleanupOldAuditLogs();
-    // console.log(`  Old audit logs cleaned: ${auditLogs}`);
-    
+
     console.log('✅ Daily cleanup completed successfully');
   } catch (error) {
     console.error('❌ Daily cleanup failed:', error);
@@ -16742,7 +16721,6 @@ export async function runDailyCleanup(): Promise<void> {
   }
 }
 
-// Export for manual triggering or cron job
 export default {
   expireLostItems,
   expireFoundItems,
@@ -17731,7 +17709,7 @@ export async function generateHandoverOTP(
   
   // Check for existing valid OTP
   const existingOTP = await query(
-    `SELECT id, otp_expires_at, otp_verified FROM handover_confirmations
+    `SELECT id, expires_at, otp_verified FROM handover_confirmations
      WHERE claim_id = $1`,
     [claimId]
   );
@@ -17743,8 +17721,8 @@ export async function generateHandoverOTP(
       return { success: false, message: 'Handover has already been completed for this claim' };
     }
     
-    if (new Date(existing.otp_expires_at) > new Date()) {
-      const remainingMs = new Date(existing.otp_expires_at).getTime() - Date.now();
+    if (new Date(existing.expires_at) > new Date()) {
+      const remainingMs = new Date(existing.expires_at).getTime() - Date.now();
       const remainingHours = Math.ceil(remainingMs / (60 * 60 * 1000));
       return { 
         success: false, 
@@ -17763,7 +17741,7 @@ export async function generateHandoverOTP(
   
   await query(
     `INSERT INTO handover_confirmations 
-     (claim_id, otp_code_hash, otp_expires_at, generated_by, max_attempts)
+     (claim_id, otp_hash, expires_at, generated_by, max_attempts)
      VALUES ($1, $2, $3, $4, $5)`,
     [claimId, otpHash, expiresAt, userId, MAX_OTP_ATTEMPTS]
   );
@@ -17830,7 +17808,7 @@ export async function verifyHandoverOTP(
     return { success: false, message: isAuthorizedVerifier.reason };
   }
   
-  if (new Date(handover.otp_expires_at) < new Date()) {
+  if (new Date(handover.expires_at) < new Date()) {
     return { success: false, message: 'Handover code has expired. Please ask the owner to generate a new one.' };
   }
   
@@ -17843,7 +17821,7 @@ export async function verifyHandoverOTP(
   }
   
   // Verify OTP
-  const isValid = await bcrypt.compare(otp, handover.otp_code_hash);
+  const isValid = await bcrypt.compare(otp, handover.otp_hash);
   
   const { ipAddress, userAgent } = req ? extractRequestMeta(req) : { ipAddress: undefined, userAgent: undefined };
   
@@ -17876,7 +17854,7 @@ export async function verifyHandoverOTP(
   await transaction(async (client) => {
     await client.query(
       `UPDATE handover_confirmations 
-       SET otp_verified = TRUE, returned_at = NOW(), return_confirmed_by = $1
+       SET otp_verified = TRUE, verified_at = NOW(), returned_at = NOW(), return_confirmed_by = $1
        WHERE id = $2`,
       [verifierId, handover.id]
     );
@@ -18004,7 +17982,7 @@ export async function getHandoverStatus(claimId: number): Promise<HandoverDetail
     foundItemId: h.found_item_id,
     ownerId: h.owner_id,
     finderId: h.finder_id,
-    otpExpiresAt: h.otp_expires_at,
+    otpExpiresAt: h.expires_at,      // fixed: was h.otp_expires_at
     otpVerified: h.otp_verified,
     verificationAttempts: h.verification_attempts
   };
@@ -34749,23 +34727,21 @@ export default AdminUsersPage;
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: frontend/src/pages/ClaimDetailPage.tsx
-│ Language: TSX | Lines: 608 | Size: 22.1 KB
+│ Language: TSX | Lines: 588 | Size: 22.0 KB
 └────────────────────────────────────────────────────────────┘
 
 /**
  * ClaimDetailPage — FULLY FIXED
  *
- * Changes vs original:
- *  1. PENDING_QUESTIONS status: finder sees SetQuestionsPanel — the core missing feature.
- *  2. Badge variant correctly handles PENDING_QUESTIONS (active/blue).
- *  3. verifyClaim response normalised: backend returns { passed, score } but frontend
- *     now reads both shapes (verified|passed, correct_count|score).
- *  4. loadMessages() is now called for both owner and finder whenever the claim is
- *     in PENDING, VERIFIED, or RETURNED state.
- *  5. Finder also sees the messages section (no longer gated to isOwner only).
- *  6. 30-second polling keeps both parties updated without a manual refresh.
- *  7. PENDING_QUESTIONS status is shown to the owner with a "waiting" info card.
- *  8. Progress tracker reflects all 4 stages: Created → Questions Set → Verified → Returned.
+ * Fixes in this version:
+ *  1. SafeHandoverLocationPicker shown to BOTH parties but with role-appropriate messaging.
+ *     Owner: "Generate a one-time code and share it with the finder."
+ *     Finder: "Enter the 6-digit code the owner reads to you at the meetup."
+ *  2. HandoverOTPPanel correctly shows generate (owner) vs enter (finder) — unchanged, was correct.
+ *  3. isOwner logic: claimant_id IS the owner/person who lost the item. Correct.
+ *  4. Dispute 404 is now silently swallowed — it's expected when no dispute exists.
+ *  5. Messages 404 also silently swallowed — not all claims have messaging open yet.
+ *  6. Progress tracker, polling, messaging all intact from prior version.
  */
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
@@ -34863,8 +34839,9 @@ const ClaimDetailPage: React.FC = () => {
   } | null>(null);
 
   // Derived: who is this user in the claim?
+  // claimant_id = the person who LOST the item and is CLAIMING it back = Owner
   const isOwner = user?.id === claim?.claimant_id;
-  const isFinder = !isOwner; // both participants share this page
+  const isFinder = !isOwner;
 
   /* ─── Data Loading ─── */
 
@@ -34895,7 +34872,7 @@ const ClaimDetailPage: React.FC = () => {
     try {
       const response = await messagesApi.getMessages(parseInt(id!));
       setMessages(response.data.data || []);
-    } catch (error) {
+    } catch {
       // Silently ignore — messaging may not be open yet
     }
   };
@@ -34906,10 +34883,8 @@ const ClaimDetailPage: React.FC = () => {
       if (response.data.success && response.data.data) {
         setExistingDispute(response.data.data);
       }
-    } catch (error: any) {
-      if (error.response?.status !== 404) {
-        console.error('Failed to load dispute:', error);
-      }
+    } catch {
+      // 404 = no dispute exists yet — silently ignore
     }
   };
 
@@ -34926,22 +34901,18 @@ const ClaimDetailPage: React.FC = () => {
   useEffect(() => {
     if (!claim) return;
 
-    // Owner answers questions once claim is PENDING
     if (claim.status === 'PENDING' && isOwner) {
       loadQuestions();
     }
 
-    // Messages available for both parties in PENDING, VERIFIED, RETURNED
     if (['PENDING', 'VERIFIED', 'RETURNED'].includes(claim.status)) {
       loadMessages();
     }
 
-    // Dispute status
     if (['PENDING', 'VERIFIED', 'REJECTED'].includes(claim.status)) {
       loadDispute();
     }
 
-    // Poll every 30 s so both parties see status changes without a manual refresh
     if (pollRef.current) clearInterval(pollRef.current);
     if (!['RETURNED', 'CANCELLED', 'REJECTED', 'EXPIRED'].includes(claim.status)) {
       pollRef.current = setInterval(async () => {
@@ -34967,7 +34938,6 @@ const ClaimDetailPage: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [claim?.status, isOwner]);
 
-  // Scroll messages to bottom on new messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
@@ -35057,7 +35027,12 @@ const ClaimDetailPage: React.FC = () => {
         <h1 className="text-2xl font-bold text-gray-900 mb-1">{claim.lost_item_title}</h1>
         <p className="text-gray-600">Found item: {claim.found_item_title}</p>
         <p className="text-xs text-gray-400 mt-2">
-          Your role: <strong>{isOwner ? 'Owner / Claimant' : 'Finder'}</strong>
+          Your role:{' '}
+          <strong>
+            {isOwner
+              ? '🙋 Owner / Claimant — you lost this item'
+              : '🤝 Finder — you found this item'}
+          </strong>
         </p>
       </Card>
 
@@ -35155,14 +35130,36 @@ const ClaimDetailPage: React.FC = () => {
             </Card>
           )}
 
-          {/* ══ Handover OTP (VERIFIED) ══ */}
+          {/* ══ Handover (VERIFIED) ══ */}
           {claim.status === 'VERIFIED' && (
             <>
+              {/* Safe location picker — shown to both, same map, role-aware instructions */}
               <SafeHandoverLocationPicker
                 itemArea={claim.found_item_area || claim.lost_item_area || ''}
                 itemCategory={claim.category || 'OTHER'}
-                onSelectLocation={(loc) => console.log('Handover location:', loc.name)}
+                onSelectLocation={(loc) => console.log('Handover location selected:', loc.name)}
               />
+
+              {/* Clear role explanation so neither party is confused about what to do */}
+              <Card className="p-4 border-l-4 border-blue-500 bg-blue-50">
+                <p className="text-sm text-blue-900">
+                  {isOwner ? (
+                    <>
+                      <strong>📱 Your turn (Owner):</strong> Once you've agreed on a safe meetup
+                      location above, tap <em>Generate Handover Code</em> below. Show or read the
+                      6-digit code to the finder <strong>only when you meet in person</strong>.
+                    </>
+                  ) : (
+                    <>
+                      <strong>🤝 Your turn (Finder):</strong> Agree on a safe meetup location
+                      above, then meet the owner in person. The owner will generate a 6-digit code
+                      — enter it below to confirm the handover and close this claim.
+                    </>
+                  )}
+                </p>
+              </Card>
+
+              {/* HandoverOTPPanel already correctly branches by userRole */}
               <HandoverOTPPanel
                 claimId={claim.id}
                 claimStatus={claim.status}
@@ -35207,7 +35204,6 @@ const ClaimDetailPage: React.FC = () => {
                 <h2 className="font-semibold text-gray-900">Messages</h2>
               </div>
 
-              {/* Thread */}
               <div className="space-y-3 max-h-80 overflow-y-auto mb-4 pr-1">
                 {messages.length === 0 ? (
                   <p className="text-center text-gray-500 py-8 text-sm">
@@ -35217,7 +35213,6 @@ const ClaimDetailPage: React.FC = () => {
                   messages.map((m) => (
                     <div key={m.id} className={`flex ${m.is_mine ? 'justify-end' : 'justify-start'}`}>
                       <div className="max-w-[80%]">
-                        {/* Sender name (other party) */}
                         {!m.is_mine && (
                           <p className="text-xs text-gray-500 mb-1 ml-1">{m.sender_name || 'Other party'}</p>
                         )}
@@ -35227,25 +35222,15 @@ const ClaimDetailPage: React.FC = () => {
                           }`}
                         >
                           {m.is_flagged && (
-                            <p
-                              className={`text-xs mb-1 ${
-                                m.is_mine ? 'text-primary-200' : 'text-orange-600'
-                              }`}
-                            >
+                            <p className={`text-xs mb-1 ${m.is_mine ? 'text-primary-200' : 'text-orange-600'}`}>
                               ⚠️ This message was flagged for review.
                             </p>
                           )}
                           <p className="text-sm whitespace-pre-wrap">{m.content}</p>
-                          <p
-                            className={`text-xs mt-1 ${
-                              m.is_mine ? 'text-primary-200' : 'text-gray-400'
-                            }`}
-                          >
+                          <p className={`text-xs mt-1 ${m.is_mine ? 'text-primary-200' : 'text-gray-400'}`}>
                             {formatDate(m.created_at, 'h:mm a')}
                           </p>
                         </div>
-
-                        {/* Scam report button on received messages */}
                         {!m.is_mine && (
                           <div className="mt-1 ml-1">
                             <ScamReportButton
@@ -35253,9 +35238,7 @@ const ClaimDetailPage: React.FC = () => {
                               messageId={m.id}
                               reportedUserId={m.sender_id}
                               reportedUserName={m.sender_name || 'Unknown'}
-                              onReportSubmitted={() =>
-                                toast.success(t('scamReport.reportSuccess'))
-                              }
+                              onReportSubmitted={() => toast.success(t('scamReport.reportSuccess'))}
                             />
                           </div>
                         )}
@@ -35266,7 +35249,6 @@ const ClaimDetailPage: React.FC = () => {
                 <div ref={messagesEndRef} />
               </div>
 
-              {/* Input */}
               <form onSubmit={sendMessage} className="flex gap-2">
                 <Input
                   value={newMessage}
@@ -35299,34 +35281,17 @@ const ClaimDetailPage: React.FC = () => {
 
         {/* ── Sidebar ── */}
         <div>
-          {/* Progress tracker */}
           <Card className="p-6 mb-6">
             <h3 className="font-semibold text-gray-900 mb-4">Progress</h3>
             <div className="space-y-4">
               {[
-                {
-                  label: 'Claim Created',
-                  done: true,
-                },
-                {
-                  label: 'Questions Set',
-                  done: !['PENDING_QUESTIONS'].includes(claim.status),
-                },
-                {
-                  label: 'Ownership Verified',
-                  done: ['VERIFIED', 'RETURNED'].includes(claim.status),
-                },
-                {
-                  label: 'Item Returned',
-                  done: claim.status === 'RETURNED',
-                },
+                { label: 'Claim Created', done: true },
+                { label: 'Questions Set', done: !['PENDING_QUESTIONS'].includes(claim.status) },
+                { label: 'Ownership Verified', done: ['VERIFIED', 'RETURNED'].includes(claim.status) },
+                { label: 'Item Returned', done: claim.status === 'RETURNED' },
               ].map(({ label, done }) => (
                 <div key={label} className="flex items-center gap-3">
-                  <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                      done ? 'bg-trust-500 text-white' : 'bg-gray-200 text-gray-400'
-                    }`}
-                  >
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${done ? 'bg-trust-500 text-white' : 'bg-gray-200 text-gray-400'}`}>
                     {done ? <CheckCircle className="w-5 h-5" /> : <Clock className="w-5 h-5" />}
                   </div>
                   <span className={done ? 'font-medium text-gray-900' : 'text-gray-400 text-sm'}>
@@ -35337,19 +35302,12 @@ const ClaimDetailPage: React.FC = () => {
             </div>
           </Card>
 
-          {/* Related items */}
           <Card className="p-6">
             <h3 className="font-semibold text-gray-900 mb-4">Related Items</h3>
-            <Link
-              to={`/lost-items/${claim.lost_item_id}`}
-              className="block text-sm text-primary-500 hover:underline mb-2"
-            >
+            <Link to={`/lost-items/${claim.lost_item_id}`} className="block text-sm text-primary-500 hover:underline mb-2">
               View Lost Item Report →
             </Link>
-            <Link
-              to={`/found-items/${claim.found_item_id}`}
-              className="block text-sm text-primary-500 hover:underline"
-            >
+            <Link to={`/found-items/${claim.found_item_id}`} className="block text-sm text-primary-500 hover:underline">
               View Found Item Report →
             </Link>
           </Card>
@@ -41368,7 +41326,7 @@ export default TermsPage;
 
 ┌────────────────────────────────────────────────────────────┐
 │ FILE: frontend/src/services/api.ts
-│ Language: TypeScript | Lines: 606 | Size: 19.1 KB
+│ Language: TypeScript | Lines: 606 | Size: 19.2 KB
 └────────────────────────────────────────────────────────────┘
 
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
@@ -41851,10 +41809,10 @@ export const messagesApi = {
     api.get<PaginatedResponse<MessageThread>>('/messages/threads', { params }),
 
   getMessages: (claimId: number, params?: { page?: number; limit?: number }) =>
-    api.get<ApiResponse<Message[]>>(`/messages/${claimId}`, { params }),
+    api.get<ApiResponse<Message[]>>(`/messages/threads/${claimId}`, { params }),  // FIXED: was /messages/:claimId
 
   sendMessage: (claimId: number, content: string) =>
-    api.post<ApiResponse>(`/messages/${claimId}`, { content }),
+    api.post<ApiResponse>(`/messages/threads/${claimId}`, { content }),            // FIXED: was /messages/:claimId
 
   reportScam: (messageId: number, reason: string) =>
     api.post<ApiResponse>(`/messages/${messageId}/report`, { reason }),
@@ -42705,5 +42663,5 @@ export default defineConfig({
 
 
 ══════════════════════════════════════════════════════════════
-  END OF DUMP — 176 files | 41,010 lines
+  END OF DUMP — 176 files | 40,968 lines
 ══════════════════════════════════════════════════════════════

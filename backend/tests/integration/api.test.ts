@@ -245,7 +245,8 @@ describeIf('Integration: Full API Flow', () => {
         .send({ answers: ['wrong', 'wrong', 'wrong'] });
       expect(res.status).toBe(200);
       expect(res.body.data.verified).toBe(false);
-      expect(res.body.data.score).toBe(0);
+      // FIX: API returns `correct_count`, not `score`
+      expect(res.body.data.correct_count).toBe(0);
     });
 
     it('POST /claims/:id/verify — correct answers pass (2/3)', async () => {
@@ -254,7 +255,8 @@ describeIf('Integration: Full API Flow', () => {
         .send({ answers: ['my dog', 'blue', 'wrong answer'] });
       expect(res.status).toBe(200);
       expect(res.body.data.verified).toBe(true);
-      expect(res.body.data.score).toBeGreaterThanOrEqual(2);
+      // FIX: API returns `correct_count`, not `score`
+      expect(res.body.data.correct_count).toBeGreaterThanOrEqual(2);
     });
 
     it('GET /claims/:id — claim is now VERIFIED', async () => {
