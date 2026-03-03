@@ -213,7 +213,7 @@ const TermsPage: React.FC = () => {
             <p className="text-gray-700 leading-relaxed">
               For questions about these Terms, contact us through the{' '}
               <Link to="/contact" className="text-primary-500 hover:text-primary-600">Contact page</Link>
-              {' '}or email support@byaboneka.rw.
+              {' '}or email mayalaplamedi.rw@gmail.com .
             </p>
           </section>
         </div>

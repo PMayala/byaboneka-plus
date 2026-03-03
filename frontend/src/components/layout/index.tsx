@@ -1,18 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { 
-  Menu, X, Search, Bell, User, LogOut, 
+import {
+  Menu, X, Search, Bell, User, LogOut,
   Home, FileText, Package, MessageSquare, Settings,
-  Shield, ChevronDown, Trophy
+  Shield, ChevronDown
 } from 'lucide-react';
 import { clsx } from 'clsx';
+import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
+
 import { useAuthStore } from '../../store/authStore';
 import { authApi, messagesApi } from '../../services/api';
-import toast from 'react-hot-toast';
 import LanguageSwitcher from '../LanguageSwitcher';
 import { SkipLink } from '../SkipLink';
 import { CookieConsentBanner } from '../CookieConsentBanner';
-import { useTranslation } from 'react-i18next';
+
+import i18n, { LANG_STORAGE_KEY } from '../../i18n';
+
 // ============================================
 // HEADER
 // ============================================
@@ -21,13 +25,34 @@ export const Header: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+
   const { user, isAuthenticated, logout } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
+
+  // ✅ LOCK language after login/logout (and on first mount)
+  useEffect(() => {
+    const savedLang = localStorage.getItem(LANG_STORAGE_KEY);
+
+    if (!savedLang) return;
+
+    const short = savedLang.split('-')[0];
+
+    // resolvedLanguage can be undefined early, so compare safely
+    const current = (i18n.resolvedLanguage || i18n.language || '').split('-')[0];
+
+    if (short && short !== current) {
+      i18n.changeLanguage(short);
+    }
+
+    // Always keep <html lang="">
+    if (short) document.documentElement.lang = short;
+  }, [isAuthenticated]);
+
   // Poll for unread message count
   useEffect(() => {
     if (!isAuthenticated) return;
-    
+
     const fetchUnread = async () => {
       try {
         const res = await messagesApi.getUnreadCount();
@@ -36,28 +61,33 @@ export const Header: React.FC = () => {
         // Silently fail — not critical
       }
     };
+
     fetchUnread();
-    const interval = setInterval(fetchUnread, 30000); // every 30s
+    const interval = setInterval(fetchUnread, 30000);
     return () => clearInterval(interval);
   }, [isAuthenticated]);
+
   const handleLogout = async () => {
     try {
       await authApi.logout();
-    } catch (error) {
-      // Continue with logout even if API call fails
+    } catch {
+      // Continue logout even if API call fails
     }
     logout();
     toast.success(t('nav.logoutSuccess'));
     navigate('/');
   };
+
   const navLinks = [
     { href: '/', label: t('nav.home'), icon: Home },
     { href: '/search', label: t('nav.search'), icon: Search },
     { href: '/report-lost', label: t('nav.reportLost'), icon: FileText },
-    { href: '/report-found', label: t('nav.reportFound'), icon: Package },/* 
-    { href: '/leaderboard', label: t('nav.leaderboard'), icon: Trophy }, */
+    { href: '/report-found', label: t('nav.reportFound'), icon: Package },
+    // { href: '/leaderboard', label: t('nav.leaderboard'), icon: Trophy },
   ];
+
   const isActive = (href: string) => location.pathname === href;
+
   return (
     <header className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -71,6 +101,7 @@ export const Header: React.FC = () => {
               Byaboneka+
             </span>
           </Link>
+
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-1">
             {navLinks.map((link) => (
@@ -88,13 +119,17 @@ export const Header: React.FC = () => {
               </Link>
             ))}
           </nav>
+
           {/* Right side */}
           <div className="flex items-center space-x-4">
+            {/* ✅ Language switcher should work logged in too */}
+            <LanguageSwitcher compact />
+
             {isAuthenticated ? (
               <>
                 {/* Notifications */}
-                <Link 
-                  to="/messages" 
+                <Link
+                  to="/messages"
                   className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg relative"
                 >
                   <Bell className="w-5 h-5" />
@@ -104,6 +139,7 @@ export const Header: React.FC = () => {
                     </span>
                   )}
                 </Link>
+
                 {/* Profile Dropdown */}
                 <div className="relative">
                   <button
@@ -118,11 +154,12 @@ export const Header: React.FC = () => {
                     </span>
                     <ChevronDown className="w-4 h-4 text-gray-500" />
                   </button>
+
                   {profileMenuOpen && (
                     <>
-                      <div 
-                        className="fixed inset-0" 
-                        onClick={() => setProfileMenuOpen(false)} 
+                      <div
+                        className="fixed inset-0"
+                        onClick={() => setProfileMenuOpen(false)}
                       />
                       <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 py-2 animate-fade-in">
                         <div className="px-4 py-2 border-b border-gray-100">
@@ -135,6 +172,7 @@ export const Header: React.FC = () => {
                             </span>
                           </div>
                         </div>
+
                         <Link
                           to="/dashboard"
                           className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
@@ -143,6 +181,7 @@ export const Header: React.FC = () => {
                           <Home className="w-4 h-4 mr-3" />
                           Dashboard
                         </Link>
+
                         <Link
                           to="/my-items"
                           className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
@@ -151,6 +190,7 @@ export const Header: React.FC = () => {
                           <Package className="w-4 h-4 mr-3" />
                           My Items
                         </Link>
+
                         <Link
                           to="/messages"
                           className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
@@ -159,6 +199,7 @@ export const Header: React.FC = () => {
                           <MessageSquare className="w-4 h-4 mr-3" />
                           Messages
                         </Link>
+
                         <Link
                           to="/settings"
                           className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
@@ -167,6 +208,7 @@ export const Header: React.FC = () => {
                           <Settings className="w-4 h-4 mr-3" />
                           Settings
                         </Link>
+
                         {user?.role === 'admin' && (
                           <Link
                             to="/admin"
@@ -177,6 +219,7 @@ export const Header: React.FC = () => {
                             Admin Panel
                           </Link>
                         )}
+
                         {user?.role === 'coop_staff' && (
                           <Link
                             to="/coop"
@@ -187,13 +230,14 @@ export const Header: React.FC = () => {
                             Cooperative
                           </Link>
                         )}
+
                         <div className="border-t border-gray-100 mt-2 pt-2">
                           <button
                             onClick={handleLogout}
                             className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
                           >
                             <LogOut className="w-4 h-4 mr-3" />
-                            Logout
+                            {t('nav.logout')}
                           </button>
                         </div>
                       </div>
@@ -203,21 +247,21 @@ export const Header: React.FC = () => {
               </>
             ) : (
               <div className="flex items-center space-x-2">
-                <LanguageSwitcher compact />
                 <Link
                   to="/login"
                   className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
                 >
-                  Log in
+                  {t('nav.login')}
                 </Link>
                 <Link
                   to="/register"
                   className="px-4 py-2 text-sm font-medium text-white bg-primary-500 rounded-lg hover:bg-primary-600 transition-colors"
                 >
-                  Sign up
+                  {t('nav.signup')}
                 </Link>
               </div>
             )}
+
             {/* Mobile menu button */}
             <button
               className="md:hidden p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg"
@@ -227,6 +271,7 @@ export const Header: React.FC = () => {
             </button>
           </div>
         </div>
+
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
           <div className="md:hidden py-4 border-t border-gray-100 animate-fade-in">
@@ -254,11 +299,13 @@ export const Header: React.FC = () => {
     </header>
   );
 };
+
 // ============================================
-// FOOTER (FIX: All links now point to real pages)
+// FOOTER
 // ============================================
 export const Footer: React.FC = () => {
   const { t } = useTranslation();
+
   return (
     <footer className="bg-white border-t border-gray-100 mt-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -275,7 +322,8 @@ export const Footer: React.FC = () => {
               {t('footer.description')}
             </p>
           </div>
-          {/* Quick Links - FIX: Updated to point to real pages */}
+
+          {/* Quick Links */}
           <div>
             <h4 className="font-semibold text-gray-900 mb-4">{t('footer.quickLinks')}</h4>
             <ul className="space-y-2">
@@ -286,7 +334,8 @@ export const Footer: React.FC = () => {
               <li><Link to="/leaderboard" className="text-sm text-gray-600 hover:text-primary-500">{t('nav.leaderboard')}</Link></li>
             </ul>
           </div>
-          {/* Support - FIX: Updated to point to real pages */}
+
+          {/* Support */}
           <div>
             <h4 className="font-semibold text-gray-900 mb-4">{t('footer.support')}</h4>
             <ul className="space-y-2">
@@ -297,6 +346,7 @@ export const Footer: React.FC = () => {
             </ul>
           </div>
         </div>
+
         <div className="mt-8 pt-8 border-t border-gray-100 text-center">
           <p className="text-sm text-gray-500">
             {t('common.copyrightYear', { year: new Date().getFullYear() })}
@@ -306,22 +356,24 @@ export const Footer: React.FC = () => {
     </footer>
   );
 };
+
 // ============================================
 // LAYOUT
 // ============================================
 interface LayoutProps {
   children: React.ReactNode;
 }
+
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <div className="min-h-screen flex flex-col">
       <SkipLink />
       <Header />
-      <main id="main-content" className="flex-1" tabIndex={-1}>{children}</main>
+      <main id="main-content" className="flex-1" tabIndex={-1}>
+        {children}
+      </main>
       <Footer />
       <CookieConsentBanner />
     </div>
   );
 };
-
-

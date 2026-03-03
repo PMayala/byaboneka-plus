@@ -51,7 +51,7 @@ const PrivacyPolicyPage: React.FC = () => {
             <h2 className="text-xl font-semibold text-gray-900 mt-8 mb-3">2. Data Controller</h2>
             <p className="text-gray-700 leading-relaxed">
               Byaboneka+ is operated as a capstone project at the African Leadership University, Kigali, Rwanda.
-              For data protection inquiries, contact us at: support@byaboneka.rw
+              For data protection inquiries, contact us at: mayalaplamedi.rw@gmail.com
             </p>
           </section>
 
@@ -221,7 +221,7 @@ const PrivacyPolicyPage: React.FC = () => {
             <h2 className="text-xl font-semibold text-gray-900 mt-8 mb-3">14. Contact</h2>
             <p className="text-gray-700 leading-relaxed">
               For privacy-related questions or to exercise your rights, contact us through the
-              Contact page or email support@byaboneka.rw. For complaints about our data processing,
+              Contact page or email mayalaplamedi.rw@gmail.com. For complaints about our data processing,
               you may also contact the National Cyber Security Authority (NCSA) of Rwanda.
             </p>
           </section>
