@@ -288,9 +288,7 @@ const ClaimDetailPage: React.FC = () => {
         <p className="text-xs text-gray-400 mt-2">
           {t('claims.yourRole')}:{' '}
           <strong>
-            {isOwner
-              ? '{t('claims.roleOwner')}'
-              : '{t('claims.roleFinder')}'}
+            {isOwner ? t('claims.roleOwner') : t('claims.roleFinder')}
           </strong>
         </p>
       </Card>
@@ -356,7 +354,7 @@ const ClaimDetailPage: React.FC = () => {
                         <XCircle className="w-4 h-4 inline mr-2" />
                       )}
                       {verificationResult.verified
-                        ? '{t('claims.verificationSuccessMsg')}'
+                        ? t('claims.verificationSuccessMsg')
                         : `${verificationResult.correct_count}/3 correct. ${verificationResult.attempts_remaining} attempt(s) remaining.`}
                     </Alert>
                   )}
@@ -409,11 +407,6 @@ const ClaimDetailPage: React.FC = () => {
                   )}
                 </p>
               </Card>
-
-              {/* Add these definitions above your return:
-                  const userRole = ...
-                  const handleHandoverComplete = ...
-              */}
 
               {user && claim?.claimant_id && claim?.finder_id && (
                 <HandoverOTPPanel

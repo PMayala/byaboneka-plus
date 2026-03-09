@@ -205,7 +205,7 @@ const FoundItemDetailPage: React.FC = () => {
   if (!item) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-12 text-center">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">{t("common.itemNotFound")}</h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('common.itemNotFound')}</h1>
         <Link to="/search">
           <Button>{t('items.backToSearch')}</Button>
         </Link>
@@ -388,14 +388,14 @@ const FoundItemDetailPage: React.FC = () => {
                     onClick={loadMatches}
                     disabled={matchesLoading}
                   >
-                    {matchesLoading ? '{t('items.searchingMatches')}' : matches.length > 0 ? 'Refresh' : '{t('items.findMatches')}'}
+                    {matchesLoading ? t('items.searchingMatches') : matches.length > 0 ? 'Refresh' : t('items.findMatches')}
                   </Button>
                 </div>
                 {matchesLoading ? (
                   <LoadingSpinner size="sm" />
                 ) : matches.length === 0 ? (
                   <p className="text-gray-500 text-sm text-center py-4">
-                    Click "{t('items.findMatches')}" to search for lost items that match this report.
+                    {t('items.clickToFindMatches', { label: t('items.findMatches') })}
                   </p>
                 ) : (
                   <div className="space-y-3">
@@ -438,7 +438,7 @@ const FoundItemDetailPage: React.FC = () => {
 
         {/* ── Sidebar ── */}
         <div>
-          {/* ── Owner: {t('items.makeClaim')} ── */}
+          {/* ── Owner: Make a Claim ── */}
           {!isFinder && item.status === 'UNCLAIMED' && (
             <Card className="p-6 mb-6">
               <h3 className="font-semibold text-gray-900 mb-3">{t('items.isThisYours')}</h3>
@@ -458,7 +458,7 @@ const FoundItemDetailPage: React.FC = () => {
                       }
                     }}
                   >
-                    {myLostItems.length === 0 ? '{t('items.reportLostFirst')}' : '{t('items.makeClaim')}'}
+                    {myLostItems.length === 0 ? t('items.reportLostFirst') : t('items.makeClaim')}
                   </Button>
                   {myLostItems.length === 0 && (
                     <p className="text-xs text-gray-500 mt-2 text-center">
@@ -557,7 +557,7 @@ const FoundItemDetailPage: React.FC = () => {
       <Modal
         isOpen={showClaimModal}
         onClose={() => setShowClaimModal(false)}
-        title={t("items.whichLostItem")}
+        title={t('items.whichLostItem')}
       >
         <p className="text-sm text-gray-600 mb-4">
           Select the lost-item report that matches this found item.
@@ -604,7 +604,7 @@ const FoundItemDetailPage: React.FC = () => {
       <Modal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
-        title={t("items.deleteFoundItem")}
+        title={t('items.deleteFoundItem')}
       >
         <p className="text-gray-600 mb-6">
           {t('items.deleteConfirmFound')}
