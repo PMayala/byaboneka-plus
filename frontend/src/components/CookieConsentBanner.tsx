@@ -104,31 +104,3 @@ export function hasCookieConsent(): boolean {
 }
 
 export default CookieConsentBanner;
-
-// ============================================
-// INTEGRATION:
-// In src/components/layout/index.tsx, inside Layout component:
-//
-// import { CookieConsentBanner } from '../CookieConsentBanner';
-//
-// export const Layout: React.FC<LayoutProps> = ({ children }) => {
-//   return (
-//     <div className="min-h-screen flex flex-col">
-//       <Header />
-//       <main id="main-content" className="flex-1" tabIndex={-1}>{children}</main>
-//       <Footer />
-//       <CookieConsentBanner />    {/* <-- ADD THIS */}
-//     </div>
-//   );
-// };
-//
-// TRANSLATION KEYS (add to en/fr/rw.json):
-// "cookies": {
-//   "title": "Cookie & Privacy Notice",
-//   "description": "Byaboneka+ uses essential cookies and Google reCAPTCHA to prevent spam and protect the platform. reCAPTCHA may set cookies to verify you are human.",
-//   "learnMore": "Read our Privacy Policy",
-//   "accept": "Accept",
-//   "decline": "Decline",
-//   "dismiss": "Dismiss"
-// }
-// ============================================

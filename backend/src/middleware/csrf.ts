@@ -1,7 +1,5 @@
 // ============================================
 // CSRF PROTECTION MIDDLEWARE
-// File: src/middleware/csrf.ts
-// Gap: No CSRF documentation or explicit protection
 //
 // Byaboneka+ uses JWT in Authorization headers (not cookies),
 // which provides natural CSRF protection. This middleware adds
@@ -66,13 +64,3 @@ export function csrfProtection(allowedOrigins: string[]) {
     });
   };
 }
-
-
-// ============================================
-// INTEGRATION:
-// In src/index.ts, after CORS middleware:
-//
-// import { csrfProtection } from './middleware/csrf';
-//
-// app.use(csrfProtection(allowedOrigins));
-// ============================================

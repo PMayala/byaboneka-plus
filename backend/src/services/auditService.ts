@@ -33,7 +33,6 @@ export async function logAudit(entry: AuditLogEntry): Promise<void> {
     );
   } catch (error) {
     console.error('Failed to create audit log:', error);
-    // Don't throw - audit logging should not break main flow
   }
 }
 

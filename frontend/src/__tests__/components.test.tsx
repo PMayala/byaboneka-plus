@@ -1,7 +1,5 @@
 // ============================================
 // FRONTEND COMPONENT TESTS
-// File: src/__tests__/components.test.tsx
-// Gap Fix #13: No frontend tests
 //
 // Run: npm test
 // ============================================

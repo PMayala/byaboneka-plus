@@ -1,17 +1,6 @@
 // ============================================
 // SKIP TO CONTENT LINK
-// File: src/components/SkipLink.tsx
-// Gap Fix #10: Accessibility
 // ============================================
-// 
-// Add this component at the TOP of your layout (before Header):
-//   import { SkipLink } from '../components/SkipLink';
-//   <SkipLink />
-//   <Header />
-//   <main id="main-content" tabIndex={-1}>
-//     {children}
-//   </main>
-//   <Footer />
 
 import React from 'react';
 

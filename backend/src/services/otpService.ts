@@ -1,5 +1,5 @@
 /**
- * Enhanced OTP Handover Service for Byaboneka+
+ * OTP Handover Service
  * 
  * Implements secure handover OTP requirements:
  * - HAND-01: OTP generation for verified claims only

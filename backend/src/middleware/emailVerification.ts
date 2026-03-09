@@ -2,8 +2,6 @@
  * Email Verification Middleware for Byaboneka+
  * 
  * Requires verified email for sensitive actions.
- * FIX BUG-02: Bypasses in development/test environments since
- * email sending isn't implemented for MVP.
  */
 
 import { Request, Response, NextFunction } from 'express';
@@ -21,13 +19,11 @@ export async function requireVerifiedEmail(
   res: Response,
   next: NextFunction
 ): Promise<void> {
-  // FIX BUG-02: Skip email verification in non-production environments
   // This allows the full claim → OTP → handover flow to work during development & testing
   if (process.env.NODE_ENV !== 'production') {
     return next();
   }
 
-  // FIX: If EMAIL_VERIFICATION_REQUIRED is explicitly set to 'false', skip check
   // This allows production demos to work without requiring email verification
   if (process.env.EMAIL_VERIFICATION_REQUIRED === 'false') {
     return next();

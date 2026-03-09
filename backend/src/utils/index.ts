@@ -108,7 +108,7 @@ export async function verifyOTP(otp: string, hash: string): Promise<boolean> {
 // KEYWORD EXTRACTION
 // ============================================
 
-// Common stopwords to filter out (English + Kinyarwanda — ALGO-3.1.4 FIXED)
+// Common stopwords to filter out
 const STOPWORDS = new Set([
   // English
   'the', 'a', 'an', 'in', 'on', 'at', 'to', 'for', 'of', 'and', 'or', 'is', 'it',
@@ -121,7 +121,7 @@ const STOPWORDS = new Set([
   'than', 'too', 'very', 'just', 'also', 'now', 'here', 'there', 'then', 'once',
   'with', 'about', 'after', 'before', 'above', 'below', 'between', 'into', 'through',
   'during', 'under', 'again', 'further', 'while', 'lost', 'found', 'item',
-  // Kinyarwanda common words (Algorithm Spec ALGO-3.1.4)
+  // Kinyarwanda common words
   'mu', 'ku', 'ni', 'na', 'ndi', 'uri', 'ari', 'dufite', 'nta', 'hari', 'ya', 'yo',
   'by', 'bya', 'cy', 'cya', 'ry', 'rya', 'wa', 'wo', 'ba', 'bo', 'ka', 'ko', 'ha',
   'ho', 'kuri', 'ngo', 'aho', 'ibi', 'iki', 'iri', 'uru', 'uku', 'aba', 'izi',
@@ -218,17 +218,17 @@ export function getReportDailyLimit(trustLevel: TrustLevel): number {
   }
 }
 
-// Trust score changes (complete list per spec — CLAIM-06 FIX)
+// Trust score changes
 export const TRUST_CHANGES = {
   SUCCESSFUL_RETURN_FINDER: 3,
   SUCCESSFUL_RECOVERY_OWNER: 2,
-  EMAIL_VERIFIED: 1,           // AUTH-01: +1 for email verification
-  PHONE_VERIFIED: 2,           // AUTH-01: +2 for phone verification
+  EMAIL_VERIFIED: 1,
+  PHONE_VERIFIED: 2,
   FAILED_VERIFICATION: -2,
   MULTIPLE_FAILED_CLAIMS: -5,
   SCAM_REPORTED: -5,
   SCAM_CONFIRMED: -20,
-  FALSE_SCAM_REPORT: -3,       // Spec: -3 for filing false scam report
+  FALSE_SCAM_REPORT: -3,
   ACCURATE_REPORT_CONFIRMED: 1,
   DISPUTE_LOST: -3,            // Lost a dispute as the disputer
   DISPUTE_WON: 2,              // Won a dispute
@@ -292,7 +292,7 @@ export function computeLocationDistance(area1: string, area2: string): number {
 }
 
 // ============================================
-// FRAUD DETECTION UTILITIES (COMM-05 COMPLETE FIX)
+// FRAUD DETECTION UTILITIES
 // ============================================
 
 // Payment/money keywords (English + Kinyarwanda + French)

@@ -1,7 +1,5 @@
 /**
- * Email Verification Service for Byaboneka+
- * 
- * Implements AUTH-01: Email verification requirement
+ * Email Verification Service
  */
 
 import crypto from 'crypto';

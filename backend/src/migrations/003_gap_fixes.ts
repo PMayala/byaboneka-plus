@@ -1,7 +1,5 @@
 // ============================================
-// DATABASE MIGRATION: Gap Fixes
-// File: src/migrations/003_gap_fixes.ts
-// Run: npx ts-node src/migrations/003_gap_fixes.ts
+// DATABASE MIGRATION
 // ============================================
 
 import { query } from '../config/database';

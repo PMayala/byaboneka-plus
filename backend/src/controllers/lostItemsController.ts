@@ -4,6 +4,7 @@ import { extractKeywords, hashSecretAnswer, parsePaginationParams } from '../uti
 import { logCreate, logUpdate, logDelete } from '../services/auditService';
 import { onItemCreated, findMatchesForLostItem } from '../services/matchingService';
 import { ItemCategory, LostItemStatus } from '../types';
+import type { Multer } from 'multer';
 
 // ============================================
 // LOST ITEMS CONTROLLER
@@ -39,7 +40,7 @@ export async function createLostItem(req: Request, res: Response): Promise<void>
     res.status(500).json({ success: false, message: 'Failed to create lost item report' });
   }
 }
-// Upload images for lost items (NEW — gap fix)
+// Upload images for lost items
 export async function uploadLostItemImages(req: Request, res: Response): Promise<void> {
   try {
     const { id } = req.params;
@@ -311,19 +312,24 @@ export async function deleteLostItem(req: Request, res: Response): Promise<void>
 
     // Don't allow deletion if there's an active claim
     const activeClaim = await query(
-      `SELECT id FROM claims WHERE lost_item_id = $1 AND status IN ('PENDING', 'VERIFIED')`,
+      `SELECT id FROM claims WHERE lost_item_id = $1 AND status IN ('PENDING', 'PENDING_QUESTIONS', 'VERIFIED')`,
       [id]
     );
 
     if (activeClaim.rows.length > 0) {
       res.status(400).json({
         success: false,
-        message: 'Cannot delete lost item with an active claim'
+        message: 'Cannot delete lost item with an active claim. Cancel or resolve the claim first.'
       });
       return;
     }
 
     // Delete (will cascade to verification_secrets)
+    // Clean up terminal claims, matches, and secrets before delete
+    try { await query(`DELETE FROM claims WHERE lost_item_id = $1 AND status IN ('CANCELLED','REJECTED','EXPIRED')`, [id]); } catch (e) {}
+    try { await query('DELETE FROM matches WHERE lost_item_id = $1', [id]); } catch (e) {}
+    try { await query('DELETE FROM verification_secrets WHERE lost_item_id = $1', [id]); } catch (e) {}
+
     await query('DELETE FROM lost_items WHERE id = $1', [id]);
 
     // Log deletion
@@ -401,7 +407,7 @@ export async function getLostItemMatches(req: Request, res: Response): Promise<v
   }
 }
 
-// Dismiss a match suggestion (NEW — MATCH-06 gap fix)
+// Dismiss a match suggestion
 export async function dismissMatch(req: Request, res: Response): Promise<void> {
   try {
     const userId = req.user!.userId;

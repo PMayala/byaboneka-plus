@@ -63,7 +63,7 @@ export interface LostItem {
   id: number;
   user_id: number;
   category: ItemCategory;
-  subcategory?: string;          // Added: migration 004 (ALGO-3.1.2)
+  subcategory?: string;
   title: string;
   description: string;
   location_area: string;
@@ -72,7 +72,7 @@ export interface LostItem {
   status: LostItemStatus;
   keywords?: string[];
   photo_url?: string;
-  image_urls?: string[];         // Added: migration 004
+  image_urls?: string[];
   created_at: string;
   user_name?: string;
   verification_questions?: string[];
@@ -86,7 +86,7 @@ export interface FoundItem {
   finder_id: number;
   cooperative_id?: number;
   category: ItemCategory;
-  subcategory?: string;          // Added: migration 004 (ALGO-3.1.2)
+  subcategory?: string; 
   title: string;
   description: string;
   location_area: string;
@@ -119,10 +119,8 @@ export interface Claim {
   claimant_name?: string;
   otp_expires_at?: string;
   otp_verified?: boolean;
-  // Location info (for handover location recommendations)
   lost_item_area?: string;
   found_item_area?: string;
-  // Dispute info
   dispute_reason?: string;
 }
 
@@ -164,7 +162,7 @@ export interface MessageThread {
   unread_count: number;
 }
 
-// Cooperative — FIX INT-01: Matches backend schema exactly
+// Cooperative 
 export interface Cooperative {
   id: number;
   name: string;
@@ -270,8 +268,8 @@ export const STATUS_INFO: Record<string, { label: string; color: string }> = {
   MATCHED: { label: 'Matched', color: 'yellow' },
 
   // Claims
-  PENDING_QUESTIONS: { label: 'Awaiting Questions', color: 'blue' },      // NEW
-  PENDING: { label: 'Awaiting Verification', color: 'yellow' },           // UPDATED label
+  PENDING_QUESTIONS: { label: 'Awaiting Questions', color: 'blue' },   
+  PENDING: { label: 'Awaiting Verification', color: 'yellow' },  
   VERIFIED: { label: 'Verified', color: 'green' },
   REJECTED: { label: 'Rejected', color: 'red' },
   RETURNED: { label: 'Returned', color: 'green' },

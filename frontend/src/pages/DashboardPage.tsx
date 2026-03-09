@@ -1,12 +1,3 @@
-/**
- * DashboardPage — FIXED
- *
- * Fixes:
- *  1. i18n keys corrected: dashboard.lostItems, dashboard.foundItems, dashboard.activeClaims
- *     (keys now exist in en.json after the en.json patch)
- *  2. Loads and displays "Claims on My Found Items" (finder-side claims).
- *  3. activeClaims stat includes both claimant-side AND finder-side active claims.
- */
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -182,18 +173,18 @@ const DashboardPage: React.FC = () => {
       {/* Welcome */}
       <div className="mb-6 sm:mb-8">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-          Welcome back, {user?.name?.split(' ')[0]}!
+          {t("dashboard.welcomeBack", { name: user?.name?.split(" ")[0] || "" })}
         </h1>
-        <p className="text-gray-600">Here's what's happening with your items</p>
+        <p className="text-gray-600">{t('dashboard.whatsHappening')}</p>
       </div>
 
       {/* ── Action-required banner ── */}
       {needsQuestions.length > 0 && (
         <Alert type="warning" className="mb-6">
           <Bell className="w-4 h-4 inline mr-2" />
-          <strong>Action required:</strong> {needsQuestions.length} claim
-          {needsQuestions.length > 1 ? 's' : ''} on your found item
-          {needsQuestions.length > 1 ? 's need' : ' needs'} verification questions from you.
+          <strong>{t('dashboard.actionRequired')}:</strong> {t('dashboard.claimsNeedQuestions', { count: needsQuestions.length })}
+          
+          
           {needsQuestions.map((c) => (
             <Link key={c.id} to={`/claims/${c.id}`} className="underline font-semibold ml-2">
               Claim #{c.id} →
@@ -211,7 +202,6 @@ const DashboardPage: React.FC = () => {
             </div>
             <div className="min-w-0">
               <p className="text-xl sm:text-2xl font-bold text-gray-900">{stats.lostItems}</p>
-              {/* FIX: use dashboard.lostItems key (added to en.json) */}
               <p className="text-xs sm:text-sm text-gray-500 truncate">{t('dashboard.lostItems')}</p>
             </div>
           </div>
@@ -224,7 +214,6 @@ const DashboardPage: React.FC = () => {
             </div>
             <div className="min-w-0">
               <p className="text-xl sm:text-2xl font-bold text-gray-900">{stats.foundItems}</p>
-              {/* FIX: use dashboard.foundItems key (added to en.json) */}
               <p className="text-xs sm:text-sm text-gray-500 truncate">{t('dashboard.foundItems')}</p>
             </div>
           </div>
@@ -237,7 +226,6 @@ const DashboardPage: React.FC = () => {
             </div>
             <div className="min-w-0">
               <p className="text-xl sm:text-2xl font-bold text-gray-900">{stats.activeClaims}</p>
-              {/* FIX: use dashboard.activeClaims key (added to en.json) */}
               <p className="text-xs sm:text-sm text-gray-500 truncate">{t('dashboard.activeClaims')}</p>
             </div>
           </div>
@@ -277,20 +265,20 @@ const DashboardPage: React.FC = () => {
                       : 'default'
                   }
                 >
-                  {trustInfo.level} Trust
+                  {trustInfo.level === 'High' ? t('dashboard.trustBadgeHigh') : trustInfo.level === 'Medium' ? t('dashboard.trustBadgeMedium') : trustInfo.level === 'New' ? t('dashboard.trustBadgeNew') : t('dashboard.trustBadgeLow')}
                 </Badge>
               </div>
-              <p className="text-gray-600 text-sm sm:text-base">Your trust score</p>
+              <p className="text-gray-600 text-sm sm:text-base">{t('dashboard.yourTrustScore')}</p>
             </div>
           </div>
           <div className="text-left sm:text-right">
-            <p className="text-sm text-gray-600 mb-2">Build trust by:</p>
+            <p className="text-sm text-gray-600 mb-2">{t('dashboard.buildTrustBy')}</p>
             <ul className="text-sm space-y-1">
               <li className="flex items-center gap-1">
-                <CheckCircle className="w-4 h-4 text-trust-500" /> Returning found items
+                <CheckCircle className="w-4 h-4 text-trust-500" /> {t('dashboard.returningFoundItems')}
               </li>
               <li className="flex items-center gap-1">
-                <CheckCircle className="w-4 h-4 text-trust-500" /> Successful recoveries
+                <CheckCircle className="w-4 h-4 text-trust-500" /> {t('dashboard.successfulRecoveries')}
               </li>
             </ul>
           </div>
@@ -307,7 +295,7 @@ const DashboardPage: React.FC = () => {
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900">{t('dashboard.reportLost')}</h3>
-                <p className="text-sm text-gray-500 hidden sm:block">Lost something? Report it now</p>
+                <p className="text-sm text-gray-500 hidden sm:block">{t('dashboard.lostSomething')}</p>
               </div>
             </div>
             <ArrowRight className="w-5 h-5 text-gray-400" />
@@ -321,7 +309,7 @@ const DashboardPage: React.FC = () => {
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900">{t('dashboard.reportFound')}</h3>
-                <p className="text-sm text-gray-500 hidden sm:block">Found something? Help return it</p>
+                <p className="text-sm text-gray-500 hidden sm:block">{t('dashboard.foundSomethingHelp')}</p>
               </div>
             </div>
             <ArrowRight className="w-5 h-5 text-gray-400" />
@@ -334,9 +322,9 @@ const DashboardPage: React.FC = () => {
         {/* My Lost Items */}
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Your Lost Items</h2>
+            <h2 className="text-lg font-semibold text-gray-900">{t('dashboard.yourLostItems')}</h2>
             <Link to="/my-items?tab=lost" className="text-sm text-primary-500 hover:text-primary-600">
-              View all
+              {t("dashboard.viewAll")}
             </Link>
           </div>
           {recentLostItems.length > 0 ? (
@@ -366,8 +354,8 @@ const DashboardPage: React.FC = () => {
             <Card className="p-8 text-center">
               <EmptyState
                 icon={<FileText className="w-12 h-12" />}
-                title="No lost items"
-                description="Report a lost item to get started"
+                title={t('dashboard.noLostItems')}
+                description={t('dashboard.reportItNow')}
                 action={
                   <Link to="/report-lost">
                     <Button size="sm">{t('dashboard.reportLost')}</Button>
@@ -381,9 +369,9 @@ const DashboardPage: React.FC = () => {
         {/* My Claims (as claimant/owner) */}
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Your Claims</h2>
+            <h2 className="text-lg font-semibold text-gray-900">{t('dashboard.yourClaims')}</h2>
             <Link to="/my-items?tab=claims" className="text-sm text-primary-500 hover:text-primary-600">
-              View all
+              {t("dashboard.viewAll")}
             </Link>
           </div>
           {recentClaims.length > 0 ? (
@@ -413,8 +401,8 @@ const DashboardPage: React.FC = () => {
             <Card className="p-8 text-center">
               <EmptyState
                 icon={<CheckCircle className="w-12 h-12" />}
-                title="No claims"
-                description="Find a matching item to make a claim"
+                title={t('dashboard.noClaims')}
+                description={t('dashboard.findMatchingItem')}
                 action={
                   <Link to="/search">
                     <Button size="sm">{t('dashboard.searchItems')}</Button>
@@ -429,10 +417,10 @@ const DashboardPage: React.FC = () => {
         <div className="lg:col-span-2">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900">
-              Claims on Your Found Items
+              {t('dashboard.claimsOnFoundItems')}
             </h2>
             <Link to="/my-items?tab=found" className="text-sm text-primary-500 hover:text-primary-600">
-              View found items
+              {t("dashboard.viewFoundItems")}
             </Link>
           </div>
 
@@ -464,7 +452,7 @@ const DashboardPage: React.FC = () => {
                         {claim.status === 'PENDING_QUESTIONS' && (
                           <p className="text-xs text-yellow-700 font-medium mt-1 flex items-center gap-1">
                             <AlertCircle className="w-3 h-3" />
-                            Your action needed: set questions
+                            {t('dashboard.yourActionNeeded')}
                           </p>
                         )}
                       </div>
@@ -478,8 +466,8 @@ const DashboardPage: React.FC = () => {
             <Card className="p-8 text-center">
               <EmptyState
                 icon={<Package className="w-12 h-12" />}
-                title="No active claims on your found items"
-                description="When someone claims an item you found, it will appear here"
+                title={t('dashboard.noActiveFinderClaims')}
+                description={t('dashboard.whenSomeoneClaims')}
               />
             </Card>
           )}

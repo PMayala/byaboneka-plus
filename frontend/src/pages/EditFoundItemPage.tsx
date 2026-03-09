@@ -63,13 +63,13 @@ const EditFoundItemPage: React.FC = () => {
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
     if (!formData.title || formData.title.length < 3) {
-      newErrors.title = 'Title must be at least 3 characters';
+      newErrors.title = t('items.titleMinError');
     }
     if (!formData.description || formData.description.length < 10) {
-      newErrors.description = 'Description must be at least 10 characters';
+      newErrors.description = t('items.descMinError');
     }
     if (!formData.location_area) {
-      newErrors.location_area = 'Please select a location';
+      newErrors.location_area = t('items.locationRequired');
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -103,7 +103,7 @@ const EditFoundItemPage: React.FC = () => {
   if (!item) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-12 text-center">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">Item Not Found</h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('common.itemNotFound')}</h1>
         <Button onClick={() => navigate('/my-items?tab=found')}>{t('items.backToMyItems')}</Button>
       </div>
     );
@@ -120,31 +120,31 @@ const EditFoundItemPage: React.FC = () => {
         Back to Item
       </button>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Edit Found Item</h1>
-        <p className="text-gray-600">Update the details of your found item report</p>
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">{t('items.editFoundItem')}</h1>
+        <p className="text-gray-600">{t('items.editFoundSubtitle')}</p>
       </div>
       {item.status !== 'UNCLAIMED' && (
         <Alert type="warning" className="mb-6">
-          This item is currently <strong>{item.status.toLowerCase()}</strong>. Some fields may not be editable.
+          {t('items.statusWarning', { status: item.status.toLowerCase() })}
         </Alert>
       )}
       <form onSubmit={handleSubmit}>
         <Card className="p-6 mb-6">
           {/* Category (read-only) */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{t('items.categoryLabel')}</label>
             <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
               <span className="text-gray-500">
                 {CATEGORY_ICONS[item.category as ItemCategory]}
               </span>
               <span className="font-medium text-gray-700">{categoryInfo?.label || item.category}</span>
-              <span className="text-xs text-gray-400 ml-auto">Cannot be changed</span>
+              <span className="text-xs text-gray-400 ml-auto">{t('common.cannotBeChanged')}</span>
             </div>
           </div>
           {/* Title */}
           <div className="mb-6">
             <Input
-              label="Title *"
+              label={t("items.titleLabel") + " *"}
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               placeholder={t('items.titlePlaceholderFound')}
@@ -154,7 +154,7 @@ const EditFoundItemPage: React.FC = () => {
           {/* Description */}
           <div className="mb-6">
             <Textarea
-              label="Description *"
+              label={t("items.descriptionLabel") + " *"}
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               placeholder={t('items.descPlaceholderFound')}
@@ -166,7 +166,7 @@ const EditFoundItemPage: React.FC = () => {
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               <MapPin className="w-4 h-4 inline mr-1" />
-              Location Area *
+              {t('items.locationAreaLabel')} *
             </label>
             <select
               value={formData.location_area}
@@ -187,7 +187,7 @@ const EditFoundItemPage: React.FC = () => {
           {/* Location Hint */}
           <div className="mb-6">
             <Textarea
-              label="Specific Location (Optional)"
+              label={t("items.specificLocationLabel")}
               value={formData.location_hint}
               onChange={(e) => setFormData({ ...formData, location_hint: e.target.value })}
               placeholder={t('items.locationHintPlaceholderFound')}
@@ -206,12 +206,12 @@ const EditFoundItemPage: React.FC = () => {
               disabled
               className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500"
             />
-            <p className="text-xs text-gray-400 mt-1">Date cannot be changed after submission</p>
+            <p className="text-xs text-gray-400 mt-1">{t('items.dateCannotChange')}</p>
           </div>
           {/* Images (read-only info) */}
           {item.image_urls && item.image_urls.length > 0 && (
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Current Photos</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">{t('items.currentPhotos')}</label>
               <div className="grid grid-cols-4 gap-3">
                 {item.image_urls.map((url, index) => (
                   <div key={index} className="aspect-square rounded-lg overflow-hidden bg-gray-100">
@@ -227,7 +227,7 @@ const EditFoundItemPage: React.FC = () => {
                 ))}
               </div>
               <p className="text-xs text-gray-400 mt-1">
-                To update photos, please delete and re-report the item
+                {t('items.updatePhotosHint')}
               </p>
             </div>
           )}

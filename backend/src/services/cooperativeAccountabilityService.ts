@@ -247,8 +247,6 @@ export interface SafeHandoverPoint {
 /**
  * NOVEL FEATURE: Structured handover location recommendations.
  * Returns safe meeting points ranked by proximity to the item's location area.
- * 
- * Fills spec gap HAND-05 and Algorithm Spec 3.5.2.
  */
 export const SAFE_HANDOVER_POINTS: SafeHandoverPoint[] = [
   // Cooperative offices

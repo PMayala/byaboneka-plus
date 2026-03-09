@@ -1,19 +1,3 @@
-/**
- * Enhanced Routes for Byaboneka+
- *
- * Fixes:
- * - Dispute GET should not 404 when no dispute exists (return success:true, data:null)
- * - Adds OTP regenerate endpoint
- * - Dev-friendly email verification gating for OTP generation
- *
- * Endpoints:
- * - Dispute workflow (CLAIM-07)
- * - Enhanced OTP verification (HAND-01 to HAND-07)
- * - Email verification (AUTH-01)
- * - Verification cooldown (SYS)
- * - Duplicate detection responses (SYS-05)
- */
-
 import { Router } from 'express';
 import { z } from 'zod';
 
@@ -276,7 +260,7 @@ enhancedRouter.post(
  * Get dispute for a claim
  * GET /claims/:claimId/dispute
  *
- * IMPORTANT FIX:
+ * IMPORTANT:
  * - Return 200 with data:null if no dispute yet (prevents noisy 404 in frontend logs)
  */
 enhancedRouter.get(

@@ -51,7 +51,7 @@ interface ActionContext {
 }
 
 // ============================================
-// DETECTION RULES (from Algorithm Spec 3.4.1)
+// DETECTION RULES
 // ============================================
 
 const THRESHOLDS = {

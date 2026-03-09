@@ -1,13 +1,3 @@
-# ============================================
-# Byaboneka+ Continuous Deployment
-# ============================================
-# Triggers only on push to main (not PRs, not develop).
-# Waits for the CI workflow to pass, then deploys to Render.
-#
-# Required GitHub Secret:
-#   RENDER_DEPLOY_HOOK — get from Render → Service → Settings → Deploy Hook
-# ============================================
-
 name: CD
 
 on:

@@ -30,7 +30,7 @@ export const Header: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // ✅ LOCK language after login/logout (and on first mount)
+  // LOCK language after login/logout (and on first mount)
   useEffect(() => {
     const savedLang = localStorage.getItem(LANG_STORAGE_KEY);
 
@@ -122,7 +122,7 @@ export const Header: React.FC = () => {
 
           {/* Right side */}
           <div className="flex items-center space-x-4">
-            {/* ✅ Language switcher should work logged in too */}
+            {/* Language switcher should work logged in too */}
             <LanguageSwitcher compact />
 
             {isAuthenticated ? (

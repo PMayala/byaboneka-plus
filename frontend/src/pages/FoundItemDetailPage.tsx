@@ -1,14 +1,3 @@
-/**
- * FoundItemDetailPage — FIXED
- *
- * Changes vs original:
- *  1. Finder sees a prominent alert card when there are PENDING_QUESTIONS claims
- *     on this item, with a direct link to act on them.
- *  2. Authenticated non-finder users with at least one active lost report see a
- *     "Claim This Item" button with a modal to pick the matching lost report.
- *  3. Image gallery is preserved for display (read-only) but no upload UI.
- *  4. All existing functionality (matches, delete, coop badge) retained.
- */
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
@@ -159,7 +148,7 @@ const FoundItemDetailPage: React.FC = () => {
 
   const handleClaimSubmit = async () => {
     if (!selectedLostItemId) {
-      toast.error('Please select which of your lost items this matches.');
+      toast.error(t('items.locationRequired'));
       return;
     }
     setClaimLoading(true);
@@ -168,10 +157,10 @@ const FoundItemDetailPage: React.FC = () => {
         lost_item_id: selectedLostItemId,
         found_item_id: parseInt(id!),
       });
-      toast.success('Claim submitted! The finder will be asked to set verification questions.');
+      toast.success(t('items.claimSubmitted'));
       navigate(`/claims/${response.data.data.id}`);
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to create claim');
+      toast.error(error.response?.data?.message || t('errors.generic'));
     } finally {
       setClaimLoading(false);
       setShowClaimModal(false);
@@ -216,7 +205,7 @@ const FoundItemDetailPage: React.FC = () => {
   if (!item) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-12 text-center">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">Item Not Found</h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">{t("common.itemNotFound")}</h1>
         <Link to="/search">
           <Button>{t('items.backToSearch')}</Button>
         </Link>
@@ -244,7 +233,7 @@ const FoundItemDetailPage: React.FC = () => {
       {isFinder && pendingClaims.length > 0 && (
         <Alert type="warning" className="mb-6">
           <Bell className="w-4 h-4 inline mr-2" />
-          <strong>Action required:</strong> {pendingClaims.length} person
+          <strong>{t('dashboard.actionRequired')}:</strong> {pendingClaims.length} person
           {pendingClaims.length > 1 ? 's have' : ' has'} claimed this item and{' '}
           {pendingClaims.length > 1 ? 'are' : 'is'} waiting for you to set verification
           questions.{' '}
@@ -254,7 +243,7 @@ const FoundItemDetailPage: React.FC = () => {
               to={`/claims/${c.id}`}
               className="underline font-semibold ml-1"
             >
-              Review Claim #{c.id} →
+              {t('common.view')} Claim #{c.id} →
             </Link>
           ))}
         </Alert>
@@ -369,13 +358,13 @@ const FoundItemDetailPage: React.FC = () => {
             )}
 
             <div className="mb-6">
-              <h3 className="font-semibold text-gray-900 mb-2">Description</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">{t('items.descriptionHeading')}</h3>
               <p className="text-gray-600 whitespace-pre-wrap">{item.description}</p>
             </div>
 
             {item.location_hint && (
               <div className="mb-6">
-                <h3 className="font-semibold text-gray-900 mb-2">Where it was found</h3>
+                <h3 className="font-semibold text-gray-900 mb-2">{t('items.whereFoundHeading')}</h3>
                 <p className="text-gray-600">{item.location_hint}</p>
               </div>
             )}
@@ -392,21 +381,21 @@ const FoundItemDetailPage: React.FC = () => {
             {isFinder && (
               <div className="mt-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-semibold text-gray-900">Potential Matching Lost Items</h3>
+                  <h3 className="font-semibold text-gray-900">{t('items.potentialMatchingLost')}</h3>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={loadMatches}
                     disabled={matchesLoading}
                   >
-                    {matchesLoading ? 'Searching…' : matches.length > 0 ? 'Refresh' : 'Find Matches'}
+                    {matchesLoading ? '{t('items.searchingMatches')}' : matches.length > 0 ? 'Refresh' : '{t('items.findMatches')}'}
                   </Button>
                 </div>
                 {matchesLoading ? (
                   <LoadingSpinner size="sm" />
                 ) : matches.length === 0 ? (
                   <p className="text-gray-500 text-sm text-center py-4">
-                    Click "Find Matches" to search for lost items that match this report.
+                    Click "{t('items.findMatches')}" to search for lost items that match this report.
                   </p>
                 ) : (
                   <div className="space-y-3">
@@ -449,10 +438,10 @@ const FoundItemDetailPage: React.FC = () => {
 
         {/* ── Sidebar ── */}
         <div>
-          {/* ── Owner: Claim This Item ── */}
+          {/* ── Owner: {t('items.makeClaim')} ── */}
           {!isFinder && item.status === 'UNCLAIMED' && (
             <Card className="p-6 mb-6">
-              <h3 className="font-semibold text-gray-900 mb-3">Is this yours?</h3>
+              <h3 className="font-semibold text-gray-900 mb-3">{t('items.isThisYours')}</h3>
               {isLoggedIn ? (
                 <>
                   <p className="text-sm text-gray-600 mb-4">
@@ -469,7 +458,7 @@ const FoundItemDetailPage: React.FC = () => {
                       }
                     }}
                   >
-                    {myLostItems.length === 0 ? 'Report Lost Item First' : 'Claim This Item'}
+                    {myLostItems.length === 0 ? '{t('items.reportLostFirst')}' : '{t('items.makeClaim')}'}
                   </Button>
                   {myLostItems.length === 0 && (
                     <p className="text-xs text-gray-500 mt-2 text-center">
@@ -483,7 +472,7 @@ const FoundItemDetailPage: React.FC = () => {
                     Sign in to claim this item or report it as lost.
                   </p>
                   <Link to="/login">
-                    <Button className="w-full">Sign In to Claim</Button>
+                    <Button className="w-full">{t('items.signInToClaim')}</Button>
                   </Link>
                 </>
               )}
@@ -493,7 +482,7 @@ const FoundItemDetailPage: React.FC = () => {
           {/* ── Already claimed / matched / returned ── */}
           {!isFinder && item.status !== 'UNCLAIMED' && (
             <Card className="p-6 mb-6">
-              <h3 className="font-semibold text-gray-900 mb-2">Status</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">{t('items.statusLabel')}</h3>
               <p className="text-sm text-gray-600">
                 This item is currently <strong>{statusInfo?.label || item.status}</strong> and is
                 not available to claim.
@@ -504,7 +493,7 @@ const FoundItemDetailPage: React.FC = () => {
           {/* ── Finder: "What happens next" ── */}
           {isFinder && (
             <Card className="p-6 mb-6">
-              <h3 className="font-semibold text-gray-900 mb-3">What happens next?</h3>
+              <h3 className="font-semibold text-gray-900 mb-3">{t('items.whatHappensNext')}</h3>
               <ol className="text-sm text-gray-600 space-y-2">
                 <li className="flex items-start gap-2">
                   <span className="w-5 h-5 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0">
@@ -533,7 +522,7 @@ const FoundItemDetailPage: React.FC = () => {
 
           {/* Status tracker */}
           <Card className="p-6 mb-6">
-            <h3 className="font-semibold text-gray-900 mb-4">Status</h3>
+            <h3 className="font-semibold text-gray-900 mb-4">{t('items.statusLabel')}</h3>
             <div className="space-y-3">
               {(['UNCLAIMED', 'MATCHED', 'RETURNED'] as const).map((s) => (
                 <div key={s} className="flex items-center gap-3">
@@ -568,7 +557,7 @@ const FoundItemDetailPage: React.FC = () => {
       <Modal
         isOpen={showClaimModal}
         onClose={() => setShowClaimModal(false)}
-        title="Which lost item is this?"
+        title={t("items.whichLostItem")}
       >
         <p className="text-sm text-gray-600 mb-4">
           Select the lost-item report that matches this found item.
@@ -615,10 +604,10 @@ const FoundItemDetailPage: React.FC = () => {
       <Modal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
-        title="Delete Found Item"
+        title={t("items.deleteFoundItem")}
       >
         <p className="text-gray-600 mb-6">
-          Are you sure you want to delete this found item report? This action cannot be undone.
+          {t('items.deleteConfirmFound')}
         </p>
         <div className="flex justify-end gap-3">
           <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>

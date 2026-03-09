@@ -1,14 +1,3 @@
-/**
- * backend/src/controllers/claimsController.ts — PATCHED
- *
- * Fixes applied:
- *  1. verifyClaim: response now uses `verified` + `correct_count` (not `passed` + `score`)
- *  2. getFinderClaims: new exported function — returns claims on a specific found item
- *  3. verifySecretAnswer calls run in parallel (Promise.all) to prevent timing attacks.
- *  4. openDispute / getDispute: fixed table name from `disputes` → `claim_disputes`
- *     (the migration creates `claim_disputes`, not `disputes`)
- */
-
 import { Request, Response } from 'express';
 import { query, transaction } from '../config/database';
 import {
@@ -327,9 +316,6 @@ export async function getVerificationQuestions(req: Request, res: Response): Pro
 
 // ─────────────────────────────────────────────────────────────────────────────
 // VERIFY CLAIM  (OWNER answers questions)
-// FIX: response now uses `verified` + `correct_count` to match frontend types.
-// FIX: all three bcrypt comparisons run in parallel (Promise.all) to prevent
-//      timing-based answer enumeration attacks.
 // ─────────────────────────────────────────────────────────────────────────────
 export async function verifyClaim(req: Request, res: Response): Promise<void> {
   try {
@@ -457,7 +443,6 @@ export async function verifyClaim(req: Request, res: Response): Promise<void> {
 
     const attemptsRemaining = 3 - parseInt(attemptsToday.rows[0].count) - 1;
 
-    // FIX: use `verified` and `correct_count` to match frontend type expectations
     res.json({
       success: true,
       data: {
@@ -911,7 +896,6 @@ export async function getHandoverStatus(req: Request, res: Response): Promise<vo
 
 // ─────────────────────────────────────────────────────────────────────────────
 // OPEN DISPUTE
-// FIX: changed `disputes` → `claim_disputes` to match the actual DB table name
 // ─────────────────────────────────────────────────────────────────────────────
 export async function openDispute(req: Request, res: Response): Promise<void> {
   try {
@@ -972,7 +956,6 @@ export async function openDispute(req: Request, res: Response): Promise<void> {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // GET DISPUTE
-// FIX: changed `disputes` → `claim_disputes` to match the actual DB table name
 // ─────────────────────────────────────────────────────────────────────────────
 export async function getDispute(req: Request, res: Response): Promise<void> {
   try {

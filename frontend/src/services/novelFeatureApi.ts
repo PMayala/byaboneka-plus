@@ -2,10 +2,6 @@
  * ============================================
  * API METHODS FOR NOVEL FEATURES
  * ============================================
- * 
- * Add to: frontend/src/services/novelFeatureApi.ts
- * 
- * Uses the existing default-exported axios instance from api.ts.
  */
 
 import api from './api';

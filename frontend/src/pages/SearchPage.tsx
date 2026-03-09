@@ -113,7 +113,7 @@ const SearchPage: React.FC = () => {
       {/* Header */}
       <div className="mb-6 sm:mb-8">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{t('search.title')}</h1>
-        <p className="text-gray-600">Find lost or found items reported in Rwanda</p>
+        <p className="text-gray-600">{t('search.subtitleFull')}</p>
       </div>
       {/* Tabs */}
       <div className="flex border-b border-gray-200 mb-6">
@@ -164,7 +164,7 @@ const SearchPage: React.FC = () => {
                 className="relative"
               >
                 <Filter className="w-4 h-4 sm:mr-2" />
-                <span className="hidden sm:inline">Filters</span>
+                <span className="hidden sm:inline">{t('search.filtersBtn')}</span>
                 {hasActiveFilters && (
                   <span className="absolute -top-1 -right-1 w-3 h-3 bg-primary-500 rounded-full" />
                 )}
@@ -175,7 +175,7 @@ const SearchPage: React.FC = () => {
           {showFilters && (
             <div className="mt-4 pt-4 border-t border-gray-200 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('search.categoryFilterLabel')}</label>
                 <select
                   value={filters.category}
                   onChange={(e) => setFilters({ ...filters, category: e.target.value })}
@@ -190,7 +190,7 @@ const SearchPage: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('search.locationFilterLabel')}</label>
                 <select
                   value={filters.location_area}
                   onChange={(e) => setFilters({ ...filters, location_area: e.target.value })}
@@ -203,7 +203,7 @@ const SearchPage: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Date From</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('search.dateFromLabel')}</label>
                 <input
                   type="date"
                   value={filters.date_from}
@@ -212,7 +212,7 @@ const SearchPage: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Date To</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('search.dateToLabel')}</label>
                 <input
                   type="date"
                   value={filters.date_to}

@@ -8,7 +8,6 @@ import crypto from 'crypto';
 // ============================================
 // BYABONEKA+ COMPREHENSIVE SEED DATA
 // Trust-Aware Lost & Found Infrastructure
-// Enhanced Production-Ready Dataset
 // ============================================
 
 async function hashPassword(password: string): Promise<string> {

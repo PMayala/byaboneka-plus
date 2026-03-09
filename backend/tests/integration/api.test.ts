@@ -245,7 +245,6 @@ describeIf('Integration: Full API Flow', () => {
         .send({ answers: ['wrong', 'wrong', 'wrong'] });
       expect(res.status).toBe(200);
       expect(res.body.data.verified).toBe(false);
-      // FIX: API returns `correct_count`, not `score`
       expect(res.body.data.correct_count).toBe(0);
     });
 

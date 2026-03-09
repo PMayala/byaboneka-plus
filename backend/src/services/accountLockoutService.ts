@@ -1,7 +1,5 @@
 // ============================================
 // ACCOUNT LOCKOUT SERVICE
-// File: src/services/accountLockoutService.ts
-// Gap Fix: Brute-force account lockout after N failed login attempts
 // ============================================
 
 import { query } from '../config/database';
@@ -72,35 +70,3 @@ export async function checkAccountLockout(email: string): Promise<{ locked: bool
   await resetFailedLogins(email);
   return { locked: false, minutesRemaining: 0 };
 }
-
-
-// ============================================
-// DATABASE MIGRATION NEEDED:
-// ============================================
-// Run this SQL to add the required columns:
-//
-// ALTER TABLE users ADD COLUMN IF NOT EXISTS failed_login_attempts INT DEFAULT 0;
-// ALTER TABLE users ADD COLUMN IF NOT EXISTS last_failed_login TIMESTAMP;
-//
-// ============================================
-// HOW TO INTEGRATE:
-// ============================================
-// In src/controllers/authController.ts, in the login() function:
-//
-// 1. At the top of login(), BEFORE password check:
-//    import { checkAccountLockout, recordFailedLogin, resetFailedLogins } from '../services/accountLockoutService';
-//
-//    const lockout = await checkAccountLockout(email);
-//    if (lockout.locked) {
-//      res.status(423).json({
-//        success: false,
-//        message: `Account temporarily locked. Try again in ${lockout.minutesRemaining} minutes.`
-//      });
-//      return;
-//    }
-//
-// 2. After FAILED password verification:
-//    await recordFailedLogin(email);
-//
-// 3. After SUCCESSFUL login:
-//    await resetFailedLogins(email);

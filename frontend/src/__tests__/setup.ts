@@ -1,16 +1,11 @@
 // ============================================
 // FRONTEND TEST SETUP
-// File: src/__tests__/setup.ts
 // ============================================
 
 import React from 'react';
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 
-// ✅ remove this (it breaks parsing/types)
-// import { a } from 'vitest/dist/reporters-w_64AS5f.js';
-
-// Mock react-router-dom (NO JSX here)
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual<any>('react-router-dom');
 
@@ -20,7 +15,6 @@ vi.mock('react-router-dom', async () => {
     useParams: () => ({}),
     useSearchParams: () => [new URLSearchParams(), vi.fn()],
 
-    // ✅ No JSX in .ts: use React.createElement instead
     Link: ({ children, to, ...props }: any) =>
       React.createElement('a', { href: to, ...props }, children),
   };

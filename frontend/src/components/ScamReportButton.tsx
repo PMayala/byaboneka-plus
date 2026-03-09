@@ -2,14 +2,11 @@ import React, { useState } from 'react';
 import { messagesApi, getErrorMessage } from '../services/api';
 import { useTranslation } from 'react-i18next';
 /**
- * ScamReportButton Component for Byaboneka+
+ * ScamReportButton Component
  * 
- * Implements COMM-03: Scam report button in every message thread
+ * Scam report button in every message thread
  * Allows users to report suspicious messages or behavior
  * 
- * FIX #4: Now uses centralized axios instance instead of raw fetch().
- * FIX: Uses correct backend route: POST /messages/:messageId/report
- *      (not the non-existent POST /scam-reports endpoint)
  */
 interface ScamReportButtonProps {
   claimId: number;

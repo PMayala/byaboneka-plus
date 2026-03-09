@@ -1,11 +1,3 @@
-# ============================================
-# Byaboneka+ Continuous Integration
-# ============================================
-# Runs on every push and PR to main/develop.
-# Validates code quality, type safety, and tests
-# for both backend and frontend.
-# ============================================
-
 name: CI
 
 on:

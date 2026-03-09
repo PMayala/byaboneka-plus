@@ -1,16 +1,3 @@
-/**
- * ClaimDetailPage — FIXED
- *
- * Fixes in this version:
- *  1. SafeHandoverLocationPicker REMOVED — safe location feature is deferred (future iposita/police integration).
- *  2. Scroll-to-footer BUG FIXED: messagesEndRef.current?.scrollIntoView() was firing on every
- *     messages state change, including the initial empty-array load, which caused the page to
- *     jump to the bottom on load. Now only scrolls when messages.length > 0.
- *  3. normaliseVerifyResult handles both old `score`/`passed` and new `correct_count`/`verified` shapes.
- *  4. Dispute 404 is silently swallowed — expected when no dispute exists.
- *  5. Messages 404 also silently swallowed — not all claims have messaging open yet.
- *  6. Progress tracker, polling, messaging all intact.
- */
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
@@ -205,7 +192,7 @@ const ClaimDetailPage: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [claim?.status, isOwner]);
 
-  // FIX: Only scroll to bottom when there are actual messages.
+  // Only scroll to bottom when there are actual messages.
   // Previously this fired on every render including the initial empty load,
   // causing the page to jump to the footer on first load.
   useEffect(() => {
@@ -235,7 +222,7 @@ const ClaimDetailPage: React.FC = () => {
         );
       }
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Verification failed');
+      toast.error(error.response?.data?.message || t('claims.verificationFailed'));
     } finally {
       setVerifying(false);
     }
@@ -250,7 +237,7 @@ const ClaimDetailPage: React.FC = () => {
       setNewMessage('');
       loadMessages();
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to send message');
+      toast.error(error.response?.data?.message || t('errors.generic'));
     } finally {
       setSendingMessage(false);
     }
@@ -294,16 +281,16 @@ const ClaimDetailPage: React.FC = () => {
           <Badge variant={claimBadgeVariant(claim.status)}>
             {statusInfo?.label || claim.status}
           </Badge>
-          <span className="text-sm text-gray-500">Claim #{claim.id}</span>
+          <span className="text-sm text-gray-500">{t('claims.claimHashtag', { id: claim.id })}</span>
         </div>
         <h1 className="text-2xl font-bold text-gray-900 mb-1">{claim.lost_item_title}</h1>
-        <p className="text-gray-600">Found item: {claim.found_item_title}</p>
+        <p className="text-gray-600">{t('claims.foundItemLabel', { title: claim.found_item_title })}</p>
         <p className="text-xs text-gray-400 mt-2">
-          Your role:{' '}
+          {t('claims.yourRole')}:{' '}
           <strong>
             {isOwner
-              ? '🙋 Owner / Claimant — you lost this item'
-              : '🤝 Finder — you found this item'}
+              ? '{t('claims.roleOwner')}'
+              : '{t('claims.roleFinder')}'}
           </strong>
         </p>
       </Card>
@@ -322,7 +309,7 @@ const ClaimDetailPage: React.FC = () => {
             <Card className="p-6">
               <div className="flex items-center gap-3 mb-4">
                 <Loader2 className="w-6 h-6 text-blue-500 animate-spin" />
-                <h2 className="text-lg font-semibold">Waiting for Verification Questions</h2>
+                <h2 className="text-lg font-semibold">{t('claims.waitingForQuestions')}</h2>
               </div>
               <p className="text-gray-600 mb-3">
                 Your claim has been submitted. The finder has been notified and is setting up 3
@@ -340,7 +327,7 @@ const ClaimDetailPage: React.FC = () => {
             <Card className="p-6">
               <div className="flex items-center gap-3 mb-6">
                 <Shield className="w-6 h-6 text-primary-500" />
-                <h2 className="text-lg font-semibold">Verification Challenge</h2>
+                <h2 className="text-lg font-semibold">{t('claims.verificationChallenge')}</h2>
               </div>
               {questions.length > 0 ? (
                 <div className="space-y-4">
@@ -369,7 +356,7 @@ const ClaimDetailPage: React.FC = () => {
                         <XCircle className="w-4 h-4 inline mr-2" />
                       )}
                       {verificationResult.verified
-                        ? 'Verification successful! You can now proceed to handover.'
+                        ? '{t('claims.verificationSuccessMsg')}'
                         : `${verificationResult.correct_count}/3 correct. ${verificationResult.attempts_remaining} attempt(s) remaining.`}
                     </Alert>
                   )}
@@ -393,7 +380,7 @@ const ClaimDetailPage: React.FC = () => {
             <Card className="p-6">
               <div className="flex items-center gap-3 mb-3">
                 <Loader2 className="w-5 h-5 text-yellow-500 animate-spin" />
-                <h2 className="text-lg font-semibold">Waiting for Owner to Verify</h2>
+                <h2 className="text-lg font-semibold">{t('claims.waitingForOwner')}</h2>
               </div>
               <p className="text-gray-600 text-sm">
                 The owner has been notified and is answering your verification questions. You'll
@@ -446,9 +433,9 @@ const ClaimDetailPage: React.FC = () => {
           {claim.status === 'RETURNED' && (
             <Card className="p-6 bg-trust-50 border-trust-200 text-center">
               <CheckCircle className="w-16 h-16 text-trust-500 mx-auto mb-4" />
-              <h2 className="text-xl font-bold text-trust-800">Item Successfully Returned! 🎉</h2>
+              <h2 className="text-xl font-bold text-trust-800">{t('claims.itemReturned')}</h2>
               <p className="text-trust-700 mt-2">
-                Great job! This claim has been completed.
+                {t('claims.itemReturnedDesc')}
               </p>
             </Card>
           )}
@@ -474,13 +461,13 @@ const ClaimDetailPage: React.FC = () => {
             <Card className="p-6">
               <div className="flex items-center gap-3 mb-4">
                 <MessageSquare className="w-5 h-5 text-gray-500" />
-                <h2 className="font-semibold text-gray-900">Messages</h2>
+                <h2 className="font-semibold text-gray-900">{t('messages.title')}</h2>
               </div>
 
               <div className="space-y-3 max-h-80 overflow-y-auto mb-4 pr-1">
                 {messages.length === 0 ? (
                   <p className="text-center text-gray-500 py-8 text-sm">
-                    No messages yet. Start the conversation below.
+                    {t('claims.noMessagesYet')}
                   </p>
                 ) : (
                   messages.map((m) => (
@@ -555,13 +542,13 @@ const ClaimDetailPage: React.FC = () => {
         {/* ── Sidebar ── */}
         <div>
           <Card className="p-6 mb-6">
-            <h3 className="font-semibold text-gray-900 mb-4">Progress</h3>
+            <h3 className="font-semibold text-gray-900 mb-4">{t('claims.progressTitle')}</h3>
             <div className="space-y-4">
               {[
-                { label: 'Claim Created', done: true },
-                { label: 'Questions Set', done: !['PENDING_QUESTIONS'].includes(claim.status) },
-                { label: 'Ownership Verified', done: ['VERIFIED', 'RETURNED'].includes(claim.status) },
-                { label: 'Item Returned', done: claim.status === 'RETURNED' },
+                { label: t('claims.progressClaimCreated'), done: true },
+                { label: t('claims.progressQuestionsSet'), done: !['PENDING_QUESTIONS'].includes(claim.status) },
+                { label: t('claims.progressOwnershipVerified'), done: ['VERIFIED', 'RETURNED'].includes(claim.status) },
+                { label: t('claims.progressItemReturned'), done: claim.status === 'RETURNED' },
               ].map(({ label, done }) => (
                 <div key={label} className="flex items-center gap-3">
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${done ? 'bg-trust-500 text-white' : 'bg-gray-200 text-gray-400'}`}>
@@ -576,12 +563,12 @@ const ClaimDetailPage: React.FC = () => {
           </Card>
 
           <Card className="p-6">
-            <h3 className="font-semibold text-gray-900 mb-4">Related Items</h3>
+            <h3 className="font-semibold text-gray-900 mb-4">{t('claims.relatedItems')}</h3>
             <Link to={`/lost-items/${claim.lost_item_id}`} className="block text-sm text-primary-500 hover:underline mb-2">
-              View Lost Item Report →
+              {t('claims.viewLostItemReport')} →
             </Link>
             <Link to={`/found-items/${claim.found_item_id}`} className="block text-sm text-primary-500 hover:underline">
-              View Found Item Report →
+              {t('claims.viewFoundItemReport')} →
             </Link>
           </Card>
         </div>

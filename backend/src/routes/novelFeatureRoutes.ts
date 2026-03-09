@@ -2,8 +2,6 @@ import { Router, Request, Response } from 'express';
 import { authenticate, adminOnly, authorize } from '../middleware/auth';
 import { query } from '../config/database';
 import { UserRole } from '../types';
-
-// Existing imports you already had in novelFeatureRoutes.ts
 import { fraudCheck } from '../services/fraudDetectionService';
 import { getFlaggedUsers } from '../services/fraudDetectionService';
 import {
@@ -17,7 +15,6 @@ import {
   SAFE_HANDOVER_POINTS
 } from '../services/cooperativeAccountabilityService';
 
-// ✅ Trust transparency service (you already wrote this)
 import { getTrustScoreExplanation } from '../services/trustTransparencyService';
 
 const router = Router();
@@ -192,10 +189,6 @@ router.get('/cooperatives/staff-audit',
     }
   }
 );
-
-// ======================================================
-// KEEP YOUR EXISTING ROUTES BELOW (unchanged)
-// ======================================================
 
 // Admin fraud flagged users
 router.get('/admin/fraud/flagged-users',

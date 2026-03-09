@@ -23,7 +23,7 @@ const SENSITIVE_DATA_PATTERNS = [
   /(?:pin|code|password|mot de passe|ijambo ry'ibanga)/i, // Asking for credentials
 ];
 
-// MoMo/Mobile money detection (COMM-05: complete MTN patterns)
+// MoMo/Mobile money detection (complete MTN patterns)
 const MOBILE_MONEY_PATTERNS = [
   /\*182\*/,            // MTN MoMo USSD
   /\*131\*/,            // Airtel Money

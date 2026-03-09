@@ -11,7 +11,6 @@
  * Unlike crude show/hide toggles, this provides surgical, pattern-aware
  * redaction specific to Rwandan document formats.
  * 
- * Fills spec gap THREAT-7.4 (Privacy leak prevention).
  */
 
 // ============================================
@@ -195,12 +194,6 @@ import { Request, Response, NextFunction } from 'express';
 /**
  * Middleware that automatically redacts sensitive content in item responses.
  * Attach after the main handler has set res.locals.itemData.
- * 
- * Usage in routes:
- *   router.get('/found-items/:id', getFoundItem, redactItemMiddleware);
- * 
- * Or call directly in controller:
- *   const result = redactSensitiveContent(item.description, item.category, isOwner);
  */
 export function redactItemResponse(isOwnerCheck: (req: Request, itemData: any) => boolean) {
   return (req: Request, res: Response, next: NextFunction): void => {

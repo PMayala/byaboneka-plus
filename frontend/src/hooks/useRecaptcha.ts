@@ -1,6 +1,6 @@
 /**
  * ============================================
- * Google reCAPTCHA v3 Hook for Byaboneka+
+ * Google reCAPTCHA v3 Hook 
  * ============================================
  * 
  * Invisible reCAPTCHA — no checkbox, no puzzle.
@@ -79,17 +79,6 @@ declare global {
 
 /**
  * Hook to use reCAPTCHA v3 in any component.
- * 
- * Usage:
- * ```tsx
- * const { executeRecaptcha, isReady } = useRecaptcha();
- * 
- * const handleSubmit = async () => {
- *   const token = await executeRecaptcha('register');
- *   // Send token to backend with your API call
- *   await authApi.register({ ...data, recaptchaToken: token });
- * };
- * ```
  */
 export function useRecaptcha() {
   const isReady = useRef(false);

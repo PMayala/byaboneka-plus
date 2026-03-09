@@ -1,8 +1,5 @@
 // ============================================
 // DATA RETENTION CLEANUP
-// File: src/services/dataRetentionService.ts
-// Gap Fix #12: Expired data persists forever
-// 
 // Algorithm Spec 3.6.2 requires:
 //   Phase 3: "Archive to cold storage, then DELETE"
 // 
@@ -148,20 +145,3 @@ export async function runDataRetention(): Promise<RetentionStats> {
 
   return stats;
 }
-
-
-// ============================================
-// INTEGRATION: Add to src/index.ts cron section:
-// ============================================
-//
-// import { runDataRetention } from './services/dataRetentionService';
-//
-// // Data retention (weekly, Sunday at 3 AM)
-// cron.schedule('0 3 * * 0', async () => {
-//   console.log('🕐 Running data retention...');
-//   try {
-//     await runDataRetention();
-//   } catch (error) {
-//     console.error('❌ Data retention failed:', error);
-//   }
-// });

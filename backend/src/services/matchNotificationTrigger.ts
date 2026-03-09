@@ -1,7 +1,5 @@
 // ============================================
 // MATCH NOTIFICATION TRIGGER
-// File: src/services/matchNotificationTrigger.ts
-// Gap: sendMatchNotificationEmail() exists but is never called
 //
 // This connects the matching engine to email notifications.
 // ============================================
@@ -67,18 +65,3 @@ export async function notifyOwnerOfMatches(
     console.error('Match notification error:', error);
   }
 }
-
-
-// ============================================
-// INTEGRATION:
-// In src/services/matchingService.ts, at the end of findMatchesForLostItem():
-//
-// import { notifyOwnerOfMatches } from './matchNotificationTrigger';
-//
-// // After computing and storing matches:
-// if (matches.length > 0) {
-//   notifyOwnerOfMatches(lostItemId, matches).catch(err =>
-//     console.error('Match notification failed:', err)
-//   );
-// }
-// ============================================

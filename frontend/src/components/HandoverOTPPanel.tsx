@@ -1,12 +1,10 @@
-// frontend/src/components/HandoverOTPPanel.tsx
-
 import React, { useMemo, useEffect, useState } from 'react';
 import { handoverApi, getErrorMessage } from '../services/api';
 import { useTranslation } from 'react-i18next';
 
 interface HandoverOTPPanelProps {
   claimId: number;
-  claimStatus: string; // expects "VERIFIED" before OTP is allowed
+  claimStatus: string;
   userRole: 'owner' | 'finder' | 'coop_staff';
   userId: number;
   claimantId: number;
@@ -42,7 +40,6 @@ export const HandoverOTPPanel: React.FC<HandoverOTPPanelProps> = ({
   const [success, setSuccess] = useState('');
   const [showOTP, setShowOTP] = useState(false);
 
-  // ✅ Correct authorization
   // Owner is the claimant only
   const isOwner = useMemo(
     () => userRole === 'owner' && userId === claimantId,
@@ -56,7 +53,7 @@ export const HandoverOTPPanel: React.FC<HandoverOTPPanelProps> = ({
   const isUnauthorized = !isOwner && !isFinder && !isCoopStaff;
   const isVerifiedClaim = claimStatus === 'VERIFIED';
 
-  // ✅ UI gates to prevent guaranteed 400/403 calls
+  // UI gates to prevent guaranteed 400/403 calls
   const canGenerateOtp = isOwner && isVerifiedClaim && !(status?.has_otp && !status?.is_expired);
   const canVerifyOtp =
     (isFinder || isCoopStaff) &&
@@ -76,7 +73,7 @@ export const HandoverOTPPanel: React.FC<HandoverOTPPanelProps> = ({
     }
   };
 
-  // ✅ Important: re-fetch when claimStatus changes to VERIFIED
+  // Important: re-fetch when claimStatus changes to VERIFIED
   useEffect(() => {
     if (isUnauthorized) return;
 

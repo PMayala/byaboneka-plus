@@ -3,18 +3,6 @@ import { Link } from 'react-router-dom';
 import { Shield, ArrowLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-/**
- * PrivacyPolicyPage — PRODUCTION VERSION
- *
- * Replaces the placeholder privacy policy with content that:
- * 1. Complies with Rwanda's Data Protection Law (Law N°058/2021)
- * 2. Covers all data collected by Byaboneka+
- * 3. Explains user rights (access, rectification, erasure, portability)
- * 4. Describes trust score processing transparently
- * 5. Covers cookie usage and consent
- *
- * FILE: frontend/src/pages/PrivacyPolicyPage.tsx (FULL REPLACEMENT)
- */
 const PrivacyPolicyPage: React.FC = () => {
   const { t } = useTranslation();
 

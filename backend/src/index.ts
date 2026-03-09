@@ -26,7 +26,8 @@ import { runFinalProductionMigration } from './migrations/005_final_production_f
 import { runComprehensiveBugfixMigration } from './migrations/006_comprehensive_bugfix';
 import { runLogicRefactorMigration } from './migrations/007_logic_refactor';
 import { runClaimFlowFixMigration } from './migrations/008_claim_flow_fixes';
-import { runHandoverSchemaFix } from './migrations/009_handover_schema_fix'; // ← NEW
+import { runHandoverSchemaFix } from './migrations/009_handover_schema_fix'; 
+import { runCrudFixMigration } from './migrations/010_crud_fixes';
 
 
 
@@ -74,7 +75,7 @@ if (process.env.NODE_ENV !== 'test') {
   app.use(morgan('dev'));
 }
 
-// Body parsing — 1MB limit to prevent DoS (security fix)
+// Body parsing — 1MB limit to prevent DoS
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
@@ -103,7 +104,7 @@ console.log('📖 API docs available at /api-docs');
 // ROUTES
 // ============================================
 
-// API routes (core + enhanced + novel features)
+// API routes
 app.use('/api/v1', routes);
 app.use('/api/v1', enhancedRoutes);
 app.use('/api/v1', novelFeatureRoutes);
@@ -119,7 +120,7 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 // ============================================
-// ERROR HANDLING (using middleware from errorHandler.ts)
+// ERROR HANDLING
 // ============================================
 
 app.use(notFoundHandler);
@@ -291,6 +292,7 @@ async function startServer() {
     await runLogicRefactorMigration().catch(err => console.warn('Logic refactor migration note:', err.message));
     await runClaimFlowFixMigration().catch(err => console.warn('Claim flow fix migration note:', err.message));
     await runHandoverSchemaFix().catch(err => console.warn('Handover schema fix migration note:', err.message)); // ← NEW
+    await runCrudFixMigration().catch(err => console.warn('CRUD fix migration note:', err.message));
 
     // Create uploads directory if it doesn't exist
     if (!fs.existsSync(uploadPath)) {

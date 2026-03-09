@@ -7,8 +7,6 @@
  * verification questions. This service scores questions on specificity,
  * guessability, and redundancy, then gives users actionable feedback.
  * 
- * Also provides category-specific question templates as defined in
- * Algorithm Spec section 3.2.2 (was missing from codebase).
  */
 
 // ============================================

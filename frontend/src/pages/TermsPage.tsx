@@ -3,20 +3,6 @@ import { Link } from 'react-router-dom';
 import { FileText, ArrowLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-/**
- * TermsPage — PRODUCTION VERSION
- *
- * Replaces the placeholder Terms of Service with real content covering:
- * 1. Platform usage rules
- * 2. User responsibilities (accurate reporting, no fraud)
- * 3. Trust score system explanation
- * 4. Verification and handover protocols
- * 5. Prohibited conduct
- * 6. Limitation of liability
- * 7. Account termination conditions
- *
- * FILE: frontend/src/pages/TermsPage.tsx (FULL REPLACEMENT)
- */
 const TermsPage: React.FC = () => {
   const { t } = useTranslation();
 

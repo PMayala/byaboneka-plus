@@ -50,7 +50,7 @@ import { fraudCheck } from '../services/fraudDetectionService';
 import { requireRecaptcha, softRecaptcha } from '../middleware/recaptcha';
 import { checkEmailHealth, sendContactFormEmail } from '../services/emailService';
 import { requireConsent } from '../middleware/consent';
-import { deleteAccount, exportUserData } from '../controllers/accountController';
+import { deleteAccount, exportUserData, exportDataPreview } from '../controllers/accountController';
 import { getCooperativeAccountability } from '../services/cooperativeAccountabilityService';
 
 const router = Router();
@@ -102,6 +102,7 @@ router.post('/auth/change-password', authenticate, authController.changePassword
 // ============================================
 
 router.delete('/users/me', authenticate, deleteAccount);
+router.get('/users/me/export/preview', authenticate, exportDataPreview);
 router.get('/users/me/export', authenticate, exportUserData);
 
 // ============================================
@@ -154,7 +155,7 @@ router.get('/found-items/:id/matches', authenticate, foundItemsController.getFou
 router.get('/users/me/found-items', authenticate, foundItemsController.getMyFoundItems);
 
 // ─────────────────────────────────────────────────────────────────────────────
-// FIX: GET /found-items/:foundItemId/claims
+// GET /found-items/:foundItemId/claims
 // Returns claims on a found item to the finder.
 // Powers the "pending claim alert" on FoundItemDetailPage and Dashboard.
 // ─────────────────────────────────────────────────────────────────────────────

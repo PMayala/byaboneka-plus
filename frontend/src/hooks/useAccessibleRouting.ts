@@ -51,15 +51,3 @@ export function useAccessibleRouting(): void {
 }
 
 export default useAccessibleRouting;
-
-// ============================================
-// INTEGRATION:
-// In your App.tsx or router wrapper:
-//
-// import { useAccessibleRouting } from './hooks/useAccessibleRouting';
-//
-// function AppRoutes() {
-//   useAccessibleRouting();
-//   return <Routes>...</Routes>;
-// }
-// ============================================

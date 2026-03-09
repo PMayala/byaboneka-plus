@@ -1,8 +1,5 @@
 // ============================================
 // PERFORMANCE / LOAD TEST
-// File: tests/performance/load-test.ts
-// Gap Fix #17: No performance testing
-//
 // Run: npx ts-node tests/performance/load-test.ts
 //
 // Tests the API against the NFR requirement:

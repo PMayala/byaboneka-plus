@@ -10,6 +10,7 @@ import { LostItem, FoundItem, Claim, CATEGORY_INFO, STATUS_INFO, ItemCategory } 
 import { formatDate, formatDateShort } from '../utils/dateUtils';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+
 const MyItemsPage: React.FC = () => {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -22,9 +23,11 @@ const MyItemsPage: React.FC = () => {
     isOpen: false, type: 'lost', id: null
   });
   const [deleting, setDeleting] = useState(false);
+
   useEffect(() => {
     loadData();
   }, []);
+
   const loadData = async () => {
     setLoading(true);
     try {
@@ -43,10 +46,12 @@ const MyItemsPage: React.FC = () => {
       setLoading(false);
     }
   };
+
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
     setSearchParams({ tab });
   };
+
   const handleDelete = async () => {
     if (!deleteModal.id) return;
     setDeleting(true);
@@ -67,6 +72,7 @@ const MyItemsPage: React.FC = () => {
       setDeleting(false);
     }
   };
+
   const getStatusBadge = (status: string) => {
     const info = STATUS_INFO[status] || { label: status, color: 'gray' };
     const variantMap: Record<string, 'active' | 'verified' | 'pending' | 'expired' | 'danger'> = {
@@ -74,11 +80,13 @@ const MyItemsPage: React.FC = () => {
     };
     return <Badge variant={variantMap[info.color] || 'default'} dot>{info.label}</Badge>;
   };
+
   const tabs = [
     { id: 'lost', label: t('myItems.lostItems'), icon: <FileText className="w-4 h-4" />, count: lostItems.length },
     { id: 'found', label: t('myItems.foundItems'), icon: <Package className="w-4 h-4" />, count: foundItems.length },
     { id: 'claims', label: t('myItems.claims'), icon: <CheckCircle className="w-4 h-4" />, count: claims.length },
   ];
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -86,23 +94,26 @@ const MyItemsPage: React.FC = () => {
       </div>
     );
   }
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-6 sm:py-8">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">{t('myItems.title')}</h1>
-          <p className="text-gray-600">Manage your lost and found reports</p>
+          <p className="text-gray-600">{t('myItems.subtitle')}</p>
         </div>
         <div className="flex gap-2">
           <Link to="/report-lost">
-            <Button variant="outline" size="sm" leftIcon={<Plus className="w-4 h-4" />}>Report Lost</Button>
+            <Button variant="outline" size="sm" leftIcon={<Plus className="w-4 h-4" />}>{t('myItems.reportLostBtn')}</Button>
           </Link>
           <Link to="/report-found">
-            <Button size="sm" leftIcon={<Plus className="w-4 h-4" />}>Report Found</Button>
+            <Button size="sm" leftIcon={<Plus className="w-4 h-4" />}>{t('myItems.reportFoundBtn')}</Button>
           </Link>
         </div>
       </div>
+
       <Tabs tabs={tabs} activeTab={activeTab} onChange={handleTabChange} className="mb-6" />
+
       {/* Lost Items Tab */}
       {activeTab === 'lost' && (
         <div>
@@ -110,8 +121,8 @@ const MyItemsPage: React.FC = () => {
             <Card padding="lg">
               <EmptyState
                 icon={<FileText className="w-16 h-16" />}
-                title="No lost items"
-                description="Haven't lost anything? Great! If you do, report it here."
+                title={t('myItems.noLostItemsTitle')}
+                description={t('myItems.noLostItemsDesc')}
                 action={<Link to="/report-lost"><Button>{t('dashboard.reportLost')}</Button></Link>}
               />
             </Card>
@@ -134,17 +145,17 @@ const MyItemsPage: React.FC = () => {
                           <span className="flex items-center gap-1"><MapPin className="w-4 h-4" /> {item.location_area}</span>
                           <span className="flex items-center gap-1"><Calendar className="w-4 h-4" /> {formatDateShort(item.lost_date)}</span>
                           {item.match_count !== undefined && item.match_count > 0 && (
-                            <Badge variant="info">{item.match_count} potential matches</Badge>
+                            <Badge variant="info">{t('myItems.potentialMatches', { count: item.match_count })}</Badge>
                           )}
                         </div>
                       </div>
                     </div>
                     <div className="flex sm:flex-col gap-2 sm:items-end">
                       <Link to={`/lost-items/${item.id}`} className="flex-1 sm:flex-none">
-                        <Button variant="secondary" size="sm" fullWidth leftIcon={<Eye className="w-4 h-4" />}>View</Button>
+                        <Button variant="secondary" size="sm" fullWidth leftIcon={<Eye className="w-4 h-4" />}>{t('myItems.viewBtn')}</Button>
                       </Link>
                       <Link to={`/lost-items/${item.id}/edit`} className="flex-1 sm:flex-none">
-                        <Button variant="ghost" size="sm" fullWidth leftIcon={<Edit2 className="w-4 h-4" />}>Edit</Button>
+                        <Button variant="ghost" size="sm" fullWidth leftIcon={<Edit2 className="w-4 h-4" />}>{t('myItems.editBtn')}</Button>
                       </Link>
                       <Button 
                         variant="ghost" 
@@ -153,7 +164,7 @@ const MyItemsPage: React.FC = () => {
                         leftIcon={<Trash2 className="w-4 h-4" />}
                         onClick={() => setDeleteModal({ isOpen: true, type: 'lost', id: item.id })}
                       >
-                        Delete
+                        {t('myItems.deleteBtn')}
                       </Button>
                     </div>
                   </div>
@@ -163,6 +174,7 @@ const MyItemsPage: React.FC = () => {
           )}
         </div>
       )}
+
       {/* Found Items Tab */}
       {activeTab === 'found' && (
         <div>
@@ -170,8 +182,8 @@ const MyItemsPage: React.FC = () => {
             <Card padding="lg">
               <EmptyState
                 icon={<Package className="w-16 h-16" />}
-                title="No found items"
-                description="Found something? Help return it to its owner!"
+                title={t('myItems.noFoundItemsTitle')}
+                description={t('myItems.noFoundItemsDesc')}
                 action={<Link to="/report-found"><Button>{t('dashboard.reportFound')}</Button></Link>}
               />
             </Card>
@@ -203,10 +215,10 @@ const MyItemsPage: React.FC = () => {
                     </div>
                     <div className="flex sm:flex-col gap-2 sm:items-end">
                       <Link to={`/found-items/${item.id}`} className="flex-1 sm:flex-none">
-                        <Button variant="secondary" size="sm" fullWidth leftIcon={<Eye className="w-4 h-4" />}>View</Button>
+                        <Button variant="secondary" size="sm" fullWidth leftIcon={<Eye className="w-4 h-4" />}>{t('myItems.viewBtn')}</Button>
                       </Link>
                       <Link to={`/found-items/${item.id}/edit`} className="flex-1 sm:flex-none">
-                        <Button variant="ghost" size="sm" fullWidth leftIcon={<Edit2 className="w-4 h-4" />}>Edit</Button>
+                        <Button variant="ghost" size="sm" fullWidth leftIcon={<Edit2 className="w-4 h-4" />}>{t('myItems.editBtn')}</Button>
                       </Link>
                       <Button 
                         variant="ghost" 
@@ -215,7 +227,7 @@ const MyItemsPage: React.FC = () => {
                         leftIcon={<Trash2 className="w-4 h-4" />}
                         onClick={() => setDeleteModal({ isOpen: true, type: 'found', id: item.id })}
                       >
-                        Delete
+                        {t('myItems.deleteBtn')}
                       </Button>
                     </div>
                   </div>
@@ -225,6 +237,7 @@ const MyItemsPage: React.FC = () => {
           )}
         </div>
       )}
+
       {/* Claims Tab */}
       {activeTab === 'claims' && (
         <div>
@@ -232,8 +245,8 @@ const MyItemsPage: React.FC = () => {
             <Card padding="lg">
               <EmptyState
                 icon={<CheckCircle className="w-16 h-16" />}
-                title="No claims yet"
-                description="When you find a potential match, create a claim to verify ownership"
+                title={t('myItems.noClaimsTitle')}
+                description={t('myItems.noClaimsDesc')}
                 action={<Link to="/search"><Button>{t('myItems.searchItems')}</Button></Link>}
               />
             </Card>
@@ -249,7 +262,7 @@ const MyItemsPage: React.FC = () => {
                         </div>
                         <div>
                           <h3 className="font-semibold text-gray-900">{claim.lost_item_title || claim.found_item_title || `Claim #${claim.id}`}</h3>
-                          <p className="text-sm text-gray-500">Created {formatDate(claim.created_at)}</p>
+                          <p className="text-sm text-gray-500">{t('myItems.claimCreated', { date: formatDate(claim.created_at) })}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
@@ -263,7 +276,7 @@ const MyItemsPage: React.FC = () => {
                       <Alert type="info" className="mt-4">
                         <div className="flex items-center gap-2">
                           <Clock className="w-4 h-4" />
-                          <span>Verification needed - Answer the owner's questions to prove this is your item</span>
+                          <span>{t('myItems.verificationNeeded')}</span>
                         </div>
                       </Alert>
                     )}
@@ -274,15 +287,16 @@ const MyItemsPage: React.FC = () => {
           )}
         </div>
       )}
+
       {/* Delete Confirmation Modal */}
       <ConfirmModal
         isOpen={deleteModal.isOpen}
         onClose={() => setDeleteModal({ isOpen: false, type: 'lost', id: null })}
         onConfirm={handleDelete}
-        title="Delete Item?"
-        message={`Are you sure you want to delete this ${deleteModal.type} item? This action cannot be undone.`}
-        confirmText="Delete"
-        cancelText="Cancel"
+        title={t('myItems.deleteItemTitle')}
+        message={t('myItems.deleteItemMessage', { type: deleteModal.type === 'lost' ? t('myItems.lostItems').toLowerCase() : t('myItems.foundItems').toLowerCase() })}
+        confirmText={t('myItems.deleteConfirmBtn')}
+        cancelText={t('myItems.cancelBtn')}
         variant="danger"
         loading={deleting}
       />

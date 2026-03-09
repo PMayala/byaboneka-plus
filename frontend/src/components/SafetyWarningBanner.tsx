@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 /**
  * SafetyWarningBanner Component for Byaboneka+
  * 
- * Implements COMM-04: Auto-warning banner "Never pay..."
+ * Auto-warning banner "Never pay..."
  * Displayed on every message thread to remind users about safe practices
  */
 interface SafetyWarningBannerProps {

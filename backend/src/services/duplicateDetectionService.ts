@@ -1,7 +1,7 @@
 /**
- * Duplicate Detection Service for Byaboneka+
+ * Duplicate Detection Service
  * 
- * Implements SYS-05: Duplicate detection for similar reports
+ * Duplicate detection for similar reports
  * Uses fuzzy matching to identify potentially duplicate reports
  */
 

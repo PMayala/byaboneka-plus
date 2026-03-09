@@ -4,7 +4,7 @@ import { TrustLevel } from '../types';
 
 // ============================================
 // TRUST SCORE TRANSPARENCY SERVICE
-// Fills audit gap: "Users can see their score but NOT how it's calculated"
+// "Users can see their score but NOT how it's calculated"
 // ============================================
 
 export interface TrustScoreExplanation {

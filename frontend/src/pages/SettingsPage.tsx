@@ -22,17 +22,6 @@ import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-/**
- * Enhanced SettingsPage
- * 
- * Features:
- * - Profile management
- * - Password & security settings
- * - Data privacy & export (GDPR compliance)
- * - Account deletion (Right to erasure)
- * - Comprehensive data management
- */
-
 interface DataExportPreview {
   total_lost_items: number;
   total_found_items: number;
@@ -150,7 +139,7 @@ const SettingsPage: React.FC = () => {
         setDataPreview(response.data.data);
       }
     } catch (error: any) {
-      toast.error('Failed to load data preview');
+      toast.error(t('settings.previewLoadFailed'));
     } finally {
       setPreviewLoading(false);
     }
@@ -174,7 +163,7 @@ const SettingsPage: React.FC = () => {
       a.click();
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
-      toast.success('Your data has been exported successfully');
+      toast.success(t('settings.dataExportSuccess'));
     } catch (error: any) {
       toast.error(
         error.response?.data?.message || t('settings.exportFailed')
@@ -201,7 +190,7 @@ const SettingsPage: React.FC = () => {
         password: deletePassword,
         confirmation: deleteConfirmation,
       });
-      toast.success('Your account and all personal data have been deleted');
+      toast.success(t('settings.accountDeletedMsg'));
       logout();
       navigate('/');
     } catch (error: any) {
@@ -225,7 +214,7 @@ const SettingsPage: React.FC = () => {
   const tabs = [
     { id: 'profile', label: t('settings.profile'), icon: User },
     { id: 'security', label: t('settings.security'), icon: Shield },
-    { id: 'data', label: 'Data & Privacy', icon: Database },
+    { id: 'data', label: t('settings.dataPrivacyTab'), icon: Database },
   ];
 
   return (
@@ -566,8 +555,7 @@ const SettingsPage: React.FC = () => {
                   </h2>
                 </div>
                 <p className="text-gray-600 text-sm mb-4">
-                  {t('settings.exportDescription')} Download all your personal
-                  data in JSON format (GDPR compliant).
+                  {t('settings.exportDescription')}
                 </p>
 
                 {!dataPreview && (
@@ -577,55 +565,55 @@ const SettingsPage: React.FC = () => {
                     variant="secondary"
                     className="mb-4"
                   >
-                    View Data Preview
+                    {t("settings.viewDataPreview")}
                   </Button>
                 )}
 
             {dataPreview && (
               <div className="bg-blue-50 rounded-lg p-4 mb-4 border border-blue-200">
                 <h3 className="font-medium text-blue-900 mb-3">
-                  Your Data Summary
+                  {t("settings.yourDataSummary")}
                 </h3>
 
                 <div className="grid grid-cols-2 gap-3 text-sm">
                   <div>
                     <p className="text-blue-700">
-                      Total Claims:{' '}
+                      {t("settings.totalClaimsLabel")}:{' '}
                       <span className="font-bold">{dataPreview.total_claims}</span>
                     </p>
                   </div>
 
                   <div>
                     <p className="text-blue-700">
-                      Lost Items:{' '}
+                      {t("settings.lostItemsLabel")}:{' '}
                       <span className="font-bold">{dataPreview.total_lost_items}</span>
                     </p>
                   </div>
 
                   <div>
                     <p className="text-blue-700">
-                      Found Items:{' '}
+                      {t("settings.foundItemsLabel")}:{' '}
                       <span className="font-bold">{dataPreview.total_found_items}</span>
                     </p>
                   </div>
 
                   <div>
                     <p className="text-blue-700">
-                      Messages:{' '}
+                      {t("settings.messagesLabel")}:{' '}
                       <span className="font-bold">{dataPreview.total_messages}</span>
                     </p>
                   </div>
 
                   <div>
                     <p className="text-blue-700">
-                      Disputes:{' '}
+                      {t("settings.disputesLabel")}:{' '}
                       <span className="font-bold">{dataPreview.total_disputes}</span>
                     </p>
                   </div>
 
                   <div>
                     <p className="text-blue-700">
-                      Estimated Size:{' '}
+                      {t("settings.estimatedSizeLabel")}:{' '}
                       <span className="font-bold">
                         {(dataPreview.estimated_size_bytes / 1024 / 1024).toFixed(2)} MB
                       </span>
@@ -654,8 +642,7 @@ const SettingsPage: React.FC = () => {
                   </h2>
                 </div>
                 <p className="text-gray-600 text-sm mb-4">
-                  {t('settings.deleteWarning')} This action is permanent and
-                  cannot be undone.
+                  {t('settings.deleteWarning')}
                 </p>
 
                 {!showDeleteSection ? (

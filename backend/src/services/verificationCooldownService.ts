@@ -1,5 +1,5 @@
 /**
- * Verification Cooldown Service for Byaboneka+
+ * Verification Cooldown Service
  * 
  * Implements CLAIM-04/05: Progressive cooldown for failed verification attempts
  * - 1 hour after first failure

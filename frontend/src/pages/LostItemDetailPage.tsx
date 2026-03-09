@@ -91,7 +91,7 @@ const LostItemDetailPage: React.FC = () => {
       toast.success(t('items.deleteSuccess'));
       navigate('/my-items');
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to delete item');
+      toast.error(error.response?.data?.message || t('items.deleteFailed'));
     } finally {
       setDeleting(false);
       setShowDeleteModal(false);
@@ -103,9 +103,9 @@ const LostItemDetailPage: React.FC = () => {
     try {
       await lostItemsApi.dismissMatch(parseInt(id!), foundItemId);
       setMatches(prev => prev.filter(m => m.found_item?.id !== foundItemId));
-      toast.success('Match dismissed');
+      toast.success(t('items.matchDismissed'));
     } catch (error) {
-      toast.error('Failed to dismiss match');
+      toast.error(t('errors.generic'));
     }
   };
 
@@ -120,7 +120,7 @@ const LostItemDetailPage: React.FC = () => {
   if (!item) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-12 text-center">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">Item Not Found</h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">{t("common.itemNotFound")}</h1>
         <Link to="/search">
           <Button>{t('items.backToSearch')}</Button>
         </Link>
@@ -189,7 +189,7 @@ const LostItemDetailPage: React.FC = () => {
             {/* Images */}
             {item.image_urls && item.image_urls.length > 0 && (
               <div className="mb-6">
-                <h3 className="font-semibold text-gray-900 mb-2">Photos</h3>
+                <h3 className="font-semibold text-gray-900 mb-2">{t('items.photosHeading')}</h3>
                 <div className="grid grid-cols-3 gap-2">
                   {item.image_urls.map((url, i) => (
                     <img
@@ -205,13 +205,13 @@ const LostItemDetailPage: React.FC = () => {
 
             {/* Description */}
             <div className="mb-6">
-              <h3 className="font-semibold text-gray-900 mb-2">Description</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">{t('items.descriptionHeading')}</h3>
               <p className="text-gray-600 whitespace-pre-wrap">{item.description}</p>
             </div>
 
             {item.location_hint && (
               <div className="mb-6">
-                <h3 className="font-semibold text-gray-900 mb-2">Location Details</h3>
+                <h3 className="font-semibold text-gray-900 mb-2">{t('items.locationDetailsHeading')}</h3>
                 <p className="text-gray-600">{item.location_hint}</p>
               </div>
             )}
@@ -254,7 +254,7 @@ const LostItemDetailPage: React.FC = () => {
                 <LoadingSpinner />
               ) : matches.length === 0 ? (
                 <div className="text-center py-8">
-                  <p className="text-gray-500 mb-2">No matches found yet</p>
+                  <p className="text-gray-500 mb-2">{t('items.noMatchesYet')}</p>
                   <p className="text-sm text-gray-400">
                     We'll notify you when someone reports a similar found item
                   </p>
@@ -381,10 +381,10 @@ const LostItemDetailPage: React.FC = () => {
       <Modal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
-        title="Delete Lost Item"
+        title={t("items.deleteLostItem")}
       >
         <p className="text-gray-600 mb-6">
-          Are you sure you want to delete this lost item report? This action cannot be undone.
+          {t('items.deleteConfirmLost')}
         </p>
         <div className="flex justify-end gap-3">
           <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>

@@ -67,7 +67,7 @@ export async function createFoundItem(req: Request, res: Response): Promise<void
   }
 }
 
-// Get all found items (public, with filters) — WITH REDACTION (THREAT-7.4)
+// Get all found items (public, with filters)
 export async function getFoundItems(req: Request, res: Response): Promise<void> {
   try {
     const { page, limit, offset } = parsePaginationParams(
@@ -136,11 +136,7 @@ export async function getFoundItems(req: Request, res: Response): Promise<void> 
     );
 
     const userId = req.user?.userId;
-
-    // THREAT-7.4: Apply sensitive content redaction to list results
     const redactedItems = redactItemList(result.rows, userId);
-
-    // THREAT-7.4: Hide images unless finder/coop_staff/admin (ALL categories)
     for (const item of redactedItems) {
       const canSeeImages =
         (userId !== undefined && item.finder_id === userId) ||
@@ -168,8 +164,6 @@ export async function getFoundItems(req: Request, res: Response): Promise<void> 
   }
 }
 
-// Get single found item — WITH REDACTION (THREAT-7.4)
-// Get single found item — WITH REDACTION (THREAT-7.4)
 export async function getFoundItem(req: Request, res: Response): Promise<void> {
   try {
     const { id } = req.params;
@@ -193,13 +187,11 @@ export async function getFoundItem(req: Request, res: Response): Promise<void> {
 
     const isOwner = userId === item.finder_id;
 
-    // THREAT-7.4: Only show images to finder, coop staff, or admin
     const canSeeImages =
       userId === item.finder_id ||
       req.user?.role === 'coop_staff' ||
       req.user?.role === 'admin';
 
-    // THREAT-7.4: Apply redaction for non-owners
     if (!isOwner) {
       // Redact sensitive patterns in description
       const descResult = redactSensitiveContent(item.description, item.category, false);
@@ -218,7 +210,6 @@ export async function getFoundItem(req: Request, res: Response): Promise<void> {
       }
     }
 
-    // THREAT-7.4: Hide images from public unless allowed (ALL categories)
     if (!canSeeImages) {
       item.image_urls = [];
       item._images_hidden = true;
@@ -304,17 +295,21 @@ export async function deleteFoundItem(req: Request, res: Response): Promise<void
 
     // Don't allow deletion if there's an active claim
     const activeClaim = await query(
-      `SELECT id FROM claims WHERE found_item_id = $1 AND status IN ('PENDING', 'VERIFIED')`,
+      `SELECT id FROM claims WHERE found_item_id = $1 AND status IN ('PENDING', 'PENDING_QUESTIONS', 'VERIFIED')`,
       [id]
     );
 
     if (activeClaim.rows.length > 0) {
       res.status(400).json({
         success: false,
-        message: 'Cannot delete found item with an active claim'
+        message: 'Cannot delete found item with an active claim. Cancel or resolve the claim first.'
       });
       return;
     }
+
+    // Clean up terminal claims and matches before delete
+    try { await query(`DELETE FROM claims WHERE found_item_id = $1 AND status IN ('CANCELLED','REJECTED','EXPIRED')`, [id]); } catch (e) {}
+    try { await query('DELETE FROM matches WHERE found_item_id = $1', [id]); } catch (e) {}
 
     await query('DELETE FROM found_items WHERE id = $1', [id]);
     await logDelete(req, 'found_item', parseInt(id), existing.rows[0]);

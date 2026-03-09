@@ -1,9 +1,9 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 /**
- * DuplicateWarning Component for Byaboneka+
+ * DuplicateWarning Component
  * 
- * Implements SYS-05: Duplicate detection warning
+ * Duplicate detection warning
  * Shows users potential duplicate items before they create a new report
  */
 interface DuplicateCandidate {

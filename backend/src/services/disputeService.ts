@@ -1,7 +1,7 @@
 /**
- * Dispute Service for Byaboneka+
+ * Dispute Service
  * 
- * Implements CLAIM-07: Dispute mechanism for edge cases
+ * Dispute mechanism for edge cases
  * Allows users to dispute claims when verification fails despite ownership,
  * or when there are issues with the handover process.
  */

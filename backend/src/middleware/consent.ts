@@ -1,7 +1,5 @@
 // ============================================
 // CONSENT VALIDATION MIDDLEWARE
-// File: src/middleware/consent.ts
-// Gap Fix: Registration consent (Research Proposal 3.2.4)
 // ============================================
 
 import { Request, Response, NextFunction } from 'express';
@@ -45,19 +43,3 @@ export function requireConsent(req: Request, res: Response, next: NextFunction):
 
   next();
 }
-
-
-// ============================================
-// HOW TO INTEGRATE:
-// ============================================
-// In src/routes/index.ts, update the register route:
-//
-// import { requireConsent } from '../middleware/consent';
-//
-// router.post('/auth/register',
-//   authLimiter,
-//   requireConsent,              // <-- ADD THIS LINE
-//   requireRecaptcha('register'),
-//   validate(registerSchema),
-//   authController.register
-// );

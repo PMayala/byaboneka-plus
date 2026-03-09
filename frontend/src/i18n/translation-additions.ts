@@ -1,6 +1,5 @@
 // ============================================
 // TRANSLATION KEYS TO ADD
-// File: Add these to en.json, fr.json, rw.json
 // ============================================
 
 // --- ENGLISH (en.json) --- Add to respective sections:

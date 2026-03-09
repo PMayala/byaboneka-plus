@@ -251,7 +251,7 @@ export async function runMigrations(): Promise<void> {
     )
   `);
   await query(`CREATE INDEX IF NOT EXISTS idx_handover_claim ON handover_confirmations(claim_id)`);
-  // FIX: Use a DO block so this works whether the table is freshly created (expires_at)
+  // Use a DO block so this works whether the table is freshly created (expires_at)
   // or was created by an old migration and already renamed by 009 (also expires_at),
   // or is a legacy DB where 009 hasn't run yet (otp_expires_at). Never crashes.
   await query(`

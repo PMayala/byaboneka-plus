@@ -10,10 +10,6 @@ import { formatDate, formatDateShort, formatDateTime } from '../utils/dateUtils'
 import { useTranslation } from 'react-i18next';
 /**
  * AdminDashboardPage - FIXED VERSION
- * 
- * FIX #2: Uses proper AdminStats type that matches backend response
- * FIX #12: Only links to pages that actually exist
- * FIX: Added Fraud Dashboard link to Quick Actions
  */
 const AdminDashboardPage: React.FC = () => {
   const { t } = useTranslation();

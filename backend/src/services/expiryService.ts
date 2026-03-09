@@ -107,8 +107,7 @@ export async function expireStaleClaims(): Promise<number> {
   return result.rowCount || 0;
 }
 
-// Revoke expired OTPs (cleanup only, validation already checks expiry)
-// FIX: column renamed from otp_expires_at → expires_at by migration 009
+// Revoke expired OTPs
 export async function cleanupExpiredOTPs(): Promise<number> {
   const result = await query(
     `DELETE FROM handover_confirmations
