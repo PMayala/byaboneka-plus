@@ -430,7 +430,6 @@
     "searchingMatches": "Searching…",
     "findMatchesHint": "Click \"Find Matches\" to search for lost items that match this report.",
     "potentialMatchingLost": "Potential Matching Lost Items",
-    "potentialMatches": "Potential Matches",
     "noMatchesYet": "No matches found yet",
     "notifyOnMatch": "We'll notify you when someone reports a similar found item",
     "matchDismissed": "Match dismissed",
@@ -504,8 +503,7 @@
     "progressItemReturned": "Item Returned",
     "relatedItems": "Related Items",
     "viewLostItemReport": "View Lost Item Report",
-    "viewFoundItemReport": "View Found Item Report",
-    "verificationFailed": "Verification failed"
+    "viewFoundItemReport": "View Found Item Report"
   },
   "handover": {
     "title": "Handover",

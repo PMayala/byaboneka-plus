@@ -430,7 +430,6 @@
     "searchingMatches": "Recherche…",
     "findMatchesHint": "Cliquez sur « Trouver des correspondances » pour rechercher des objets perdus correspondants.",
     "potentialMatchingLost": "Objets perdus potentiellement correspondants",
-    "potentialMatches": "Correspondances potentielles",
     "noMatchesYet": "Aucune correspondance trouvée",
     "notifyOnMatch": "Nous vous notifierons lorsque quelqu'un signalera un objet trouvé similaire",
     "matchDismissed": "Correspondance rejetée",
@@ -469,7 +468,7 @@
     "tooManyAttempts": "Trop de tentatives de vérification. Veuillez réessayer demain.",
     "answerAll": "Veuillez répondre à toutes les questions",
     "verificationSuccess": "Vérification réussie ! Vous pouvez maintenant procéder à la remise.",
-    "verificationFailed": "Vérification échouée. {{correct}}/{{total}} correctes. {{remaining}} tentatives restantes.",
+    "verificationFailed": "Échec de la vérification",
     "sendMessage": "Envoyer",
     "typeMessage": "Tapez votre message...",
     "yourAnswer": "Votre réponse",
@@ -504,8 +503,7 @@
     "progressItemReturned": "Objet restitué",
     "relatedItems": "Objets associés",
     "viewLostItemReport": "Voir le signalement d'objet perdu",
-    "viewFoundItemReport": "Voir le signalement d'objet trouvé",
-    "verificationFailed": "Échec de la vérification"
+    "viewFoundItemReport": "Voir le signalement d'objet trouvé"
   },
   "handover": {
     "title": "Remise",
@@ -651,7 +649,7 @@
     "deleteWarningFull": "Cette action est permanente et ne peut pas être annulée.",
     "dataExportSuccess": "Vos données ont été exportées avec succès",
     "accountDeletedMsg": "Votre compte et vos données personnelles ont été supprimés",
-    "previewLoadFailed": "Échec du chargement de l'aperçu des données",
+    "previewLoadFailed": "Échec du chargement de l'aperçu des données"
   },
   "leaderboard": {
     "title": "Classement de responsabilité des coopératives",
