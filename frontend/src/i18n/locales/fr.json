@@ -278,7 +278,7 @@
     "clearFilters": "Effacer les filtres",
     "showingResults": "Affichage de {{from}}-{{to}} sur {{total}}",
     "previousPage": "Précédent",
-    "nextPage": "Suivant",
+    "nextPage": "Suivant"
   },
   "reportLost": {
     "title": "Signaler un objet perdu",
