@@ -84,7 +84,7 @@ const HomePage: React.FC = () => {
               </Link>
             </div>
           </div>
-          {/* Stats */}
+          {/*
           <div className="mt-12 sm:mt-16 grid grid-cols-3 gap-4 sm:gap-8 max-w-2xl mx-auto">
             {[
               { value: stats.lost + stats.found, label: t('home.itemsReported') },
@@ -99,6 +99,7 @@ const HomePage: React.FC = () => {
               </div>
             ))}
           </div>
+          */}
         </div>
       </section>
       {/* Quick Search Bar - FIX: Now actually submits search query */}
