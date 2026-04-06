@@ -4,16 +4,16 @@
  * Implements CLAIM-04/05: Progressive cooldown for failed verification attempts
  * - 1 hour after first failure
  * - 4 hours after second failure
- * - 24 hours after third failure
+ * - 8 hours after third failure
  */
 
 import { query } from '../config/database';
 
 // Cooldown durations in milliseconds
 const COOLDOWN_DURATIONS = {
-  1: 60 * 60 * 1000,        // 1 hour after 1 failure
-  2: 4 * 60 * 60 * 1000,    // 4 hours after 2 failures  
-  3: 24 * 60 * 60 * 1000    // 24 hours after 3 failures
+  1: 60 * 60 * 1000,        // 1 hour
+  2: 4 * 60 * 60 * 1000,    // 4 hours  
+  3: 8 * 60 * 60 * 1000     // 8 hours 
 };
 
 const MAX_DAILY_ATTEMPTS = 3;

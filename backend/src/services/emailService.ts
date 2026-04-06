@@ -1,6 +1,6 @@
 /**
  * ============================================
- * Brevo (Sendinblue) Email Service for Byaboneka+
+ * Brevo (Sendinblue) Email Service
  * ============================================
  * 
  * Handles all transactional emails:

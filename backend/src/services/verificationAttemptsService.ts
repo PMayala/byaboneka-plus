@@ -30,11 +30,11 @@ export async function getVerificationLimits(params: {
   const failuresToday = rows.filter(r => r.attempt_status === 'FAILED').length;
 
   // Progressive cooldown based on failures today
-  // 1st fail -> 1 hour, 2nd -> 4 hours, 3rd+ -> 24 hours
+  // 1st fail -> 1 hour, 2nd -> 4 hours, 3rd+ -> 8 hours
   const cooldownMinutes =
     failuresToday <= 0 ? 0 :
     failuresToday === 1 ? 60 :
-    failuresToday === 2 ? 240 : 1440;
+    failuresToday === 2 ? 240 : 480;
 
   if (cooldownMinutes === 0) return { attemptsToday, failuresToday, blockedUntil: null };
 

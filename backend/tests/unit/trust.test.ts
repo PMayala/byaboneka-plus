@@ -87,12 +87,12 @@ describe('Trust Score Rules', () => {
   });
 
   describe('Progressive Cooldown', () => {
-    // From spec CLAIM-05: 1hr after 1st fail, 4hr after 2nd, 24hr after 3rd
+    // From spec CLAIM-05: 1hr after 1st fail, 4hr after 2nd, 8hr after 3rd
     function getCooldownMinutes(failuresToday: number): number {
       if (failuresToday <= 0) return 0;
       if (failuresToday === 1) return 60;
       if (failuresToday === 2) return 240;
-      return 1440;
+      return 480;
     }
 
     it('no cooldown for first attempt', () => {
@@ -107,9 +107,9 @@ describe('Trust Score Rules', () => {
       expect(getCooldownMinutes(2)).toBe(240);
     });
 
-    it('24 hours after third+ failure', () => {
-      expect(getCooldownMinutes(3)).toBe(1440);
-      expect(getCooldownMinutes(5)).toBe(1440);
+    it('8 hours after third+ failure', () => {
+      expect(getCooldownMinutes(3)).toBe(480);
+      expect(getCooldownMinutes(5)).toBe(480);
     });
   });
 });
